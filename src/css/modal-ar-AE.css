@@ -1,0 +1,38 @@
+/* The Modal (background) */
+.modal {
+
+}
+
+/* Modal Content */
+.modal-content {
+	direction: rtl;
+}
+
+/* The Close Button */
+.close {
+	float: left;
+}
+
+.close:hover,
+.close:focus {
+}
+
+.modal-header {
+
+}
+.modal-header h2 {
+
+}
+
+.modal-body {
+
+}
+	
+.modal-body p {
+
+}
+
+.modal-footer {
+	text-align: left;
+}
+

@@ -1,0 +1,147 @@
+/* The Modal (background) */
+#modalContainer{
+	z-index: 9;
+    position: relative;
+}
+.modal {
+	display: none; /* Hidden by default */
+	position: fixed; /* Stay in place */
+	z-index: 1; /* Sit on top */
+	padding-top: 100px; /* Location of the box */
+	left: 0;
+	top: 0;
+	width: 100%; /* Full width */
+	height: 100%; /* Full height */
+	overflow: auto; /* Enable scroll if needed */
+	background-color: rgb(0,0,0); /* Fallback color */
+	background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+	font-family: sans-serif;
+}
+
+/* Modal Content */
+.modal-content {
+	position: relative;
+	/* background-color: #fefefe; */
+	margin: auto;
+	padding: 0;
+	border: 0px solid #888;
+	width: 850px;
+	box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+	-webkit-animation-name: animatetop;
+	-webkit-animation-duration: 0.5s;
+	animation-name: animatetop;
+	animation-duration: 0.5s;
+	border-radius: 0px;
+	overflow: hidden;
+	/* margin-top: -300px; */
+	/* margin-bottom: 40px; */
+	top: 50%;
+	background: none;
+	max-height: 80%;
+}
+
+/* The Close Button */
+.modal-close {
+	color: white;
+	float: right;
+	font-size: 28px;
+	font-weight: bold;
+	margin-top: 18px !important;	
+}
+
+.close:hover,
+.close:focus {
+	color: #000;
+	text-decoration: none;
+	cursor: pointer;
+}
+
+.modal-header {
+	padding: 2px 16px;
+	background-color: #b33c3c;
+	color: white;
+}
+.modal-header h2 {
+    display: block;
+    font-size: 24px;
+    color: white;
+    -webkit-margin-before: 0.83em;
+    -webkit-margin-after: 0.83em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.modal-body {
+	padding: 2px 31px;
+	background: white;
+    overflow-y: auto;
+}
+
+.modal-body p {
+	font-size: 14px;
+	color: grey;
+	line-height: 13px;
+	margin-top: 14px;
+	margin-bottom: 14px;
+	
+}
+
+.modal-footer {
+	padding: 16px;
+	background-color: #dadada;
+	color: white;
+	text-align: right;
+}
+
+.modal-button {
+	padding: 4px 16px;
+	background-color: #b5b5b5;
+	color: white;
+	border-radius: 4px;
+	font-size: 14px;
+	/* color: grey; */
+}
+
+.modal-button:hover {
+	color: #848484;
+	cursor: pointer;
+	/* color: grey; */
+}
+.modal-ok{
+
+}
+.show{
+	display: block;
+}
+.hide{
+	display: none;
+}
+input {
+    border: 1px solid #666666;
+    height: 1.5em;
+    font-size: 1em;
+    vertical-align: middle;
+}
+
+/* Add Animation */
+@-webkit-keyframes animatetop {
+	from {top:-300px; opacity:0} 
+	to {top:50%; opacity:1}
+}
+
+@keyframes animatetop {
+	from {top:-300px; opacity:0}
+	to {top:50%; opacity:1}
+}
+
+@media screen and (max-width: 844px) {
+	/* Modal Content */
+	.modal-content {
+		width: 80%;
+	}
+}
+
+

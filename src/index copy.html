@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<title>My Dashboard</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="css/styles.css">		
+		<link rel="icon" href="favicon.ico" type="image/x-icon" />
+		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />		
+		<link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,700" rel="stylesheet" type="text/css">
+		<script>	
+		</script> 
+	</head>
+	<base target="_parent" />
+	<body class="my_dashboard">
+		<script src="js/data.js"></script>	
+		<div class="dashboard">
+			<div class="sidebar">
+				<div class="user-profile">
+					<div class="user-container">
+						<div class="profile-title">PROFILE</div>
+						<div class="image-container"><img src="" /></div>
+						<span class="name"></span>
+					</div>
+				</div>
+				<div class="tabs-container">								
+					<div class="tabs">								
+						<div class="tab" id="">
+							<a href="" class=""><span class="icon fas fa-th-list"></span><span class="tab-title"> &nbsp;Alerts </span><span class="badge">0</span></a>
+						</div>
+						<div class="tab-hamburger" onclick="toggleTabsMenu()">
+							<span class="dropdown-hamburger glyphicon glyphicon-chevron-down"></span>
+						</div>											
+					</div>
+				</div>
+			</div>
+			<div class="main">
+				<div class="breadcrumbs-wrapper" id="">
+					<div class="tab-breadcrumbs">Transactions on License #: CN-1018974</div>
+					<div class="filtering">
+						<div class="search-tab" id="">
+							<input class="form-control" placeholder="Filter by keyword ..."></input>
+							<button type="button" class="search-button"></button>
+							<div class="keywords-container"><div class="keyword"><span class="keyword-text"></span><div class="close">x</div></div></div>
+						</div>
+					</div>
+				</div> 
+				<div class="dashboard-tools">
+					<div class="sort">
+						<span class="sortText">Sort by:</span> 
+						<div class="dropdown">
+						<button class="dropdown-toggle" type="button"><span class="buttonText">Select</span>
+						<span class="caret"></span></button>
+						<ul class="dropdown-menu">
+								<li><a>Record Id</a></li>
+						</ul>
+						</div>
+					</div>
+					<div class="view-mode" id="">
+						<div class="view-tool">
+							<span class="view-text">View: &nbsp;</span>
+							<div class="view-container"><button></button></div>
+						</div>
+					</div>
+					
+					<div class="col-md-6 col-sm-12 paging" id="">
+						<div class="paging-container">
+							<button class="button-paging" id="">1</button>
+						</div>
+					</div>
+					<div class="tab-hamburger" onclick="togglePaginationMenu()">
+						<span class="dropdown-hamburger glyphicon glyphicon-menu-hamburger"></span>
+					</div>
+				</div>
+
+				<div class="dashboard-content">
+					<div class="row tab-panel" id="">
+						<div class="header">
+							<div class="header-container"><div class="image-spacer"></div><div class="field-header-container">
+									<div class="field-header">
+										<div class="col-lg-12">
+											<span class="header-icon"></span><span class="header-title">Record Number</span>
+										</div>
+									</div>			
+								</div>
+								<div class="actions-header col-md-2 col-sm-12">
+									<div class="col-lg-12">
+										<table class="">
+											<tbody>
+												<tr>
+													<td class="view"></td>
+												<tr>
+											</tbody>
+										</table>
+									</div>
+								</div>																												
+							</div>
+						</div>	
+						<div class="record-container">
+							<div class="record"><div class="action-menu-container"><div class="kebab-menu"><img src="assets/kebab-icon.svg"/></div></div><div class="record-image"><img /></div><span class="record-icon"></span><div class="field-container">
+									<div class="field">
+										<div class="record-field">
+											<span class="field-icon"></span><span class="field-title"></span><span class="field-value">CHAL-04-2008-00249</span>
+										</div>
+									</div>
+								</div>
+								<div class="actions-container">
+									<div class="col-lg-12">
+										<table class="actions">
+											<tbody>
+												<tr>
+													<td class="action"><a><span class="action-icon"></span><span class="subtitle">view</span></a></td>
+												</tr> 
+											</tbody>
+										</table>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="search-form-wrapper" style="display: none;" >
+			<div class="search-form-container">
+				<form class="form-horizontal search-form" role="form">
+					<div class="form-group text">
+						<label for="recordId" class="col-sm-3 control-label">{Record Id}</label>
+						<div class="col-sm-9">
+							<input type="text" id="recordId" placeholder="{Record Id}" class="form-control" autofocus>
+						</div>
+					</div>
+					<div class="form-group dropdown">
+						<label for="serviceType" class="col-sm-3 control-label">{Service Type}</label>
+						<div class="col-sm-9">
+							<select id="serviceType" class="form-control">
+								<option value="" selected></option>
+							</select>
+						</div>
+					</div> <!-- /.form-group -->
+					<div class="form-group date">
+						<label for="creationDate" class="col-sm-3 control-label date-from-label">{Creation Date}</label>
+						<div class="col-sm-4">
+							<input type="date" id="dateFrom" class="form-control date-from">
+						</div>
+						<label for="" class="col-sm-1 control-label date-to-label">{to}: </label><div class="col-sm-4">
+							<input type="date" id="dateTo" class="form-control date-to">
+						</div>			
+					</div>
+				</form> <!-- /form -->
+			</div> <!-- ./container -->
+		</div>
+		<script src="dist/dashboard-all.js"></script>	
+		<script src="dist/loadDashboard.js"></script>	
+	</body>	
+</html>

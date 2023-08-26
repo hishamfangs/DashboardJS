@@ -1,0 +1,540 @@
+@import url(https://fonts.googleapis.com/earlyaccess/droidarabickufi.css);
+
+body *{
+	font-family: 'Droid Arabic Kufi', sans-serif;
+}
+body{
+	direction: rtl;
+}
+
+div[class*="col-"] {
+	float: right;
+}
+.dashboard-content .well div[class*="col-"] {
+	float: none;
+}
+
+.background{
+
+}
+
+.dashboard{
+
+}
+
+.dashboard-container{
+
+}
+.dashboard-frame{
+
+}
+.dashboard-row{
+
+}
+.dashboard .badge{
+
+}
+.fullscreenLink:hover{
+
+}
+
+.fullscreenLink{
+    float: left;
+    margin-left: 0px;    
+    margin-right: 15px;    
+}
+.fullscreen {
+	text-align: right;
+	margin-top: 6px;
+}
+
+/*========= Sidebar */
+.dashboard .sidebar{
+
+}
+.sidebar li {
+
+}
+.sidebar li a{
+
+}
+
+.sidebar li a{
+
+}
+
+/*========= Main */
+.dashboard .main{
+
+}
+
+/*========= Toolbar */
+.dashboard-toolbar{
+
+}
+.dashboard-toolbar .row {
+	
+}
+.dashboard-toolbar .title{
+
+}
+.dashboard-toolbar .slogan{
+		
+}
+.dashboard-toolbar .btn-primary {
+
+}
+.dashboard-toolbar .btn-primary:hover {
+
+}
+
+/**** Header Navigation ******/
+.header_navigation{
+
+}
+.header_navigation .header_logo{
+	float: right;
+}
+
+.header_navigation .header_logo img{
+
+}
+.header_navigation a{
+
+}
+
+.header_navigation .links_container{
+    float: left;
+}
+.header_navigation .link_container{
+    text-align: right;
+	
+}
+.dropdown-menu {
+    /* display: block; */
+    float: right;
+    text-align: right;
+    right: 0;
+}
+/*========= Dashboard Header */
+.dashboard .main .dashboard-header{
+
+}
+
+.dashboard .main .dashboard-header .title{
+
+}
+.dashboard .main .dashboard-header .tab a{
+	font-size: 13px;
+}
+
+.dashboard .main .dashboard-header .tab a:hover{
+
+}
+.dashboard .main .dashboard-header .tab a.active,
+.dashboard .main .dashboard-header .tab a:active,
+.dashboard .main .dashboard-header .tab a:focus,
+.dashboard .main .dashboard-header .tab:focus,
+.dashboard .main .dashboard-header .tab:active,
+.dashboard .main .dashboard-header .tab.active {
+
+}
+
+/*========= Dashboard Pagination Bar */
+.dashboard .main .dashboard-pagination-bar{
+
+}
+.dashboard .main .dashboard-pagination-bar .row{
+
+}
+
+.dashboard-pagination-bar .sort > div{
+	
+
+}
+.dashboard-pagination-bar .btn {
+
+}
+.dashboard-pagination-bar .btn:hover,
+.dashboard-pagination-bar .btn.active {
+}
+.view-pagination,
+.view-pagination .btn-group {
+	float:left;
+}
+.chevron{
+    left: -10px;
+}
+.chevron .glyphicon{
+	float: left !important;
+    margin-left: 0px !important;
+    margin-right: 10px !important;
+}
+
+.dashboard-pagination-bar .view-mode .glyphicon {
+
+}
+.dashboard-pagination-bar .view-mode,
+.dashboard-pagination-bar .view-mode *{
+
+}
+.dashboard-pagination-bar .view-mode a {
+
+}
+
+.dashboard-pagination-bar .view-mode a.active {
+	
+}
+.dashboard .keyword a .close {
+    margin-left: 0px;
+    margin-right: 5px;
+}
+.dashboard .keyword span {
+    font-size: 14px;
+    line-height: initial;
+}
+.more-pages {
+    right: initial;	
+    left: -20px;
+}
+.search-tab{
+	margin-top: -3px;
+}
+.dashboard .search-tab button {
+    margin-top: 3px;
+}
+/*========= Dashboard Content */
+
+.content-container:empty:after{
+	position: absolute;
+	content: "لايوجد سجلات.";
+	top: 50%;
+	left: 50%;
+	margin-left: -40px;
+	margin-top: -10px;
+	color: #b1b1b7;
+	text-shadow: 1px 1px 1px rgba(255, 255, 255, 1);
+}
+.record-date,
+.dashboard.list .record-date {
+    text-align: right;
+}
+.record-date .monthyear {
+    margin-left: 0px;
+    margin-right: 3px;
+}
+.dashboard .main .dashboard-content{
+
+}
+
+.dashboard .main .dashboard-content .tab-content{
+
+}
+
+.dashboard .main .dashboard-content .well{
+
+}
+.dashboard .main .dashboard-content .col:last-child .well{
+
+}
+.dashboard .main .dashboard-content .well .row{
+
+/* float: right; */
+}
+.dashboard .dashboard-content .record-details-table{
+
+}
+.dashboard .dashboard-content .record-details-table td{
+
+}
+.dashboard .dashboard-content .record-details-table .record-status{
+
+}
+
+.dashboard .dashboard-content .record-details-table .record-date{
+	text-align: left;
+}
+
+.dashboard .dashboard-content .record-details-table .record-date .day{
+
+}
+.dashboard .dashboard-content .record-details-table .record-date .monthyear{
+	float: left;
+	margin-right: 5px;
+	margin-left: 0px;
+}
+.dashboard .dashboard-content .record-details-table .record-date .month{
+
+}
+.dashboard .dashboard-content .record-details-table .record-date .year{
+
+}
+.dashboard .dashboard-content .record-details-table  .record-date .glyphicon{
+
+}
+.dashboard .dashboard-content .record-details-table .calendar{
+	text-align: right;
+}
+
+.dashboard .dashboard-content .record-number {
+
+}
+.dashboard .dashboard-content .record-type{
+
+}
+.dashboard table.actions{
+	
+}
+.dashboard table.actions .subtitle{
+
+}
+
+
+/* === Change Cards into Columns */
+.dashboard.list .main .dashboard-content .col{
+
+}
+.dashboard.list .main .dashboard-content .col .well{
+
+}
+.dashboard.list .main .dashboard-content .col:nth-child(even) .well{
+	
+}
+.dashboard.list .main .dashboard-content .col .well:hover{
+
+}
+
+.dashboard.list .dashboard-content .well .row  {
+	/*float: right;*/
+}
+.dashboard.list .dashboard-content .well .row:last-child {
+	text-align: left;
+	float: left;
+}
+.dashboard.list .dashboard-content .well .row div[class*="col"] {
+
+text-align: right;
+}
+
+.dashboard.list .dashboard-content .well .container-fluid{
+	
+}
+.dashboard .header{
+
+}
+.dashboard.list .header{
+
+}
+.dashboard.list .header .well{
+
+}
+.dashboard.list .main .dashboard-content .tab-content{
+
+}
+.dashboard.list .dashboard-content .record-details-table .record-status{
+
+}
+
+.dashboard.list .header .well .record-number{
+
+}
+.dashboard.list .header .well .glyphicon{
+
+}
+.dashboard.list	.dashboard-content .record-details-table .record-date{
+	text-align: right;
+}
+
+.dashboard.list .dashboard-content .record-details-table .record-date .monthyear{
+
+}
+.dashboard.list table.actions{
+	
+}
+/* =========== */
+ .disabled {
+
+} 
+ .disabled:hover {
+
+} 
+
+
+
+/***** Footer *****/
+
+.footer-container {
+}
+
+.top-footer{
+
+}
+.top-footer:after{
+
+}
+.top-footer .container_1{
+
+}
+.top-footer .container_1 img{
+	float: left;
+}
+    
+.bottom-footer{
+
+}
+
+.bottom-footer .container_1{
+    float: right;
+}
+.bottom-footer .container_1 img{
+
+}
+.bottom-footer .container_2{
+    float: left;
+}
+.footer_navigation{
+
+}
+/*================================================================== Responsive */
+
+/* Large */
+@media (min-width: 1200px){
+	.content-container .col-lg-4:nth-child(3n+1) {
+		clear:right;
+    }
+	.content-container .col-lg-3:nth-child(4n+1) {
+		clear:right;
+    }    
+}
+
+@media (min-width: 768px) and (max-width: 1199px){
+	.content-container .col-sm-6:nth-child(2n+1) {
+		clear:right;
+    } 
+}
+/* Clearing Grid Floats 
+*	End
+*/ 
+
+/* Clearing Grid Floats 
+*	End
+*/ 
+
+@media (max-width: 1050px) {
+
+    .dashboard.list .dashboard-content .well .row  {
+		/*float: left;*/
+	}	
+    .dashboard.list .dashboard-content .well .row div {
+		text-align: left;
+	}
+    .dashboard.list .dashboard-content .well .row div.record-number {
+		text-align: right;
+	}
+
+	.dashboard.list .header{
+		display: none;
+	}
+
+    .dashboard.list .dashboard-content .well .row:nth-child(3) {
+    	margin-top: 20px;
+	}		
+    .dashboard.list .dashboard-content .well .row:nth-child(4) {
+    	margin-top: 5px;
+	 }		
+    .dashboard.list .dashboard-content .well .row div {
+		text-align: left;
+	}
+    .dashboard.list .dashboard-content .well .row div.record-number {
+		text-align: right;
+	}
+}
+
+/* Extra small devices (767px and down) */
+
+@media (max-width: 767px) {
+	
+	.dashboard{
+		margin: 20px;
+		margin-top: 10px;
+	}
+	.header_navigation{
+		padding: 20px;
+	}
+	
+    .dashboard-toolbar .row {
+        display: block; /* Turn off the flexible box layout */
+    }
+	.header_navigation .header_logo {
+		display: block;
+		margin: auto;
+		float: none;
+		margin-bottom: 30px;
+	}       
+	.header_navigation .links_container{
+		text-align: center;
+		display: block;
+		margin: auto;
+		float: none;
+	}        
+	.header_navigation .link_container{
+		text-align: center;
+		display: block;
+		margin: auto;
+	}    	
+   .dashboard .main .dashboard-toolbar{
+		text-align: center;
+	} 
+   .dashboard .main .dashboard-toolbar div{
+		margin-top: 5px;
+	} 	
+   .dashboard .main .dashboard-toolbar div:first-child{
+		margin-top: 0px;
+	} 	
+	.dashboard .main .dashboard-header{
+		text-align: center;
+	} 
+   .dashboard .main .dashboard-header div{
+		margin-top: 5px;
+		float: none;
+	} 	
+   .dashboard .main .dashboard-header div:first-child{
+		margin-top: 0px;
+	} 
+
+	.dashboard .main .dashboard-pagination-bar{
+		text-align: center;
+	}
+	.dashboard .main .dashboard-pagination-bar .view-mode{
+		margin-top: 20px;
+	}
+	.dashboard-toolbar div[class*=col-],	
+	.dashboard .main .dashboard-pagination-bar div[class*=col-]{
+		float: none;
+	}
+	
+	/* Lists */
+	.dashboard.list .dashboard-content .well .row  {
+		width: 100%;
+		float: none;
+		min-height: 0px;	
+	}		
+    .dashboard.list .dashboard-content .well .row div {
+		text-align: center;
+	}
+	.dashboard.list .dashboard-content .well .row div[class*="col"]{
+		text-align: center;
+	}	
+    .dashboard.list .dashboard-content .well .row div.record-number {
+		text-align: center;
+	}
+	.dashboard.list	.dashboard-content .record-details-table .record-date{
+		text-align: left;
+	}
+	.dashboard.list	.dashboard-content .record-details-table .record-status{
+		text-align: right;
+	}
+	.bottom-footer{
+		padding: 20px;
+	}	
+}
