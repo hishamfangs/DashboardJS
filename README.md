@@ -10,7 +10,7 @@ DashboardJS works either Synchronously (full data loaded and fed into the Dashbo
 Simplest Example:
 ----------
 
-var dashboard = new Dashboard({
+`var dashboard = new Dashboard({
 	config: {
   	tabs: {
   		'User Profiles': {
@@ -142,24 +142,24 @@ var dashboard = new Dashboard({
   },
   data: {
   "User Profiles": [
-			{
-					"Name": "Jessie Bambergans",
-					"Status": "Married",
-					"Date": "1980-08-10",
-					"Gender": "Female"
-			},
-			{
-					"Name": "Jerome Berner",
-					"Status": "Single",
-					"Date": "1980-08-10",
-					"Gender": "Male"
-			},
-			{
-					"Name": "Ruba Jackman",
-					"Status": "Married",
-					"Date": "1984-01-05",
-					"Gender": "Female"
-			}]
+	{
+			"Name": "Jessie Bambergans",
+			"Status": "Married",
+			"Date": "1980-08-10",
+			"Gender": "Female"
+	},
+	{
+			"Name": "Jerome Berner",
+			"Status": "Single",
+			"Date": "1980-08-10",
+			"Gender": "Male"
+	},
+	{
+			"Name": "Ruba Jackman",
+			"Status": "Married",
+			"Date": "1984-01-05",
+			"Gender": "Female"
+	}]
    }
 });
-
+`
