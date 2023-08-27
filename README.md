@@ -9,7 +9,13 @@ DashboardJS works either Synchronously (full data loaded and fed into the Dashbo
 
 Simplest Example:
 ----------
-```
+```html
+<style>
+  /* Set the tab size to 4 spaces */
+  pre code {
+    tab-size: 4;
+  }
+</style>
 var dashboard = new Dashboard({
 	config: {
 		tabs: {
