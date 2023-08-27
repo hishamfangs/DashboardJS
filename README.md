@@ -9,8 +9,8 @@ DashboardJS works either Synchronously (full data loaded and fed into the Dashbo
 
 Simplest Example:
 ----------
-
-`var dashboard = new Dashboard({
+```
+var dashboard = new Dashboard({
 	config: {
 		tabs: {
 			'User Profiles': {
@@ -161,5 +161,6 @@ Simplest Example:
 				"Gender": "Female"
 		}]
 	}
+ 
 });
-`
+```
