@@ -60,7 +60,7 @@ var dashboard = new Dashboard({
 							style:{
 								'grid-column':'span 3'
 							}
-						},						
+						},
 						Date: { name: "Date of Birth" },
 						Status: { name: "Marital Status" },
 						Gender: { name: "Gender" },
@@ -141,26 +141,22 @@ var dashboard = new Dashboard({
 		}
 	},
 	data: {
-		"User Profiles": [
-		{
-				"Name": "Jessie Bambergans",
-				"Status": "Married",
-				"Date": "1980-08-10",
-				"Gender": "Female"
-		},
-		{
-				"Name": "Jerome Berner",
-				"Status": "Single",
-				"Date": "1980-08-10",
-				"Gender": "Male"
-		},
-		{
-				"Name": "Ruba Jackman",
-				"Status": "Married",
-				"Date": "1984-01-05",
-				"Gender": "Female"
+		"User Profiles": [{
+			"Name": "Jessie Bambergans",
+			"Status": "Married",
+			"Date": "1980-08-10",
+			"Gender": "Female"
+		},{
+			"Name": "Jerome Berner",
+			"Status": "Single",
+			"Date": "1980-08-10",
+			"Gender": "Male"
+		},{
+			"Name": "Ruba Jackman",
+			"Status": "Married",
+			"Date": "1984-01-05",
+			"Gender": "Female"
 		}]
 	}
- 
 });
 ```
