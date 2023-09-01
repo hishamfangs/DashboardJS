@@ -456,7 +456,7 @@ DataManager.prototype.setPaging = function (page){
 DataManager.prototype.processPaging = function (){
 
 	// Local Data
-	if (this.data && !this.fetch){
+	if (this.data && !this.fetch?.url){
 		var data = this.data.sorted;
 		var count = data.length;
 		var itemsPerPage = this.itemsPerPage;

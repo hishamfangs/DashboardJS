@@ -41,9 +41,10 @@ Dashboard.prototype.initialize = async function ({config, data, templateManager,
 	if (config.tabs){
 		this.loadDashboard();
 	}
-
-	var userProfile = new UserProfile(this, { ...this.profile}, [], templateManager);
-	this.append(userProfile, 'profile');
+	if (this.profile){
+		var userProfile = new UserProfile(this, { ...this.profile}, [], templateManager);
+		this.append(userProfile, 'profile');	
+	}
 };
 
 Dashboard.prototype.loadHTML = async function (templateURL, appendTo){

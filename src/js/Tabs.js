@@ -32,10 +32,11 @@ Tabs.prototype.constructor = Tabs;
 
 Tabs.prototype.loadTabs = async function(){
 	this.processTabs();
+
 	for (var t in this.tabs){
 		var tabConfig = this.tabs[t]; 
 
-		// Check if ajax Fetch is configured
+		// Check if ajax Fetch is configured either on the tab level or on the global config level
 		var fetch = tabConfig.fetch || this.config.fetch;
 
 		// Load DataManager with configuration
@@ -48,9 +49,11 @@ Tabs.prototype.loadTabs = async function(){
 		//var tl = gsap.timeline();
 		//tl.from("#" + recordset.uid + " " + Record.defaultTemplate.item, {duration: 0.3, opacity: 0, x: 1600, stagger: 0.05});
 	}
-	if (this.config.initialActiveTab){
-		this.goToTab(this.config.initialActiveTab);
+	if (!this.config.initialActiveTab){
+		let keys = Object.keys(this.tabs); 
+		this.config.initialActiveTab = keys.length?keys[0]:null;
 	}
+	this.goToTab(this.config.initialActiveTab);
 }
 
 Tabs.prototype.goToTab = function(tabName){

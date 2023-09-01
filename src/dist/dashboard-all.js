@@ -257,9 +257,10 @@ Dashboard.prototype.initialize = async function ({config, data, templateManager,
 	if (config.tabs){
 		this.loadDashboard();
 	}
-
-	var userProfile = new UserProfile(this, { ...this.profile}, [], templateManager);
-	this.append(userProfile, 'profile');
+	if (this.profile){
+		var userProfile = new UserProfile(this, { ...this.profile}, [], templateManager);
+		this.append(userProfile, 'profile');	
+	}
 };
 
 Dashboard.prototype.loadHTML = async function (templateURL, appendTo){
@@ -1954,7 +1955,7 @@ DataManager.prototype.setPaging = function (page){
 DataManager.prototype.processPaging = function (){
 
 	// Local Data
-	if (this.data && !this.fetch){
+	if (this.data && !this.fetch?.url){
 		var data = this.data.sorted;
 		var count = data.length;
 		var itemsPerPage = this.itemsPerPage;
@@ -2262,7 +2263,7 @@ Filtering.prototype.renderKeywords = function (){
 	this.removeChildren();
 	for (var k in this.dataManager.filtering.keywords){
 		var pKeyword = this.dataManager.filtering.keywords[k];
-		var keyword = new FilteringKeyword(this, {...config, name: pKeyword}, this.dataManager, this.templateManager, false);
+		var keyword = new FilteringKeyword(this, {...this.config, name: pKeyword}, this.dataManager, this.templateManager, false);
 		this.append(keyword)
 	}
 };
@@ -3764,10 +3765,11 @@ Tabs.prototype.constructor = Tabs;
 
 Tabs.prototype.loadTabs = async function(){
 	this.processTabs();
+
 	for (var t in this.tabs){
 		var tabConfig = this.tabs[t]; 
 
-		// Check if ajax Fetch is configured
+		// Check if ajax Fetch is configured either on the tab level or on the global config level
 		var fetch = tabConfig.fetch || this.config.fetch;
 
 		// Load DataManager with configuration
@@ -3780,9 +3782,11 @@ Tabs.prototype.loadTabs = async function(){
 		//var tl = gsap.timeline();
 		//tl.from("#" + recordset.uid + " " + Record.defaultTemplate.item, {duration: 0.3, opacity: 0, x: 1600, stagger: 0.05});
 	}
-	if (this.config.initialActiveTab){
-		this.goToTab(this.config.initialActiveTab);
+	if (!this.config.initialActiveTab){
+		let keys = Object.keys(this.tabs); 
+		this.config.initialActiveTab = keys.length?keys[0]:null;
 	}
+	this.goToTab(this.config.initialActiveTab);
 }
 
 Tabs.prototype.goToTab = function(tabName){

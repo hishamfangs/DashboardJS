@@ -55,7 +55,7 @@ Filtering.prototype.renderKeywords = function (){
 	this.removeChildren();
 	for (var k in this.dataManager.filtering.keywords){
 		var pKeyword = this.dataManager.filtering.keywords[k];
-		var keyword = new FilteringKeyword(this, {...config, name: pKeyword}, this.dataManager, this.templateManager, false);
+		var keyword = new FilteringKeyword(this, {...this.config, name: pKeyword}, this.dataManager, this.templateManager, false);
 		this.append(keyword)
 	}
 };
