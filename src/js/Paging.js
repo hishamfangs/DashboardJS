@@ -20,13 +20,13 @@
 
 |********************/
 function Paging(tab, config, dataManager, template, useExistingElement) {
-	DashboardElement.call(this, config, null, template, useExistingElement);
+	Component.call(this, config, null, template, useExistingElement);
 	this.dataManager = dataManager;
 	this.tab = tab;
 	this.visiblePages = 6;
 	this.refresh();
 }
-Paging.prototype = Object.create(DashboardElement.prototype);
+Paging.prototype = Object.create(Component.prototype);
 Paging.prototype.constructor = Paging;
 
 Paging.prototype.renderPageHighlight = function (){

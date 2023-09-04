@@ -23,7 +23,7 @@
 
 |********************/
 function Panel(config, data, template, useExistingElement) {
-	DashboardElement.call(this, config, data, template, useExistingElement);
+	Component.call(this, config, data, template, useExistingElement);
 
 	// Create Tab
 	var tab = new Tab(config, data, { templateBuilder: template.templateBuilder});
@@ -35,7 +35,7 @@ function Panel(config, data, template, useExistingElement) {
 	//console.log(this);
 }
 
-Panel.prototype = Object.create(DashboardElement.prototype);
+Panel.prototype = Object.create(Component.prototype);
 Panel.prototype.constructor = Panel;
 
 /*

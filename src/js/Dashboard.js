@@ -20,7 +20,7 @@ function Dashboard({config, data, templateManager, useExistingElement, selectors
 	this.initialize({config, data, templateManager, useExistingElement, selectors, templateURL, appendTo});
 }
 
-Dashboard.prototype = Object.create(DashboardElement.prototype);
+Dashboard.prototype = Object.create(Component.prototype);
 Dashboard.prototype.constructor = Dashboard;
 
 Dashboard.prototype.initialize = async function ({config, data, templateManager, useExistingElement, selectors, templateURL, appendTo}){
@@ -35,7 +35,7 @@ Dashboard.prototype.initialize = async function ({config, data, templateManager,
 		templateManager = await this.loadHTML(templateURL, appendTo);
 	}
 	
-	DashboardElement.call(this, config, data, templateManager, useExistingElement, selectors);
+	Component.call(this, config, data, templateManager, useExistingElement, selectors);
 
 	// Create Tab
 	if (config.tabs){

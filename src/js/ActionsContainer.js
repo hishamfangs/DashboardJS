@@ -24,7 +24,7 @@
 
 |********************/
 function ActionsContainer(config, data, template, useExistingElement) {
-	DashboardElement.call(this, config, data, template, useExistingElement);
+	Component.call(this, config, data, template, useExistingElement);
 	this.actions = config.actions;
 
 	if (this.actions) {
@@ -41,7 +41,7 @@ function ActionsContainer(config, data, template, useExistingElement) {
 	}
 	console.log(this);
 }
-ActionsContainer.prototype = Object.create(DashboardElement.prototype);
+ActionsContainer.prototype = Object.create(Component.prototype);
 ActionsContainer.prototype.constructor = ActionsContainer;
 /*
 
@@ -74,6 +74,6 @@ ActionsContainer.defaultTemplate = {
 };
 
 ActionsContainer.prototype.getTemplate = function (templateConfig) {	// pass Optional template to override default template
-	var template = DashboardElement.prototype.getTemplate.call(this, templateConfig);
+	var template = Component.prototype.getTemplate.call(this, templateConfig);
 	return template;
 }

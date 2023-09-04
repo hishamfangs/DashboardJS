@@ -24,7 +24,7 @@
 |********************/
 function Filtering(tab, config, dataManager, template, useExistingElement) {
 	var filtering = this;
-	DashboardElement.call(this, config, dataManager.getData(), template, useExistingElement);
+	Component.call(this, config, dataManager.getData(), template, useExistingElement);
 	this.dataManager = dataManager;
 	this.tab = tab
 	this.dashboard = tab.dashboard
@@ -38,7 +38,7 @@ function Filtering(tab, config, dataManager, template, useExistingElement) {
 	}
 	//console.log(this);
 }
-Filtering.prototype = Object.create(DashboardElement.prototype);
+Filtering.prototype = Object.create(Component.prototype);
 Filtering.prototype.constructor = Filtering;
 
 Filtering.prototype.addKeyword = function(keyword){

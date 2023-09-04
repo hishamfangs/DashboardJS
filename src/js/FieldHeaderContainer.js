@@ -19,8 +19,8 @@
 
 |********************/
 function FieldHeaderContainer(config, data, template, useExistingElement){
-	DashboardElement.call(this, config, data, template, useExistingElement);
-	var fields = DashboardElement.getFieldSettings(this.fields, this.language);
+	Component.call(this, config, data, template, useExistingElement);
+	var fields = Component.getFieldSettings(this.fields, this.language);
 
 	for (var key in fields) {
 		if (fields.hasOwnProperty(key)) {
@@ -34,7 +34,7 @@ function FieldHeaderContainer(config, data, template, useExistingElement){
 		this.objects.imageSpacer.hide();
 	}
 }
-FieldHeaderContainer.prototype = Object.create(DashboardElement.prototype);
+FieldHeaderContainer.prototype = Object.create(Component.prototype);
 FieldHeaderContainer.prototype.constructor = FieldHeaderContainer;		
 
 

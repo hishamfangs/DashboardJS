@@ -33,7 +33,7 @@ function Action(config, data, template, useExistingElement) {
 	
 
 	// Call Default 
-	DashboardElement.call(this, config, data, template, useExistingElement);
+	Component.call(this, config, data, template, useExistingElement);
 
 	// The final Action Object
 	actionItem = {
@@ -52,7 +52,7 @@ function Action(config, data, template, useExistingElement) {
 
 }
 
-Action.prototype = Object.create(DashboardElement.prototype);
+Action.prototype = Object.create(Component.prototype);
 Action.prototype.constructor = Action;
 
 Action.defaultTemplate = {

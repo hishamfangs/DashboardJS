@@ -3,13 +3,49 @@ var browserSync = require('browser-sync').create();
 var sass = require('gulp-sass')(require('sass'));
 var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
+var insert = require("gulp-insert");
+
 
 // Concat All js files
 gulp.task('scripts', function() {
   return gulp.src('src/js/*.js')
     .pipe(concat('dashboard-all.js'))
 		//.pipe(uglify())
-    .pipe(gulp.dest('src/dist'))
+		.pipe(insert.transform(function(contents, file) {
+			return 'var FutureLabs = (function () {' 
+			+ contents 
+			+ `
+				return {
+					Action: Action,
+					ActionsContainer: ActionsContainer,
+					ActionsMenu: ActionsMenu,
+					Component: Component,
+					Dashboard: Dashboard,
+					DataManager: DataManager,
+					Field: Field,
+					FieldHeader: FieldHeader,
+					FieldHeaderContainer: FieldHeaderContainer,
+					FileLoader: FileLoader,
+					Filtering: Filtering,
+					FilteringKeyword: FilteringKeyword,
+					PageButton: PageButton,
+					Paging: Paging,
+					Record: Record,
+					Recordset: Recordset,
+					Sorting: Sorting,
+					SortingItem: SortingItem,
+					Tab: Tab,
+					Tabs: Tabs,
+					Template: Template,
+					TemplateManager: TemplateManager,
+					UserProfile: UserProfile,
+					ViewSwitcher: ViewSwitcher,
+					ViewSwitcherButton: ViewSwitcherButton
+				};
+			`
+			+ '})();';
+		}))		
+	.pipe(gulp.dest('src/dist'))
 		.pipe(browserSync.stream());
 });
 

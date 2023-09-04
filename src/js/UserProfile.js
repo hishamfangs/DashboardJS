@@ -24,11 +24,11 @@
 |********************/
 function UserProfile(dashboard, config, dataManager, template, useExistingElement) {
 
-	DashboardElement.call(this, {...config}, dataManager, template, useExistingElement);
+	Component.call(this, {...config}, dataManager, template, useExistingElement);
 	this.dashboard = dashboard;
 	//this.setLink(url);
 }
-UserProfile.prototype = Object.create(DashboardElement.prototype);
+UserProfile.prototype = Object.create(Component.prototype);
 UserProfile.prototype.constructor = UserProfile;
 
 UserProfile.defaultTemplate = {

@@ -24,7 +24,7 @@
 |********************/
 function FilteringKeyword(filtering, config, dataManager, template, useExistingElement) {
 	var filteringKeyword = this;
-	DashboardElement.call(this, config, [], template, useExistingElement);
+	Component.call(this, config, [], template, useExistingElement);
 	this.dataManager = dataManager;
 	this.filtering = filtering; 
 	//console.log(this);
@@ -34,7 +34,7 @@ function FilteringKeyword(filtering, config, dataManager, template, useExistingE
 	
 }
 
-FilteringKeyword.prototype = Object.create(DashboardElement.prototype);
+FilteringKeyword.prototype = Object.create(Component.prototype);
 FilteringKeyword.prototype.constructor = FilteringKeyword;
 
 FilteringKeyword.prototype.close = function (){

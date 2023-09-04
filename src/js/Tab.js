@@ -33,7 +33,7 @@ function Tab(tabs, config, dataManager, template, useExistingElement) {
 		};
 	}
 
-	DashboardElement.call(this, tabConfig, dataManager.getData(), template, useExistingElement);
+	Component.call(this, tabConfig, dataManager.getData(), template, useExistingElement);
 
 	this.dataManager = dataManager;
 	this.tabs = tabs;
@@ -43,7 +43,7 @@ function Tab(tabs, config, dataManager, template, useExistingElement) {
 	this.refreshCount();
 };
 
-Tab.prototype = Object.create(DashboardElement.prototype);
+Tab.prototype = Object.create(Component.prototype);
 Tab.prototype.constructor = Tab;
 
 Tab.prototype.refreshCount = async function (){
@@ -81,7 +81,7 @@ Tab.prototype.goToPage = async function(page){
 };
 
 Tab.prototype.refresh = async function(){
-	this.fields = DashboardElement.getFieldSettings(this.recordSettings.fields, this.language);
+	this.fields = Component.getFieldSettings(this.recordSettings.fields, this.language);
 	
 	this.setBreadCrumbs();
 	this.setRecordset();

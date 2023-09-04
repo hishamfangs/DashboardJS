@@ -20,7 +20,7 @@
 
 |********************/
 function Field(config, data, template, useExistingElement) {
-	DashboardElement.call(this, config, data, template, useExistingElement);
+	Component.call(this, config, data, template, useExistingElement);
 
 	this.object.setAttribute("class", this.object.getAttribute("class") + " go-" + this.position);
 
@@ -29,7 +29,7 @@ function Field(config, data, template, useExistingElement) {
 	
 
 }
-Field.prototype = Object.create(DashboardElement.prototype);
+Field.prototype = Object.create(Component.prototype);
 Field.prototype.constructor = Field;
 
 Field.prototype.renderFieldValues = function (){

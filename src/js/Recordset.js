@@ -10,7 +10,7 @@
 
 
 function Recordset(config, dataManager, templateManager, useExistingElement) {
-	DashboardElement.call(this, config, dataManager.getData(), templateManager, useExistingElement);
+	Component.call(this, config, dataManager.getData(), templateManager, useExistingElement);
 	this.dataManager = dataManager;
 	this.refresh();
 	//console.log(this);
@@ -24,7 +24,7 @@ function Recordset(config, dataManager, templateManager, useExistingElement) {
 	
 }
 
-Recordset.prototype = Object.create(DashboardElement.prototype);
+Recordset.prototype = Object.create(Component.prototype);
 Recordset.prototype.constructor = Recordset;
 
 Recordset.prototype.setDataManager = function(dataManager){

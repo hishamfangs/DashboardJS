@@ -16,10 +16,10 @@
 
 |********************/
 function Record(config, data, template, useExistingElement) {
-	DashboardElement.call(this, config, data, template, useExistingElement);
+	Component.call(this, config, data, template, useExistingElement);
 
 	// Process Field Settings
-	this.fields = DashboardElement.getFieldSettings(this.fields, this.language);
+	this.fields = Component.getFieldSettings(this.fields, this.language);
 
 	// Apply Default Image
 	if (this?.image?.url && data?.[this.image.url]){
@@ -81,7 +81,7 @@ function Record(config, data, template, useExistingElement) {
 	}
 	
 }
-Record.prototype = Object.create(DashboardElement.prototype);
+Record.prototype = Object.create(Component.prototype);
 Record.prototype.constructor = Record;
 
 Record.defaultTemplate = {

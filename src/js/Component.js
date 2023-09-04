@@ -1,4 +1,4 @@
-/**** DashboardElement Class
+/**** Component Class
 |*		
 |*	Base Class for All Dashboard Elements
 |*	All Elements will inherit this class
@@ -55,11 +55,11 @@
 |********************/
 
 
-function DashboardElement(config, data, templateManager, useExistingElement, selectors, templateURL) {
+function Component(config, data, templateManager, useExistingElement, selectors, templateURL) {
 	this.load(config, data, templateManager, useExistingElement, selectors, templateURL);
 }
 
-DashboardElement.prototype.load = function (config, data, templateManager, useExistingElement, selectors, templateURL){
+Component.prototype.load = function (config, data, templateManager, useExistingElement, selectors, templateURL){
 
 	// Initialize the element by setting the config properties and adding them to the local scope
 	// and set the Data & template 
@@ -75,7 +75,7 @@ DashboardElement.prototype.load = function (config, data, templateManager, useEx
 	//console.log(this.__proto__.constructor.name, this);
 };
 
-DashboardElement.prototype.init = function (config, data, templateManager, useExistingElement, selectors, templateURL) {
+Component.prototype.init = function (config, data, templateManager, useExistingElement, selectors, templateURL) {
 	// Loop through the config properties and add them 
 	// to the local context 
 	// then add a reference the original copy of config as well.
@@ -193,11 +193,11 @@ DashboardElement.prototype.init = function (config, data, templateManager, useEx
 	if (this.config.id){
 		this.uid = this.config.id;
 	}else{
-		this.uid = DashboardElement.generateRandomId();
+		this.uid = Component.generateRandomId();
 	}
 };
 
-DashboardElement.prototype.render = function () {
+Component.prototype.render = function () {
 
 	this.template = this.getTemplate();
 	var object = this.template.object;
@@ -222,7 +222,7 @@ DashboardElement.prototype.render = function () {
 };
 
 // Default Template for every object will be the first div inside your document
-DashboardElement.defaultTemplate = {
+Component.defaultTemplate = {
 	wrapper: "",
 	item: ".tab-content",
 	itemText: "",
@@ -261,7 +261,7 @@ DashboardElement.defaultTemplate = {
 // Default selectors are used to create the Node objects ... or
 // Optional: 	Any Passed template will take priority over the default selectors & Node objects
 // 				You can pass ready Node objects, or custom selectors, or both.  
-DashboardElement.prototype.getTemplate = function (name, selectors, useExistingElement) { // pass Optional template to override default template
+Component.prototype.getTemplate = function (name, selectors, useExistingElement) { // pass Optional template to override default template
 	if (!selectors) {
 		selectors = this.templateSettings.selectors
 	}
@@ -274,7 +274,7 @@ DashboardElement.prototype.getTemplate = function (name, selectors, useExistingE
 	return this.templateManager.getTemplate(name, selectors, useExistingElement)
 };
 
-DashboardElement.prototype.renderValues = function () {
+Component.prototype.renderValues = function () {
 	// Value of Title
 	var value = processedValue = this.name;
 /* 	if (this.onGetValue) {
@@ -332,26 +332,26 @@ DashboardElement.prototype.renderValues = function () {
 
 };
 
-DashboardElement.prototype.generateId = function (optionalName) {
+Component.prototype.generateId = function (optionalName) {
 	try {
 		var name = optionalName;
 		if (!name) {
 			name = this.name;
 		}
 		if (name) {
-			var id = DashboardElement.generateIdFromName(name);
+			var id = Component.generateIdFromName(name);
 		} else {
 			throw "Warning: " + this + " has no name. A random Id will be generated.";
 		}
 	} catch (err) {
 		console.log(err);
-		var id = DashboardElement.generateRandomId();
+		var id = Component.generateRandomId();
 		return id;
 	}
 	return id;
 };
 
-DashboardElement.generateIdFromName = function (name) {
+Component.generateIdFromName = function (name) {
 	var id = String(name).trim();
 	id = id.replace("'", "");
 	id = id.replace("\"", "");
@@ -360,7 +360,7 @@ DashboardElement.generateIdFromName = function (name) {
 	return id;
 };
 
-DashboardElement.generateRandomId = function () {
+Component.generateRandomId = function () {
 	// I generate the UID from three parts here
 	// to ensure the random number provide enough bits.
 	var letterNumber = ((Math.random() * 24) | 0);
@@ -375,7 +375,7 @@ DashboardElement.generateRandomId = function () {
 	return firstLetter + firstPart + secondPart + thirdPart;
 };
 
-DashboardElement.prototype.processEvents = function () {
+Component.prototype.processEvents = function () {
 	visibility = this.visibility;
 	var show = false;
 	if (typeof visibility === "string") {
@@ -503,14 +503,14 @@ DashboardElement.prototype.processEvents = function () {
 	this.url = url;
 	this.icon = icon;
 };
-DashboardElement.prototype.setText = function (value, selectorKey){
+Component.prototype.setText = function (value, selectorKey){
 	this.template.setText(value, selectorKey);
 };
 
-DashboardElement.prototype.addClass = function (value, selectorKey){
+Component.prototype.addClass = function (value, selectorKey){
 	this.template.addClass(value, selectorKey);
 };
-DashboardElement.prototype.removeClass = function (value, selectorKey){
+Component.prototype.removeClass = function (value, selectorKey){
 	try{
 		this.template.removeClass(value, selectorKey);
 	}catch(err){
@@ -518,23 +518,23 @@ DashboardElement.prototype.removeClass = function (value, selectorKey){
 	}
 };
 
-DashboardElement.prototype.setImage = function (value, selectorKey){
+Component.prototype.setImage = function (value, selectorKey){
 	this.template.setImage(value, selectorKey);
 };
 
-DashboardElement.prototype.setBackgroundImage = function (value, selectorKey, height){
+Component.prototype.setBackgroundImage = function (value, selectorKey, height){
 	this.template.setBackgroundImage(value, selectorKey, height);
 };
 
-DashboardElement.prototype.setIcon = function (value, selectorKey){
+Component.prototype.setIcon = function (value, selectorKey){
 	this.template.setIcon(value, selectorKey);
 };
 
-DashboardElement.prototype.removeIcon = function (selectorKey){
+Component.prototype.removeIcon = function (selectorKey){
 	this.template.removeIcon(value, selectorKey);
 };
 
-DashboardElement.prototype.setLink = function (value, selectorKey, target){
+Component.prototype.setLink = function (value, selectorKey, target){
 	// If there is no A tag, and the link is to be created on the 'item' itself, then a new link tag is created and returned
 	var newLink = this.template.setLink(value, selectorKey, target);
 
@@ -548,7 +548,7 @@ DashboardElement.prototype.setLink = function (value, selectorKey, target){
 	}
 };
 
-DashboardElement.prototype.remove = function(){
+Component.prototype.remove = function(){
 	// If onRemove event
 	if (this.onRemove) {
 		var event = new DashboardEvent();
@@ -561,7 +561,7 @@ DashboardElement.prototype.remove = function(){
 	}
 };
 
-DashboardElement.prototype.removeChildren = function(selectorKey){
+Component.prototype.removeChildren = function(selectorKey){
 	// If onRemove event
 	if (this.onRemove) {
 		var event = new DashboardEvent();
@@ -612,7 +612,7 @@ DashboardElement.prototype.removeChildren = function(selectorKey){
 	}
 };
 
-DashboardElement.prototype.delete = function(){
+Component.prototype.delete = function(){
 	try{
 		this.object.parentNode.removeChild(this.object);
 	}catch(er){
@@ -626,7 +626,7 @@ DashboardElement.prototype.delete = function(){
 };
 
 /* 
-DashboardElement.prototype.append = function (childObject, containerSelector) {	// Append to an optional Container
+Component.prototype.append = function (childObject, containerSelector) {	// Append to an optional Container
 	try {
 		if (this.object) {
 			if (childObject.object) {
@@ -658,7 +658,7 @@ DashboardElement.prototype.append = function (childObject, containerSelector) {	
 		console.log(err);
 	}
 } */
-DashboardElement.prototype.append = function (childElement, containerSelector) {	// Append to an optional Container
+Component.prototype.append = function (childElement, containerSelector) {	// Append to an optional Container
 	try {
 		pContainer = "container";
 		this.template.append(childElement, containerSelector);
@@ -693,7 +693,7 @@ DashboardElement.prototype.append = function (childElement, containerSelector) {
 	}		
 }
 
-DashboardElement.prototype.prepend = function (childElement, containerSelector) {
+Component.prototype.prepend = function (childElement, containerSelector) {
 	try {
 		var pContainer = "container";
 		this.template.prepend(childElement, containerSelector);
@@ -730,7 +730,7 @@ DashboardElement.prototype.prepend = function (childElement, containerSelector) 
 }
 
 /* 
-DashboardElement.prototype.appendTo = function (parentObject){
+Component.prototype.appendTo = function (parentObject){
 	try{
 		if (this.object){
 			if (parentObject.object){
@@ -752,7 +752,7 @@ DashboardElement.prototype.appendTo = function (parentObject){
 }
  */
 
-DashboardElement.getFieldSettings = function (fields, language) {
+Component.getFieldSettings = function (fields, language) {
 
 	// Check if a Tab Object is Passed
 	if (typeof fields === "object") {
@@ -909,7 +909,7 @@ DashboardElement.getFieldSettings = function (fields, language) {
 
 };
 
-DashboardElement.prototype.fadeOut = function() {
+Component.prototype.fadeOut = function() {
 
 	var fadeTarget = this.object;
 	var fadeEffect = setInterval(function () {
@@ -928,7 +928,7 @@ DashboardElement.prototype.fadeOut = function() {
 	}, 50);
 }
 
-DashboardElement.prototype.fadeLeft = function() {
+Component.prototype.fadeLeft = function() {
 	var fadeTarget = this.object;
 	fadeTarget.style.position = "absolute";
 	var event = new DashboardEvent();
@@ -960,7 +960,7 @@ DashboardElement.prototype.fadeLeft = function() {
 }
 
 
-DashboardElement.prototype.fadeRight = function() {
+Component.prototype.fadeRight = function() {
 	var fadeTarget = this.object;
 	var fadeEffect = setInterval(function () {
 		try{
@@ -983,7 +983,7 @@ DashboardElement.prototype.fadeRight = function() {
 }
 
 
-DashboardElement.prototype.fadeInLeft = function() {
+Component.prototype.fadeInLeft = function() {
 	var fadeTarget = this.object;
 	//fadeTarget.style.opacity = 0;
 	var event = new DashboardEvent();
@@ -1022,7 +1022,7 @@ DashboardElement.prototype.fadeInLeft = function() {
 	return event;
 }
 
-DashboardElement.prototype.getChild = function(name, containerKey){
+Component.prototype.getChild = function(name, containerKey){
 	// If containerKey is specified
 	if (containerKey){
 		if (this.children[containerKey]){
@@ -1051,7 +1051,7 @@ DashboardElement.prototype.getChild = function(name, containerKey){
 	}
 };
 
-DashboardElement.prototype.showLoader = async function (){
+Component.prototype.showLoader = async function (){
 	this.addClass('loader-fade');
 	await new Promise(resolve => setTimeout(()=>{
 		this.addClass('loader');
@@ -1060,7 +1060,7 @@ DashboardElement.prototype.showLoader = async function (){
 	
 };
 
-DashboardElement.prototype.hideLoader = function (){
+Component.prototype.hideLoader = function (){
 	this.removeClass('loader');
 	setTimeout(()=>{
 		this.removeClass('loader-fade');
@@ -1069,7 +1069,7 @@ DashboardElement.prototype.hideLoader = function (){
 	}, 1000);
 };
 
-DashboardElement.prototype.getChildById = function(id){
+Component.prototype.getChildById = function(id){
 	// Children that are added directly to the container
 	for(var c in this.children.container){
 

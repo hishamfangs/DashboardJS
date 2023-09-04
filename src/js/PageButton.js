@@ -20,14 +20,14 @@
 
 |********************/
 function PageButton(config, template) {
-	DashboardElement.call(this, config, null, template, false);
+	Component.call(this, config, null, template, false);
 
 	//clone field
 	//var fieldObject = this.object;
 	this.setText(this.config.name?this.config.name:this.config.pageNumber);
 	//fieldObject.innerHTML = this.config.pageNumber;
 }
-PageButton.prototype = Object.create(DashboardElement.prototype);
+PageButton.prototype = Object.create(Component.prototype);
 PageButton.prototype.constructor = PageButton;
 
 PageButton.prototype.highlight = function (){

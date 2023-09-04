@@ -17,15 +17,15 @@
 
 |********************/
 function FieldHeader(config, data, template, useExistingElement){
-	DashboardElement.call(this, config, data, template, useExistingElement);
-	//var fieldSettings = DashboardElement.getFieldSettings(this);
+	Component.call(this, config, data, template, useExistingElement);
+	//var fieldSettings = Component.getFieldSettings(this);
 	//var fields = fieldSettings.fields;
 
 	// Modify Header DOM Object
 	this.addClass(this.class);
 	this.setText(this.translatedName);
 }
-FieldHeader.prototype = Object.create(DashboardElement.prototype);
+FieldHeader.prototype = Object.create(Component.prototype);
 FieldHeader.prototype.constructor = FieldHeader;		
 
 
@@ -39,6 +39,6 @@ FieldHeader.defaultTemplate = {
 };
 /* 
 Recordset.prototype.getTemplate = function (jqContext, pTemplate){	// pass Optional template to override default template
-	var template = DashboardElement.prototype.getTemplate.call(this, jqContext, pTemplate);
+	var template = Component.prototype.getTemplate.call(this, jqContext, pTemplate);
 	return template;
 } */

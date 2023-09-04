@@ -24,7 +24,7 @@
 |********************/
 function Sorting(tab, config, dataManager, template, useExistingElement) {
 
-	DashboardElement.call(this, {...config, 
+	Component.call(this, {...config, 
 		onClick: function(){
 			this.toggleMenu();
 		}}, dataManager.getData(), template, useExistingElement);
@@ -44,7 +44,7 @@ function Sorting(tab, config, dataManager, template, useExistingElement) {
 	});
 	//console.log(this);
 }
-Sorting.prototype = Object.create(DashboardElement.prototype);
+Sorting.prototype = Object.create(Component.prototype);
 Sorting.prototype.constructor = Sorting;
 
 Sorting.prototype.toggleMenu = function(){

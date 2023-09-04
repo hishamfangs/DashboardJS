@@ -20,7 +20,7 @@
 
 |********************/
 function ViewSwitcherButton(viewSwitcher, config, template) {
-	DashboardElement.call(this, config, null, template, false);
+	Component.call(this, config, null, template, false);
 	this.viewSwitcher = viewSwitcher;
 	this.dashboard = viewSwitcher.dashboard;
 	this.setText(this.name);
@@ -29,7 +29,7 @@ function ViewSwitcherButton(viewSwitcher, config, template) {
 	//this.setText(this.config.name?this.config.name:this.config.pageNumber);
 	//fieldObject.innerHTML = this.config.pageNumber;
 }
-ViewSwitcherButton.prototype = Object.create(DashboardElement.prototype);
+ViewSwitcherButton.prototype = Object.create(Component.prototype);
 ViewSwitcherButton.prototype.constructor = ViewSwitcherButton;
 
 ViewSwitcherButton.prototype.highlight = function (){

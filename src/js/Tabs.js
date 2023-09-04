@@ -23,11 +23,11 @@
 
 |********************/
 function Tabs(dashboard, config, data, template, useExistingElement) {
-	DashboardElement.call(this, config, data, template, useExistingElement);
+	Component.call(this, config, data, template, useExistingElement);
 	this.dashboard = dashboard;
 	this.loadTabs()
 }
-Tabs.prototype = Object.create(DashboardElement.prototype);
+Tabs.prototype = Object.create(Component.prototype);
 Tabs.prototype.constructor = Tabs;
 
 Tabs.prototype.loadTabs = async function(){

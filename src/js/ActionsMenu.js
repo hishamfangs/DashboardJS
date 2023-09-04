@@ -24,7 +24,7 @@
 |********************/
 function ActionsMenu(record, config, dataManager, template, useExistingElement) {
 	var actionsMenu = this;
-	DashboardElement.call(this, {...config, 
+	Component.call(this, {...config, 
 		onClick: function () {
 			actionsMenu.toggleMenu();
 		}
@@ -41,7 +41,7 @@ function ActionsMenu(record, config, dataManager, template, useExistingElement) 
 	//this.dashboard = record.dashboard;
 	//this.setLink(url);
 }
-ActionsMenu.prototype = Object.create(DashboardElement.prototype);
+ActionsMenu.prototype = Object.create(Component.prototype);
 ActionsMenu.prototype.constructor = ActionsMenu;
 
 ActionsMenu.prototype.toggleMenu = function () {

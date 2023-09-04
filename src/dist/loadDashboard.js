@@ -268,7 +268,7 @@ var dashboard = new Dashboard({
 });
  */
 
-var dashboard = new Dashboard({
+var dashboard = new FutureLabs.Dashboard({
   config: {
     tabs: {
       'User Profiles': {

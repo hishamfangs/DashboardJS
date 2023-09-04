@@ -23,7 +23,7 @@
 
 |********************/
 function ViewSwitcher(tab, config, data, template, useExistingElement) {
-	DashboardElement.call(this, config, data, template, useExistingElement);
+	Component.call(this, config, data, template, useExistingElement);
 	this.viewMode = this.viewMode?String(this.viewMode).trim().toLowerCase():'cards';
 	this.tab = tab;
 	this.dashboard = tab.dashboard;
@@ -32,7 +32,7 @@ function ViewSwitcher(tab, config, data, template, useExistingElement) {
 	//console.log(this);
 }
 
-ViewSwitcher.prototype = Object.create(DashboardElement.prototype);
+ViewSwitcher.prototype = Object.create(Component.prototype);
 ViewSwitcher.prototype.constructor = ViewSwitcher;
 
 ViewSwitcher.prototype.refresh = function (){

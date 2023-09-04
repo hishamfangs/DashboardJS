@@ -36,7 +36,7 @@ function SortingItem(sorting, config, dataManager, template, useExistingElement)
 		sorting.toggleMenu();
 		sorting.tab.tabs.goToTab(sorting.tab.name);
 	}
-	DashboardElement.call(this, config, [], template, useExistingElement);
+	Component.call(this, config, [], template, useExistingElement);
 	this.dataManager = dataManager;
 	this.sortDirection = "asc"
 	//console.log(this);
@@ -44,7 +44,7 @@ function SortingItem(sorting, config, dataManager, template, useExistingElement)
 	
 }
 
-SortingItem.prototype = Object.create(DashboardElement.prototype);
+SortingItem.prototype = Object.create(Component.prototype);
 SortingItem.prototype.constructor = SortingItem;
 
 SortingItem.prototype.create = function (active){
