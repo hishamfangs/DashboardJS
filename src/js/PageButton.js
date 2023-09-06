@@ -1,26 +1,22 @@
 
-/**** Field Class
+/**** PageButton Class
 |*		
-|*	Field Class for creating, attaching and managing
-|*	Fields on Records. 
-|* 
-	// Get Fields Template
-	this.template.wrapperSelector = record.wrapperSelector + " " + record.containerSelector + " " + record.itemSelector;
-	this.template.containerSelector = ".container-fluid";
-	this.template.itemSelector = ".field";
-	this.template.itemTextSelector = ".field-value";
-	this.template.itemIconSelector = ".icon";
-	this.template.itemLinkSelector = ".field-click";
+|*	PageButton Class 
+ *	---------------------------------------
+ *	@param {Object} 					settings 														The Settings Object
+ *	@param {Object}						settings.tab												Required: A Reference to the tab object where the pagination will attach
+ *  @param {string}						settings.config												Required: The config object of the dashboard
+ *  @param {string}						settings.data													Optional: The data to run the dashboard
+ *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
+ *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
+ * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
+ * 	@param {string}						settings.templateURL									Optional: the url for the html template
+ * 	@param {string}						settings.appendTo											Optional: the HTML node you will append this component to
+ *
+******************* */
 
-	this.template.wrapper = "";//$($(field.wrapperSelector)[0]);
-	this.template.container = $($(field.wrapperSelector + " " + field.containerSelector)[0]);
-	this.template.item = $($(field.wrapperSelector + " " + field.containerSelector + " " + field.itemSelector)[0]);
-	this.template.itemText = $($(field.wrapperSelector + " " + field.containerSelector + " " + field.itemSelector + " " + field.itemTextSelector)[0]);
-	this.template.itemIcon = $($(field.wrapperSelector + " " + field.containerSelector + " " + field.itemSelector + " " + field.itemIconSelector)[0]);
-
-|********************/
-function PageButton(config, template) {
-	Component.call(this, config, null, template, false);
+function PageButton(settings) {
+	Component.call(this, settings);
 
 	//clone field
 	//var fieldObject = this.object;

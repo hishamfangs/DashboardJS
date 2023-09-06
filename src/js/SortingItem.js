@@ -1,47 +1,36 @@
-/**** Tab Class
+/**** SortingItem Class
 |*		
-|*	Recordset Class for creating, attaching and managing
-|*	Recordsets, which in UI terms takes the shape of Tabs & Their Panels.
-|*	Tabs Handle switching from one recordset to another, while
-|*	Panels hold the record. 
-|* 
-	// Get Tabs Template
-	this.template.tab = {};
-	this.template.tab.itemSelector = ".tab";
-	this.template.tab.itemIconSelector = ".icon";
-	this.template.tab.defaultIcon = "glyphicon glyphicon-th";	// For replacing
-	this.template.tab.defaultIcon = "fas fa-th-list";
-	this.template.tab.item = $($(this.template.tab.itemSelector)[0]);
-	this.template.tab.titleItemSelector = ".active-tab-title";
-	
-	// Get Panel Template
-	this.template.panel = {};
-	this.template.panel.wrapperSelector = ".dashboard-content";
-	this.template.panel.containerSelector = ".tab-content";
-	this.template.panel.itemSelector = ".tab-pane";
-	this.template.panel.item = $(this.template.panel.itemSelector);
+|*	SortingItem Class
+ * -----------------------------
+ *	@param {Object} 					settings 														The Settings Object
+ *	@param {Object}						settings.sorting											Required: A Reference to the sorting object where the pagination will attach
+ *  @param {string}						settings.config												Required: The config object of the dashboard
+ *  @param {string}						settings.data													Optional: The data to run the dashboard
+ *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
+ *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
+ * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
+ * 	@param {string}						settings.templateURL									Optional: the url for the html template
+ * 	@param {string}						settings.appendTo											Optional: the HTML node you will append this component to
+ *
+******************* */
 
-|********************/
-function SortingItem(sorting, config, dataManager, template, useExistingElement) {
+function SortingItem(settings) {
 	
-	config.onClick = function (){
+	settings.config.onClick = function (){
 		// Toggle Sorting Direction
-		sorting.dataManager.toggleSorting();
-		sorting.dataManager.sort({
-			sortBy: config.fieldKey,
-			sortFieldText: config.name
+		settings.sorting.dataManager.toggleSorting();
+		settings.sorting.dataManager.sort({
+			sortBy: settings.config.fieldKey,
+			sortFieldText: settings.config.name
 		});
 		
 		//tab.dashboard.getChild(tab.name, 'recordset').remove()
-		sorting.toggleMenu();
-		sorting.tab.tabs.goToTab(sorting.tab.name);
+		settings.sorting.toggleMenu();
+		settings.sorting.tab.tabs.goToTab(settings.sorting.tab.name);
 	}
-	Component.call(this, config, [], template, useExistingElement);
-	this.dataManager = dataManager;
+	Component.call(this, settings);
+	this.dataManager = settings.dataManager;
 	this.sortDirection = "asc"
-	//console.log(this);
-
-	
 }
 
 SortingItem.prototype = Object.create(Component.prototype);
@@ -50,27 +39,7 @@ SortingItem.prototype.constructor = SortingItem;
 SortingItem.prototype.create = function (active){
 
 
-};
-/*
-
-	// Get Tabs Template
-	this.template.tab = {};
-	this.template.tab.itemSelector = ".tab";
-	this.template.tab.itemIconSelector = ".icon";
-	this.template.tab.defaultIcon = "glyphicon glyphicon-th";	// For replacing
-	this.template.tab.defaultIcon = "fas fa-th-list";
-	this.template.tab.item = $($(this.template.tab.itemSelector)[0]);
-	this.template.tab.titleItemSelector = ".active-tab-title";
-	$(this.template.tab.itemSelector).remove();
-	
-	// Get Panel Template
-	this.template.panel = {};
-	this.template.panel.wrapperSelector = ".dashboard-content";
-	this.template.panel.containerSelector = ".tab-content";
-	this.template.panel.itemSelector = ".tab-pane";
-	this.template.panel.item = $($(this.template.panel.itemSelector).get(0));
-
-*/
+}; 
 
 SortingItem.defaultTemplate = {
 	wrapper: ".sort",

@@ -1,81 +1,43 @@
 /**** Component Class
-|*		
-|*	Base Class for All Dashboard Elements
-|*	All Elements will inherit this class
-|* 	Arguments:
-|*	 	config: a js object literal that contains all the configuration and settings for the dashboard (optional, if nothing supplied, the dashboard will start with the defaults)
-|*		data: the data values that will be fed to the dashboard (optional) (takes precident over the data object in the config argument)
-|*  Example:
-	config = {
-		language: "en-US",						// Specifies Display language. Default Language is en-US
-		name: "",								// Name of the Item. Default Name is ""
-		template: {								// This is an object that contains the template selector as well as a clone of the HTML template in jQuery
-			context:{
-				object: $("body")
-			}
-			selectors:{
-				wrapper: ".wrapper", 					// Selector for the Wrapper of the Item
-				container: ".container", 				// Selector for the Container of the Item
-				item: ".dashboard"	 					// Selector for the Item
-			},
-			objects: {
-				wrapper: $(this.selectors.wrapper).clone(),		// JQuery object clone of the Wrapper
-				container: $(this.selectors.container).clone(),	// JQuery object clone of the container
-				item: $(this.selectors.item).clone()				// JQuery object clone of the template for this item
-			}
-		},
-		data: {},  or data: []			// Can be a single key/value based pair object, or an array of objects.
-		clone: true								// Specifies whether the object should be cloned on instantiation
-	}											// true if you need to make a new copy of the HTML node everytime you create a new object, or false if you just want to use the existing one on the canvas
+ *		
+ *	Base Class for All Dashboard Components
+ *	All Components will inherit this class
+ * 	Arguments:
+ *	 	config: a js object literal that contains all the configuration and settings for the dashboard (optional, if nothing supplied, the dashboard will start with the defaults)
+ *		data: the data values that will be fed to the dashboard (optional) (takes precident over the data object in the config argument)
+ *	---------------------------------
+ *	@param {Object} 					settings 														The Settings Object
+ *  @param {string}						settings.config												Required: The config object of the dashboard
+ *  @param {string}						settings.data													Optional: The data to run the dashboard
+ *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
+ *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
+ * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
+ * 	@param {string}						settings.templateURL									Optional: the url for the html template
+ * 	@param {string}						settings.appendTo											Optional: the HTML node you will append this component to
+ *
+******************* */
 
-	data = [
-		{
-			Name: "Hisham El Fangary",
-			Age: "15",
-			Status: "Married",
-			Date: "1980-08-10"		
-		},{
-			Name: "David Jonathan",
-			Age: "15",
-			Status: "Married",
-			Date: "1980-08-10"		
-		},{
-			Name: "John Doe",
-			Age: "15",
-			Status: "Married",
-			Date: "1980-08-10"		
-		},{
-			Name: "Damien Pilsner",
-			Age: "15",
-			Status: "Married",
-			Date: "1980-08-10"		
-		}
-	];
-
-|********************/
-
-
-function Component(config, data, templateManager, useExistingElement, selectors, templateURL) {
-	this.load(config, data, templateManager, useExistingElement, selectors, templateURL);
+function Component(settings) {
+	this.loadingTemplate = this.load(settings);
 }
 
-Component.prototype.load = function (config, data, templateManager, useExistingElement, selectors, templateURL){
+Component.prototype.load = async function (settings){
 
-	// Initialize the element by setting the config properties and adding them to the local scope
+	// Initialize the Component by setting the config properties and adding them to the local scope
 	// and set the Data & template 
-	this.init(config, data, templateManager, useExistingElement, selectors, templateURL);
+	this.init(settings);
 
-	// Render the Element as per the assigned config, data, & template
-	this.render();
+	// Render the Component as per the assigned config, data, & template
+	await this.render();
 
-	// Process the Events set on the element
+	// Process the Events set on the Component
 	// Ex: visibility, icon, onClick, onLoop, url
 	this.processEvents();
 
 	//console.log(this.__proto__.constructor.name, this);
 };
 
-Component.prototype.init = function (config, data, templateManager, useExistingElement, selectors, templateURL) {
+Component.prototype.init = function ({config, data, templateManager, useExistingElement, selectors, templateURL, appendTo}) {
 	// Loop through the config properties and add them 
 	// to the local context 
 	// then add a reference the original copy of config as well.
@@ -90,6 +52,14 @@ Component.prototype.init = function (config, data, templateManager, useExistingE
 		}
 		this.config = clone(config);
 	}
+
+	if (templateURL){
+		this.templateURL = templateURL;
+	}
+	if (appendTo){
+		this.appendTo = appendTo;
+	}
+	
 	if (this.templateSettings){
 /* 		if (this.config.template.selectors){
 			this.template.selectors = 
@@ -197,8 +167,12 @@ Component.prototype.init = function (config, data, templateManager, useExistingE
 	}
 };
 
-Component.prototype.render = function () {
+Component.prototype.render = async function () {
 
+	// Load Template From URL and use it to generate a Template Manager for this component.
+	if (this.templateURL){
+		this.templateManager = await this.loadHTML(this.templateURL, this.appendTo);
+	}
 	this.template = this.getTemplate();
 	var object = this.template.object;
 
@@ -220,6 +194,20 @@ Component.prototype.render = function () {
 	this.renderValues();
 
 };
+
+Component.prototype.loadHTML = async function (templateURL, appendTo){
+	
+	if (templateURL){
+		var templateLoader = new FileLoader(templateURL);
+		var rootNode = await templateLoader.loadHTML();
+		if (appendTo){
+			appendTo.appendChild(rootNode);
+		}
+		var templateManager = new TemplateManager(rootNode);
+		return templateManager
+	}
+}
+
 
 // Default Template for every object will be the first div inside your document
 Component.defaultTemplate = {

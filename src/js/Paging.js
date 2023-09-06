@@ -1,28 +1,25 @@
 
-/**** Field Class
-|*		
-|*	Field Class for creating, attaching and managing
-|*	Fields on Records. 
-|* 
-	// Get Fields Template
-	this.template.wrapperSelector = record.wrapperSelector + " " + record.containerSelector + " " + record.itemSelector;
-	this.template.containerSelector = ".container-fluid";
-	this.template.itemSelector = ".field";
-	this.template.itemTextSelector = ".field-value";
-	this.template.itemIconSelector = ".icon";
-	this.template.itemLinkSelector = ".field-click";
+/**** Paging Class
+ *		
+ *	Paging Class for pagination on records
+ *	Paging on Records. 
+ *	---------------------------------------
+ *	@param {Object} 					settings 														The Settings Object
+ *	@param {Object}						settings.tab												Required: A Reference to the tab object where the pagination will attach
+ *  @param {string}						settings.config												Required: The config object of the dashboard
+ *  @param {string}						settings.data													Optional: The data to run the dashboard
+ *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
+ *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
+ * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
+ * 	@param {string}						settings.templateURL									Optional: the url for the html template
+ * 	@param {string}						settings.appendTo											Optional: the HTML node you will append this component to
+ *
+******************* */
 
-	this.template.wrapper = "";//$($(field.wrapperSelector)[0]);
-	this.template.container = $($(field.wrapperSelector + " " + field.containerSelector)[0]);
-	this.template.item = $($(field.wrapperSelector + " " + field.containerSelector + " " + field.itemSelector)[0]);
-	this.template.itemText = $($(field.wrapperSelector + " " + field.containerSelector + " " + field.itemSelector + " " + field.itemTextSelector)[0]);
-	this.template.itemIcon = $($(field.wrapperSelector + " " + field.containerSelector + " " + field.itemSelector + " " + field.itemIconSelector)[0]);
-
-|********************/
-function Paging(tab, config, dataManager, template, useExistingElement) {
-	Component.call(this, config, null, template, useExistingElement);
-	this.dataManager = dataManager;
-	this.tab = tab;
+function Paging(settings) {
+	Component.call(this, settings);
+	this.dataManager = settings.dataManager;
+	this.tab = settings.tab;
 	this.visiblePages = 6;
 	this.refresh();
 }
@@ -53,64 +50,78 @@ Paging.prototype.refresh = function (){
 	}
 	
 	var pageStart = new PageButton({
-		pageNumber: '1', 
-		name: '<<',
-		onClick: function(){
-			paginationObject.tab.goToPage(this.pageNumber);
-			paginationObject.unhighlight()
-			this.highlight();
-		},
-		id: this.tab+'_page_'+p+'_start'
-	}, this.templateManager);
-	this.append(pageStart);
-
-	var prevBlock = new PageButton({
-		pageNumber: '', 
-		name: '<',
-		onClick: function(){
-			paginationObject.visibleBlock = visibleBlock-1<=0?1:visibleBlock-1;
-			paginationObject.refresh();
-		},
-		id: this.tab+'_page_'+p+'_prev'
-	}, this.templateManager);
-	this.append(prevBlock);
-
-	for (var p=startPage; p<=endPage; p++) {
-		var pageBtn = new PageButton({
-			pageNumber: p, 
+		config: {
+			pageNumber: '1', 
+			name: '<<',
 			onClick: function(){
 				paginationObject.tab.goToPage(this.pageNumber);
 				paginationObject.unhighlight()
 				this.highlight();
-				paginationObject.visibleBlock = null
 			},
-			id: this.tab+'_page_'+p
-		}, this.templateManager);
+			id: this.tab+'_page_'+p+'_start'
+		}, 
+		templateManager: this.templateManager
+	});
+	this.append(pageStart);
+
+	var prevBlock = new PageButton({
+		config: {
+			pageNumber: '', 
+			name: '<',
+			onClick: function(){
+				paginationObject.visibleBlock = visibleBlock-1<=0?1:visibleBlock-1;
+				paginationObject.refresh();
+			},
+			id: this.tab+'_page_'+p+'_prev'
+		}, 
+		templateManager: this.templateManager});
+	this.append(prevBlock);
+
+	for (var p=startPage; p<=endPage; p++) {
+		var pageBtn = new PageButton({
+			config: {
+				pageNumber: p, 
+				onClick: function(){
+					paginationObject.tab.goToPage(this.pageNumber);
+					paginationObject.unhighlight()
+					this.highlight();
+					paginationObject.visibleBlock = null
+				},
+				id: this.tab+'_page_'+p
+			}, 
+			templateManager: this.templateManager
+		});
 		this.append(pageBtn);
 	}
 
 	
 	var nextBlock = new PageButton({
-		pageNumber: '', 
-		name: '>',
-		onClick: function(){
-			paginationObject.visibleBlock = visibleBlock+1>totalBlocks?totalBlocks:visibleBlock+1;
-			paginationObject.refresh();
-		},
-		id: this.tab+'_page_'+p+'_prev'
-	}, this.templateManager);
+		config: {
+			pageNumber: '', 
+			name: '>',
+			onClick: function(){
+				paginationObject.visibleBlock = visibleBlock+1>totalBlocks?totalBlocks:visibleBlock+1;
+				paginationObject.refresh();
+			},
+			id: this.tab+'_page_'+p+'_prev'
+		}, 
+		templateManager: this.templateManager
+	});
 	this.append(nextBlock);
 
 	var pageEnd = new PageButton({
-		pageNumber: this.dataManager.pages, 
-		name: '>>',
-		onClick: function(){
-			paginationObject.tab.goToPage(dataManager.pages);
-			paginationObject.unhighlight()
-			this.highlight();
-		},
-		id: this.tab+'_page_'+p+'_end'
-	}, this.templateManager);
+		config: {
+			pageNumber: this.dataManager.pages, 
+			name: '>>',
+			onClick: function(){
+				paginationObject.tab.goToPage(dataManager.pages);
+				paginationObject.unhighlight()
+				this.highlight();
+			},
+			id: this.tab+'_page_'+p+'_end'
+		}, 
+		templateManager: this.templateManager
+	});
 	this.append(pageEnd);
 
 	this.renderPageHighlight();

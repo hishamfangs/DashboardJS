@@ -1,45 +1,40 @@
 /**** Tab Class
-|*		
-|*	Recordset Class for creating, attaching and managing
-|*	Recordsets, which in UI terms takes the shape of Tabs & Their Panels.
-|*	Tabs Handle switching from one recordset to another, while
-|*	Panels hold the record. 
-|* 
-	// Get Tabs Template
-	this.template.tab = {};
-	this.template.tab.itemSelector = ".tab";
-	this.template.tab.itemIconSelector = ".icon";
-	this.template.tab.defaultIcon = "glyphicon glyphicon-th";	// For replacing
-	this.template.tab.defaultIcon = "fas fa-th-list";
-	this.template.tab.item = $($(this.template.tab.itemSelector)[0]);
-	this.template.tab.titleItemSelector = ".active-tab-title";
-	
-	// Get Panel Template
-	this.template.panel = {};
-	this.template.panel.wrapperSelector = ".dashboard-content";
-	this.template.panel.containerSelector = ".tab-content";
-	this.template.panel.itemSelector = ".tab-pane";
-	this.template.panel.item = $(this.template.panel.itemSelector);
+ *		
+ *	Recordset Class for creating, attaching and managing
+ *	Recordsets, which in UI terms takes the shape of Tabs & Their Panels.
+ *	Tabs Handle switching from one recordset to another, while
+ *	Panels hold the record. 
+ * ---------------------------------
+ *	@param {Object} 					settings 														The Settings Object
+ *  @param {string}						settings.config												Required: The config object of the dashboard
+ *  @param {string}						settings.data													Optional: The data to run the dashboard
+ *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
+ *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
+ * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
+ * 	@param {string}						settings.templateURL									Optional: the url for the html template
+ * 	@param {string}						settings.appendTo											Optional: the HTML node you will append this component to
+ *
+******************* */
 
-|********************/
-function Tab(tabs, config, dataManager, template, useExistingElement) {
+function Tab(settings) {
 	this.active = false;
 	// Make a copy as to not modify original config
-	var tabConfig = {...config};
+	var tabConfig = {...settings.config};
 	if (!tabConfig.onClick){
 		tabConfig.onClick = function (){
 			this.setActive(true);
-			tabs.goToTab(tabConfig.name);	
+			settings.tabs.goToTab(tabConfig.name);	
 		};
 	}
 
-	Component.call(this, tabConfig, dataManager.getData(), template, useExistingElement);
+	Component.call(this, {config: tabConfig, data: settings.dataManager.getData(), templateManager: settings.templateManager, useExistingElement: settings.useExistingElement});
 
-	this.dataManager = dataManager;
-	this.tabs = tabs;
-	this.dashboard = tabs.dashboard;
+	this.dataManager = settings.dataManager;
+	this.tabs = settings.tabs;
+	this.dashboard = this.tabs.dashboard;
+	//this.dashboard = settings.config.dashboard;
 	// Save Original Config without the OnClick added, so we can pass it down to the Recordset.
-	this.originalConfig = config;
+	this.originalConfig = {...settings.config};
 	this.refreshCount();
 };
 
@@ -100,13 +95,13 @@ Tab.prototype.setRecordset = function (){
 	if (recordset){
 		recordset.refresh();
 	}else{
-		recordset = new Recordset(this.originalConfig, this.dataManager, this.templateManager);
+		recordset = new Recordset({config: this.originalConfig, dataManager: this.dataManager, templateManager: this.templateManager});
 		this.dashboard.append(recordset, "recordset");			
 	}
 };
 
 Tab.prototype.setPagination = function (){
-	var pagination = new Paging(this, {name: this.name}, this.dataManager, this.templateManager, true);
+	var pagination = new Paging({tab: this, config: {name: this.name}, dataManager: this.dataManager, templateManager: this.templateManager, useExistingElement:true});
 	this.pagination = pagination;
 };
 
@@ -115,12 +110,12 @@ Tab.prototype.setFiltering = function (){
 	if (filtering){
 		filtering.remove();
 	}
-	var filtering = new Filtering(this, {name: 'Search'}, this.dataManager, this.templateManager);
+	var filtering = new Filtering({tab: this,  config: {name: 'Search'}, dataManager: this.dataManager, templateManager: this.templateManager});
 	this.dashboard.append(filtering, 'filtering');
 };
 
 Tab.prototype.setSorting = function (){
-	var sorting = new Sorting(this, {fields: this.fields, name: 'Sort By'}, this.dataManager, this.templateManager, true);
+	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager, useExistingElement:true});
 };
 
 Tab.prototype.setView = function (){
@@ -128,7 +123,7 @@ Tab.prototype.setView = function (){
 	if (viewSwitcher){
 		viewSwitcher.remove();
 	}
-	var viewSwitcher = new ViewSwitcher(this, {name: 'View', viewMode: this.viewMode}, this.dataManager, this.templateManager);
+	var viewSwitcher = new ViewSwitcher({tab: this, config: {name: 'View', viewMode: this.viewMode}, dataManager: this.dataManager, templateManager: this.templateManager});
 	this.dashboard.append(viewSwitcher, 'viewSwitcher');
 };
 

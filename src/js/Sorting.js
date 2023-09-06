@@ -1,36 +1,35 @@
-/**** Tab Class
-|*		
-|*	Recordset Class for creating, attaching and managing
-|*	Recordsets, which in UI terms takes the shape of Tabs & Their Panels.
-|*	Tabs Handle switching from one recordset to another, while
-|*	Panels hold the record. 
-|* 
-	// Get Tabs Template
-	this.template.tab = {};
-	this.template.tab.itemSelector = ".tab";
-	this.template.tab.itemIconSelector = ".icon";
-	this.template.tab.defaultIcon = "glyphicon glyphicon-th";	// For replacing
-	this.template.tab.defaultIcon = "fas fa-th-list";
-	this.template.tab.item = $($(this.template.tab.itemSelector)[0]);
-	this.template.tab.titleItemSelector = ".active-tab-title";
-	
-	// Get Panel Template
-	this.template.panel = {};
-	this.template.panel.wrapperSelector = ".dashboard-content";
-	this.template.panel.containerSelector = ".tab-content";
-	this.template.panel.itemSelector = ".tab-pane";
-	this.template.panel.item = $(this.template.panel.itemSelector);
+/**** Sorting Class
+ *		
+ *	Sorting Class
+ * -----------------------------
+ *	@param {Object} 					settings 														The Settings Object
+ *	@param {Object}						settings.tab													Required: A Reference to the tab object where the pagination will attach
+ *  @param {string}						settings.config												Required: The config object of the dashboard
+ *  @param {string}						settings.data													Optional: The data to run the dashboard
+ *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
+ *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
+ * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
+ * 	@param {string}						settings.templateURL									Optional: the url for the html template
+ * 	@param {string}						settings.appendTo											Optional: the HTML node you will append this component to
+ *
+******************* */
 
-|********************/
-function Sorting(tab, config, dataManager, template, useExistingElement) {
+function Sorting(settings) {
 
-	Component.call(this, {...config, 
-		onClick: function(){
-			this.toggleMenu();
-		}}, dataManager.getData(), template, useExistingElement);
-	this.dataManager = dataManager;
-	this.tab = tab
-	this.dashboard = tab.dashboard
+	Component.call(this, {
+		config: {
+			...settings.config, 
+			onClick: function(){
+				this.toggleMenu();
+			}
+		}, 
+		data: dataManager.getData(), 
+		templateManager: settings.templateManager, 
+		useExistingElement: settings.useExistingElement
+	});
+	this.dataManager = settings.dataManager;
+	this.tab = settings.tab
+	this.dashboard = this.tab.dashboard
 	this.createItems();
 	this.highlightSelected();
 	this.closeMenu();
@@ -56,7 +55,7 @@ Sorting.prototype.closeMenu = function(){
 
 Sorting.prototype.createItems = function (){
 	for (var f in this.fields){
-		var item = new SortingItem(this, {...this.fields[f], tab: this.tab, fieldKey: f}, [], this.templateManager, false);
+		var item = new SortingItem({sorting: this, config: {...this.fields[f], tab: this.tab, fieldKey: f}, templateManager: this.templateManager, useExistingElement: false});
 		this.append(item)
 	}
 };
@@ -75,26 +74,6 @@ Sorting.prototype.highlightSelected = function (){
 		this.removeClass('flip', 'itemSortingDirection')
 	}
 };
-/*
-
-	// Get Tabs Template
-	this.template.tab = {};
-	this.template.tab.itemSelector = ".tab";
-	this.template.tab.itemIconSelector = ".icon";
-	this.template.tab.defaultIcon = "glyphicon glyphicon-th";	// For replacing
-	this.template.tab.defaultIcon = "fas fa-th-list";
-	this.template.tab.item = $($(this.template.tab.itemSelector)[0]);
-	this.template.tab.titleItemSelector = ".active-tab-title";
-	$(this.template.tab.itemSelector).remove();
-	
-	// Get Panel Template
-	this.template.panel = {};
-	this.template.panel.wrapperSelector = ".dashboard-content";
-	this.template.panel.containerSelector = ".tab-content";
-	this.template.panel.itemSelector = ".tab-pane";
-	this.template.panel.item = $($(this.template.panel.itemSelector).get(0));
-
-*/
 
 Sorting.defaultTemplate = {
 	wrapper: "",

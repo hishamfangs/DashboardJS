@@ -1,29 +1,29 @@
 
 
 /**** Record Class
-|*		
-|*	Record Class for creating, attaching and managing
-|*	Records. 
-|* 
-	// Get Record Template Default Values
-	this.template.wrapperSelector = "";
-	this.template.containerSelector = ".content-container";
-	this.template.itemSelector = ".record";
-	this.template.itemIconSelector = ".record-icon";
-	this.template.wrapper = null; //$($(record.wrapperSelector)[0]);
-	this.template.container = $($(record.wrapperSelector + " " + record.containerSelector)[0]);
-	this.template.item = $($(record.wrapperSelector + " " + record.containerSelector + " " + record.itemSelector)[0]);
+ *		
+ *	Record Class for creating, attaching and managing
+ *	Records. 
+ * ---------------------------------
+ *	@param {Object} 					settings 														The Settings Object
+ *  @param {string}						settings.config												Required: The config object of the dashboard
+ *  @param {string}						settings.data													Optional: The data to run the dashboard
+ *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
+ *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
+ * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
+ * 	@param {string}						settings.templateURL									Optional: the url for the html template
+ * 	@param {string}						settings.appendTo											Optional: the HTML node you will append this component to
+ *
+******************* */
 
-|********************/
-function Record(config, data, template, useExistingElement) {
-	Component.call(this, config, data, template, useExistingElement);
-
+function Record(settings) {
+	Component.call(this, settings);
 	// Process Field Settings
 	this.fields = Component.getFieldSettings(this.fields, this.language);
 
 	// Apply Default Image
-	if (this?.image?.url && data?.[this.image.url]){
-		this.setBackgroundImage(data?.[this.image.url], null, {height: this.image.height});
+	if (this?.image?.url && this.data?.[this.image.url]){
+		this.setBackgroundImage(this.data?.[this.image.url], null, {height: this.image.height});
 	}else if (this?.image){
 		this.setBackgroundImage('assets/defaultImage.jpg', null, {height: this.image.height, 'background-size':'contain'});
 	}else{
@@ -43,7 +43,7 @@ function Record(config, data, template, useExistingElement) {
 		for (var i = 0; i < fieldKeys.length; i++) {
 			var fieldKey = fieldKeys[i];
 			thisFieldSettings = this.fields[fieldKey];
-			var field = new Field(thisFieldSettings, data[thisFieldSettings.dataField], template, useExistingElement);
+			var field = new Field({config: thisFieldSettings, data: this.data[thisFieldSettings.dataField], templateManager: this.templateManager, useExistingElement: this.useExistingElement});
 			//console.log(field);
 			this.append(field, "fields");
 		}
@@ -67,7 +67,7 @@ function Record(config, data, template, useExistingElement) {
 				}
 				actionConfig.name = actionKey;
 				// Create an action	
-				var action = new Action(actionConfig, this.data, template, useExistingElement);
+				var action = new Action({config: actionConfig, data: this.data, templateManager: this.templateManager, useExistingElement: this.useExistingElement});
 
 				// Attach action to current Record
 				this.append(action, "actions");
@@ -75,7 +75,7 @@ function Record(config, data, template, useExistingElement) {
 			}
 		}
 		if (this.actionsType == 'menu'){
-			var actionsMenu = new ActionsMenu(this, this.config, data, template, useExistingElement)
+			var actionsMenu = new ActionsMenu({record: this, config: this.config, data: this.data, templateManager: this.templateManager, useExistingElement: this.useExistingElement})
 			this.prepend(actionsMenu, 'actionMenu');	
 		}
 	}

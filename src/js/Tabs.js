@@ -1,32 +1,24 @@
-/**** Tab Class
-|*		
-|*	Recordset Class for creating, attaching and managing
-|*	Recordsets, which in UI terms takes the shape of Tabs & Their Panels.
-|*	Tabs Handle switching from one recordset to another, while
-|*	Panels hold the record. 
-|* 
-	// Get Tabs Template
-	this.template.tab = {};
-	this.template.tab.itemSelector = ".tab";
-	this.template.tab.itemIconSelector = ".icon";
-	this.template.tab.defaultIcon = "glyphicon glyphicon-th";	// For replacing
-	this.template.tab.defaultIcon = "fas fa-th-list";
-	this.template.tab.item = $($(this.template.tab.itemSelector)[0]);
-	this.template.tab.titleItemSelector = ".active-tab-title";
-	
-	// Get Panel Template
-	this.template.panel = {};
-	this.template.panel.wrapperSelector = ".dashboard-content";
-	this.template.panel.containerSelector = ".tab-content";
-	this.template.panel.itemSelector = ".tab-pane";
-	this.template.panel.item = $(this.template.panel.itemSelector);
+/**** Tabs Class
+ *		
+ *	Tabs Class for 
+ * 
+ * ---------------------------------
+ *	@param {Object} 					settings 														The Settings Object
+ *  @param {string}						settings.config												Required: The config object of the dashboard
+ *  @param {string}						settings.data													Optional: The data to run the dashboard
+ *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
+ *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
+ * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
+ * 	@param {string}						settings.templateURL									Optional: the url for the html template
+ * 	@param {string}						settings.appendTo											Optional: the HTML node you will append this component to
+ *
+******************* */
 
-|********************/
-function Tabs(dashboard, config, data, template, useExistingElement) {
-	Component.call(this, config, data, template, useExistingElement);
-	this.dashboard = dashboard;
+function Tabs(settings) {
+	Component.call(this, settings);
 	this.loadTabs()
 }
+
 Tabs.prototype = Object.create(Component.prototype);
 Tabs.prototype.constructor = Tabs;
 
@@ -42,7 +34,7 @@ Tabs.prototype.loadTabs = async function(){
 		// Load DataManager with configuration
 		dataManager = new DataManager({fetch: fetch}, this.data?.[tabConfig.name]);
 
-		var tab = new Tab(this, tabConfig, dataManager, this.templateManager);
+		var tab = new Tab({tabs: this, config: tabConfig, dataManager: dataManager, templateManager: this.templateManager});
 		this.tabs[t].dataManager = dataManager;
 		this.tabs[t].tab = tab;
 		this.append(tab);

@@ -41,7 +41,7 @@ Template.prototype.init = function (templateName, selectors, templateManager, us
 	}else{
 		this.selectors = {
 			wrapper: "",
-			item: "." + Template.sanitizeName(templateName) + "-element",
+			item: "." + Template.sanitizeName(templateName) + "-component",
 			itemText : ".text",
 			itemBody : ".body",
 			itemIcon : ".icon",

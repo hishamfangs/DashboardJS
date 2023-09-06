@@ -4,28 +4,26 @@
 |*	FieldHeaderContainers. 
 |*	FieldHeaderContainers will mainly be used as containers to which
 |*	FieldHeaders will be attached.
-|* 
-	// Get Field Header Template
-	this.template.wrapperSelector = ".header";
-	this.template.containerSelector = ".header-container";
-	this.template.itemSelector = ".field-header";
-	this.template.itemTextSelector = ".header-title";
-	this.template.actionsSelector = ".actions-header";
+ * ---------------------------------
+ *	@param {Object} 					settings 														The Settings Object
+ *  @param {string}						settings.config												Required: The config object of the dashboard
+ *  @param {string}						settings.data													Optional: The data to run the dashboard
+ *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
+ *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
+ * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
+ * 	@param {string}						settings.templateURL									Optional: the url for the html template
+ * 	@param {string}						settings.appendTo											Optional: the HTML node you will append this component to
+ *
+******************* */
 
-	this.template.wrapper = $($(fieldHeader.wrapperSelector)[0]);
-	this.template.container = $($(fieldHeader.wrapperSelector + " " + fieldHeader.containerSelector)[0]);
-	this.template.item = $($(fieldHeader.wrapperSelector + " " + fieldHeader.containerSelector + " " + fieldHeader.itemSelector)[0]);
-	this.template.itemText = $($(fieldHeader.wrapperSelector + " " + fieldHeader.containerSelector + " " + fieldHeader.itemSelector + " " + fieldHeader.itemTextSelector)[0]);
-
-|********************/
-function FieldHeaderContainer(config, data, template, useExistingElement){
-	Component.call(this, config, data, template, useExistingElement);
+function FieldHeaderContainer(settings){
+	Component.call(this, settings);
 	var fields = Component.getFieldSettings(this.fields, this.language);
 
 	for (var key in fields) {
 		if (fields.hasOwnProperty(key)) {
 			var fieldSettings = fields[key];
-			var field = new FieldHeader(fieldSettings, null, template);
+			var field = new FieldHeader({config: fieldSettings, templateManager: settings.templateManager});
 			//console.log("fieldHeader", field);
 			this.append(field);
 		}

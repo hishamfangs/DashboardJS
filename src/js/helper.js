@@ -381,7 +381,7 @@ function endTimer() {
 function clone(obj) {
 	var copy;
 	// Handle the 3 simple types, and null or undefined
-	if (null == obj || "object" != typeof obj || obj.templateManager instanceof TemplateManager){
+	if (null == obj || "object" != typeof obj || obj.templateManager instanceof TemplateManager || obj instanceof Dashboard){
 		return obj;
 	}else if (obj instanceof HTMLDivElement){
 		return obj; //obj.cloneNode(true)
