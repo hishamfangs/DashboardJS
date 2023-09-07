@@ -37,11 +37,5 @@ FieldHeaderContainer.prototype.constructor = FieldHeaderContainer;
 
 
 FieldHeaderContainer.defaultTemplate = {
-	wrapper: ".header",
-	item: ".header-container",
-	itemText : "",
-	itemIcon : "",
-	itemLink : "",
-	imageSpacer: ".image-spacer",
-	container: ".field-header-container"
+	imageSpacer: ".image-spacer"
 };

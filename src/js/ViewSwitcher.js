@@ -79,12 +79,3 @@ ViewSwitcher.prototype.unhighlight = function(){
 	this.getChild('cards')?.unhighlight();
 	this.getChild('list')?.unhighlight();
 };
-
-ViewSwitcher.defaultTemplate = {
-	wrapper: "",
-	item: ".view-tool",
-	itemText: ".view-text",
-	itemIcon: "",
-	itemLink: "",
-	container: ".view-container"					
-};

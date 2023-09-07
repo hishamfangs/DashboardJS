@@ -83,21 +83,14 @@ Dashboard.prototype.switchView = function (viewMode){
 };
 
 Dashboard.defaultTemplate = {
-	wrapper: "",
-	item: ".dashboard",
-	itemText: "",
 	tabBreadCrumbs: ".tab-breadcrumbs",
-	itemIcon: "",
-	itemLink: "",
 	container: {
-		tabs: ".tabs-container",
-		//tab: ".tabs .container-fluid .row",	// Tab Container
-		recordset: ".dashboard-content",
-		filtering:".filtering",	//
-		search:"",
+		tabs: ".tabs-wrapper",
+		recordset: ".recordset-wrapper",
+		filtering:".filtering-wrapper",
 		profile: ".user-profile",
 		viewSwitcher:".view-mode",
-		sorting:".sort",	//.sort
+		sorting:".sorting-wrapper",	//.sort
 		paging: ".view-pagination"
 	}			
 };

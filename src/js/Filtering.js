@@ -70,12 +70,6 @@ Filtering.prototype.filterRecordset = function (){
 };
 
 Filtering.defaultTemplate = {
-	wrapper: ".filtering",
-	item: ".search-tab",
-	itemText: "",
-	itemIcon: "",
-	itemLink: "",
 	itemInput: "input",
-	itemButton: ".search-button",
-	container: ".keywords-container"
+	itemButton: ".search-button"
 };

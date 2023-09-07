@@ -53,11 +53,5 @@ FilteringKeyword.prototype.close = function (){
 */
 
 FilteringKeyword.defaultTemplate = {
-	wrapper: ".keywords-container",
-	item: ".keyword",
-	itemText: ".keyword-text",
-	itemIcon: "",
-	itemLink: "",
-	itemClose: ".close",
-	container: ""
+	itemClose: ".close"
 };

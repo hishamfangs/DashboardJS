@@ -71,13 +71,8 @@ Recordset.prototype.switchView = function (viewMode){
 };
 
 Recordset.defaultTemplate = {
-	wrapper: "",
-	item: ".tab-panel",
-	itemText: "",
-	itemIcon: "",
-	itemLink: "",
 	container: {
-		records: ".record-container",
-		fieldHeader: ".header"
+		records: ".record-wrapper",
+		fieldHeader: ".fieldheader-wrapper"
 	}
 };

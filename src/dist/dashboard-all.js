@@ -51,16 +51,6 @@ function Action(settings) {
 Action.prototype = Object.create(Component.prototype);
 Action.prototype.constructor = Action;
 
-Action.defaultTemplate = {
-	wrapper: ".actions-container table.actions tr",
-	item: ".action",
-	itemText: ".subtitle",
-	itemIcon: ".action-icon",
-	itemLink: "a",
-	container: ""
-};
-
-
 
 /**** Recordset Class
 |*		
@@ -1376,21 +1366,14 @@ Dashboard.prototype.switchView = function (viewMode){
 };
 
 Dashboard.defaultTemplate = {
-	wrapper: "",
-	item: ".dashboard",
-	itemText: "",
 	tabBreadCrumbs: ".tab-breadcrumbs",
-	itemIcon: "",
-	itemLink: "",
 	container: {
-		tabs: ".tabs-container",
-		//tab: ".tabs .container-fluid .row",	// Tab Container
-		recordset: ".dashboard-content",
-		filtering:".filtering",	//
-		search:"",
+		tabs: ".tabs-wrapper",
+		recordset: ".recordset-wrapper",
+		filtering:".filtering-wrapper",
 		profile: ".user-profile",
 		viewSwitcher:".view-mode",
-		sorting:".sort",	//.sort
+		sorting:".sorting-wrapper",	//.sort
 		paging: ".view-pagination"
 	}			
 };
@@ -2033,11 +2016,7 @@ Field.prototype.renderFieldValues = function (){
 }
 
 Field.defaultTemplate = {
-	wrapper: ".record",
-	item: ".field",
-	itemText: ".field-value",
-	itemIcon: ".field-icon",
-	itemLink: ".field-click",
+	itemLink: "",
 	itemTitle: ".field-title",
 	container: ""
 };
@@ -2070,20 +2049,6 @@ function FieldHeader(settings){
 FieldHeader.prototype = Object.create(Component.prototype);
 FieldHeader.prototype.constructor = FieldHeader;		
 
-
-FieldHeader.defaultTemplate = {
-	wrapper: ".field-header-container",
-	item: ".field-header",
-	itemText : ".header-title",
-	itemIcon : ".header-icon",
-	itemLink : "",
-	container: ""
-};
-/* 
-Recordset.prototype.getTemplate = function (jqContext, pTemplate){	// pass Optional template to override default template
-	var template = Component.prototype.getTemplate.call(this, jqContext, pTemplate);
-	return template;
-} */
 /**** FieldHeaderContainer Class
 |*		
 |*	FieldHeaderContainer Class for creating, attaching and managing
@@ -2123,13 +2088,7 @@ FieldHeaderContainer.prototype.constructor = FieldHeaderContainer;
 
 
 FieldHeaderContainer.defaultTemplate = {
-	wrapper: ".header",
-	item: ".header-container",
-	itemText : "",
-	itemIcon : "",
-	itemLink : "",
-	imageSpacer: ".image-spacer",
-	container: ".field-header-container"
+	imageSpacer: ".image-spacer"
 };
 /**************************************************************************************************
  * 	Class FileLoader(rootNode)
@@ -2244,14 +2203,8 @@ Filtering.prototype.filterRecordset = function (){
 };
 
 Filtering.defaultTemplate = {
-	wrapper: ".filtering",
-	item: ".search-tab",
-	itemText: "",
-	itemIcon: "",
-	itemLink: "",
 	itemInput: "input",
-	itemButton: ".search-button",
-	container: ".keywords-container"
+	itemButton: ".search-button"
 };
 
 /**** FilteringKeyword Class
@@ -2309,13 +2262,7 @@ FilteringKeyword.prototype.close = function (){
 */
 
 FilteringKeyword.defaultTemplate = {
-	wrapper: ".keywords-container",
-	item: ".keyword",
-	itemText: ".keyword-text",
-	itemIcon: "",
-	itemLink: "",
-	itemClose: ".close",
-	container: ""
+	itemClose: ".close"
 };
 
 var timer;
@@ -2920,14 +2867,7 @@ PageButton.prototype.highlight = function (){
 PageButton.prototype.unhighlight = function (){
 	this.removeClass("active");
 };
-PageButton.defaultTemplate = {
-	wrapper: "",
-	item: ".button-paging",
-	itemText: ".button-paging",
-	itemIcon: "",
-	itemLink: "",
-	container: ""
-};
+
 
 
 /**** Paging Class
@@ -3078,14 +3018,6 @@ Paging.prototype.unhighlight = function (page){
 	}
 	//var pButton = document.querySelector('[id="'+this.tab+'_page_'+page+'"]');
 	//return pButton
-};
-Paging.defaultTemplate = {
-	wrapper: "",
-	item: ".paging",
-	itemText: "",
-	itemIcon: "",
-	itemLink: "",
-	container: ".paging-container"
 };
 
 /**** Panel Class
@@ -3248,16 +3180,11 @@ Record.prototype = Object.create(Component.prototype);
 Record.prototype.constructor = Record;
 
 Record.defaultTemplate = {
-	wrapper: "",
-	item: ".record",
-	itemText: "",
-	itemIcon: ".record-icon",
-	itemLink: ".record",
 	itemBackgroundImage: ".record-image",
 	container: {
-		actionMenu: '.action-menu-container',
-		fields: ".field-container",
-		actions: ".actions-container .actions > tbody > tr"
+		actionMenu: '.actionsmenu-wrapper',
+		fields: ".fields-wrapper",
+		actions: ".actions-wrapper"
 	}
 };
 
@@ -3337,14 +3264,9 @@ Recordset.prototype.switchView = function (viewMode){
 };
 
 Recordset.defaultTemplate = {
-	wrapper: "",
-	item: ".tab-panel",
-	itemText: "",
-	itemIcon: "",
-	itemLink: "",
 	container: {
-		records: ".record-container",
-		fieldHeader: ".header"
+		records: ".record-wrapper",
+		fieldHeader: ".fieldheader-wrapper"
 	}
 };
 
@@ -3426,16 +3348,9 @@ Sorting.prototype.highlightSelected = function (){
 };
 
 Sorting.defaultTemplate = {
-	wrapper: "",
-	item: ".sort",
-	itemText: ".sortText",
-	itemIcon: "",
-	itemLink: "",
-	itemBadge: "",
 	itemSortingButton: ".buttonText",
 	itemDropDown: ".dropdown",
-	itemSortingDirection: '.caret',
-	container: ".dropdown-menu"
+	itemSortingDirection: '.caret'
 };
 
 /**** SortingItem Class
@@ -3480,16 +3395,6 @@ SortingItem.prototype.create = function (active){
 
 
 }; 
-
-SortingItem.defaultTemplate = {
-	wrapper: ".sort",
-	item: "li",
-	itemText: "a",
-	itemIcon: "",
-	itemLink: "",
-	itemBadge: "",
-	container: ""
-};
 
 /**** Tab Class
  *		
@@ -3608,7 +3513,12 @@ Tab.prototype.setFiltering = function (){
 };
 
 Tab.prototype.setSorting = function (){
-	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager, useExistingElement:true});
+	var sorting = this.dashboard.getChild('Sort By')
+	if (sorting){
+		sorting.remove();
+	}
+	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager});
+	this.dashboard.append(sorting, 'sorting');
 };
 
 Tab.prototype.setView = function (){
@@ -3629,13 +3539,7 @@ Tab.prototype.deactivate = function () {
 };
 
 Tab.defaultTemplate = {
-	wrapper: ".tabs",
-	item: ".tab",
-	itemText: ".tab-title",
-	itemIcon: ".icon",
-	itemLink: "a",
-	itemBadge: ".badge",
-	container: ""
+	itemBadge: ".badge"
 };
 
 /**** Tabs Class
@@ -3727,15 +3631,6 @@ Tabs.prototype.processTabs = function (){
 	}
 };
 
-Tabs.defaultTemplate = {
-	wrapper: ".sidebar",
-	item: ".tabs",
-	itemText: "",
-	itemIcon: "",
-	itemLink: "",
-	itemBadge: "",
-	container: ".tabs"
-};
 
 /**************************************************************************************************
  * 	Class Template 
@@ -3774,20 +3669,19 @@ Template.prototype.init = function (templateName, selectors, templateManager, us
 	this.templateManager = templateManager?templateManager:new TemplateManager();
 	this.useExistingElement = useExistingElement===false?false:true;
 	this.currentIcons = {};
+	this.selectors = {
+		wrapper: "",
+		item: "." + Template.sanitizeName(templateName) + "-component",
+		itemText : "." + Template.sanitizeName(templateName) + "-text",
+		itemIcon : "." + Template.sanitizeName(templateName) + "-icon",
+		itemLink : "." + Template.sanitizeName(templateName) + "-link",
+		itemImage : "." + Template.sanitizeName(templateName) + "-image",
+		container: "." + Template.sanitizeName(templateName) + "-container"
+	};
 
+	// Merge passed in Selectors with the Default Selectors.
 	if (selectors){
-		this.selectors = selectors;
-	}else{
-		this.selectors = {
-			wrapper: "",
-			item: "." + Template.sanitizeName(templateName) + "-element",
-			itemText : ".text",
-			itemBody : ".body",
-			itemIcon : ".icon",
-			itemLink : ".link",
-			itemImage : ".image",
-			container: ".container"
-		};
+		this.selectors = {...this.selectors, ...selectors};
 	}
 
 	// If there is no wrapper configured, make it's selector an empty string
@@ -4448,15 +4342,6 @@ ViewSwitcher.prototype.unhighlight = function(){
 	this.getChild('list')?.unhighlight();
 };
 
-ViewSwitcher.defaultTemplate = {
-	wrapper: "",
-	item: ".view-tool",
-	itemText: ".view-text",
-	itemIcon: "",
-	itemLink: "",
-	container: ".view-container"					
-};
-
 
 /**** ViewSwitcherButton Class
  *		
@@ -4493,15 +4378,6 @@ ViewSwitcherButton.prototype.highlight = function (){
 
 ViewSwitcherButton.prototype.unhighlight = function (){
 	this.removeClass("active");
-};
-
-ViewSwitcherButton.defaultTemplate = {
-	wrapper: ".view-container",
-	item: "button",
-	itemText: "button",
-	itemIcon: "",
-	itemLink: "",
-	container: ""
 };
 
 				return {

@@ -40,13 +40,3 @@ SortingItem.prototype.create = function (active){
 
 
 }; 
-
-SortingItem.defaultTemplate = {
-	wrapper: ".sort",
-	item: "li",
-	itemText: "a",
-	itemIcon: "",
-	itemLink: "",
-	itemBadge: "",
-	container: ""
-};

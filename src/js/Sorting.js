@@ -76,14 +76,7 @@ Sorting.prototype.highlightSelected = function (){
 };
 
 Sorting.defaultTemplate = {
-	wrapper: "",
-	item: ".sort",
-	itemText: ".sortText",
-	itemIcon: "",
-	itemLink: "",
-	itemBadge: "",
 	itemSortingButton: ".buttonText",
 	itemDropDown: ".dropdown",
-	itemSortingDirection: '.caret',
-	container: ".dropdown-menu"
+	itemSortingDirection: '.caret'
 };

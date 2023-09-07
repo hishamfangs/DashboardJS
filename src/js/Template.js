@@ -35,20 +35,19 @@ Template.prototype.init = function (templateName, selectors, templateManager, us
 	this.templateManager = templateManager?templateManager:new TemplateManager();
 	this.useExistingElement = useExistingElement===false?false:true;
 	this.currentIcons = {};
+	this.selectors = {
+		wrapper: "",
+		item: "." + Template.sanitizeName(templateName) + "-component",
+		itemText : "." + Template.sanitizeName(templateName) + "-text",
+		itemIcon : "." + Template.sanitizeName(templateName) + "-icon",
+		itemLink : "." + Template.sanitizeName(templateName) + "-link",
+		itemImage : "." + Template.sanitizeName(templateName) + "-image",
+		container: "." + Template.sanitizeName(templateName) + "-container"
+	};
 
+	// Merge passed in Selectors with the Default Selectors.
 	if (selectors){
-		this.selectors = selectors;
-	}else{
-		this.selectors = {
-			wrapper: "",
-			item: "." + Template.sanitizeName(templateName) + "-component",
-			itemText : ".text",
-			itemBody : ".body",
-			itemIcon : ".icon",
-			itemLink : ".link",
-			itemImage : ".image",
-			container: ".container"
-		};
+		this.selectors = {...this.selectors, ...selectors};
 	}
 
 	// If there is no wrapper configured, make it's selector an empty string

@@ -115,7 +115,12 @@ Tab.prototype.setFiltering = function (){
 };
 
 Tab.prototype.setSorting = function (){
-	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager, useExistingElement:true});
+	var sorting = this.dashboard.getChild('Sort By')
+	if (sorting){
+		sorting.remove();
+	}
+	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager});
+	this.dashboard.append(sorting, 'sorting');
 };
 
 Tab.prototype.setView = function (){
@@ -136,11 +141,5 @@ Tab.prototype.deactivate = function () {
 };
 
 Tab.defaultTemplate = {
-	wrapper: ".tabs",
-	item: ".tab",
-	itemText: ".tab-title",
-	itemIcon: ".icon",
-	itemLink: "a",
-	itemBadge: ".badge",
-	container: ""
+	itemBadge: ".badge"
 };

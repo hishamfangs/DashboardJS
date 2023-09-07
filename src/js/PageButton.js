@@ -33,11 +33,4 @@ PageButton.prototype.highlight = function (){
 PageButton.prototype.unhighlight = function (){
 	this.removeClass("active");
 };
-PageButton.defaultTemplate = {
-	wrapper: "",
-	item: ".button-paging",
-	itemText: ".button-paging",
-	itemIcon: "",
-	itemLink: "",
-	container: ""
-};
+

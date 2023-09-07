@@ -87,12 +87,3 @@ Tabs.prototype.processTabs = function (){
 	}
 };
 
-Tabs.defaultTemplate = {
-	wrapper: ".sidebar",
-	item: ".tabs",
-	itemText: "",
-	itemIcon: "",
-	itemLink: "",
-	itemBadge: "",
-	container: ".tabs"
-};

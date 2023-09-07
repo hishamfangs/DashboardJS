@@ -35,12 +35,3 @@ ViewSwitcherButton.prototype.highlight = function (){
 ViewSwitcherButton.prototype.unhighlight = function (){
 	this.removeClass("active");
 };
-
-ViewSwitcherButton.defaultTemplate = {
-	wrapper: ".view-container",
-	item: "button",
-	itemText: "button",
-	itemIcon: "",
-	itemLink: "",
-	container: ""
-};

@@ -73,11 +73,7 @@ Field.prototype.renderFieldValues = function (){
 }
 
 Field.defaultTemplate = {
-	wrapper: ".record",
-	item: ".field",
-	itemText: ".field-value",
-	itemIcon: ".field-icon",
-	itemLink: ".field-click",
+	itemLink: "",
 	itemTitle: ".field-title",
 	container: ""
 };

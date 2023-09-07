@@ -85,16 +85,11 @@ Record.prototype = Object.create(Component.prototype);
 Record.prototype.constructor = Record;
 
 Record.defaultTemplate = {
-	wrapper: "",
-	item: ".record",
-	itemText: "",
-	itemIcon: ".record-icon",
-	itemLink: ".record",
 	itemBackgroundImage: ".record-image",
 	container: {
-		actionMenu: '.action-menu-container',
-		fields: ".field-container",
-		actions: ".actions-container .actions > tbody > tr"
+		actionMenu: '.actionsmenu-wrapper',
+		fields: ".fields-wrapper",
+		actions: ".actions-wrapper"
 	}
 };
 

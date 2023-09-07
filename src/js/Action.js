@@ -50,13 +50,3 @@ function Action(settings) {
 
 Action.prototype = Object.create(Component.prototype);
 Action.prototype.constructor = Action;
-
-Action.defaultTemplate = {
-	wrapper: ".actions-container table.actions tr",
-	item: ".action",
-	itemText: ".subtitle",
-	itemIcon: ".action-icon",
-	itemLink: "a",
-	container: ""
-};
-

@@ -148,11 +148,3 @@ Paging.prototype.unhighlight = function (page){
 	//var pButton = document.querySelector('[id="'+this.tab+'_page_'+page+'"]');
 	//return pButton
 };
-Paging.defaultTemplate = {
-	wrapper: "",
-	item: ".paging",
-	itemText: "",
-	itemIcon: "",
-	itemLink: "",
-	container: ".paging-container"
-};

@@ -25,18 +25,3 @@ function FieldHeader(settings){
 }
 FieldHeader.prototype = Object.create(Component.prototype);
 FieldHeader.prototype.constructor = FieldHeader;		
-
-
-FieldHeader.defaultTemplate = {
-	wrapper: ".field-header-container",
-	item: ".field-header",
-	itemText : ".header-title",
-	itemIcon : ".header-icon",
-	itemLink : "",
-	container: ""
-};
-/* 
-Recordset.prototype.getTemplate = function (jqContext, pTemplate){	// pass Optional template to override default template
-	var template = Component.prototype.getTemplate.call(this, jqContext, pTemplate);
-	return template;
-} */
