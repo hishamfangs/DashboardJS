@@ -86,13 +86,13 @@ button:active, input:active{
 table{
   border-spacing: 0px;
 }
-.dashboard{
+.dashboard-component{
 	width: 80%;
 	margin: 40px auto;
 	display: flex;
 	position:relative;
 }
-.dashboard::before{
+.dashboard-component::before{
 	content:'';
 	position: absolute;
 	height: 100%;
@@ -121,16 +121,16 @@ table{
 .bc-tab-title{
 	font-weight: bold;
 }
-.tabs{
+.tabs-component{
 	padding: 40px 0px;
 }
-.tab{
+.tab-component{
 	position: relative;
 	text-align: center;
 	min-height: 100px;
 
 }
-.tab:before{
+.tab-component::before{
 	content: '';
 	min-width: 0px;
 	max-width: 0px;
@@ -140,7 +140,7 @@ table{
 	position: absolute;
 	transition: 0.3s all;
 }
-.tab.active:before{
+.tab-component.active:before{
 	min-width: 5px;
 	max-width: 5px;
 }
@@ -178,16 +178,16 @@ table{
     display: block;
     margin: auto;
 }
-.button-paging{
+.pagebutton-component{
 	margin: 0 2px;
 	vertical-align: middle;
 	border-radius: 20px;
 	cursor: pointer;
 }
-.button-paging[id*="_start"],
-.button-paging[id*="_prev"],
-.button-paging[id*="_next"],
-.button-paging[id*="_end"] {
+.pagebutton-component[id*="_start"],
+.pagebutton-component[id*="_prev"],
+.pagebutton-component[id*="_next"],
+.pagebutton-component[id*="_end"] {
 	font-size: 1em;
 	padding: 6px 4px;
 	/* min-width: 22px; */
@@ -195,10 +195,10 @@ table{
 	color: #d3d5dd;
 	font-weight: bolder;
 }
-.button-paging[id*="_start"]:hover,
-.button-paging[id*="_prev"]:hover,
-.button-paging[id*="_next"]:hover,
-.button-paging[id*="_end"]:hover {
+.pagebutton-component[id*="_start"]:hover,
+.pagebutton-component[id*="_prev"]:hover,
+.pagebutton-component[id*="_next"]:hover,
+.pagebutton-component[id*="_end"]:hover {
 	color: black;
 }
 

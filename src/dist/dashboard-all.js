@@ -52,7 +52,7 @@ Action.prototype = Object.create(Component.prototype);
 Action.prototype.constructor = Action;
 
 
-/**** Recordset Class
+/**** ActionsContainer Class
 |*		
 |*	Recordset Class for creating, attaching and managing
 |*	Recordsets, which in UI terms takes the shape of Tabs & Their Panels.
@@ -76,6 +76,8 @@ Action.prototype.constructor = Action;
 	this.template.panel.item = $(this.template.panel.itemSelector);
 
 |********************/
+// TODO: Obsolete. Delete Or Merge with Record.
+
 function ActionsContainer(config, data, template, useExistingElement) {
 	Component.call(this, config, data, template, useExistingElement);
 	this.actions = config.actions;
@@ -117,6 +119,11 @@ ActionsContainer.prototype.constructor = ActionsContainer;
 
 */
 
+ActionsContainer.prototype.getTemplate = function (templateConfig) {	// pass Optional template to override default template
+	var template = Component.prototype.getTemplate.call(this, templateConfig);
+	return template;
+}
+
 ActionsContainer.defaultTemplate = {
 	wrapper: ".actions-container",
 	item: ".actions",
@@ -126,10 +133,6 @@ ActionsContainer.defaultTemplate = {
 	container: "tr"
 };
 
-ActionsContainer.prototype.getTemplate = function (templateConfig) {	// pass Optional template to override default template
-	var template = Component.prototype.getTemplate.call(this, templateConfig);
-	return template;
-}
 /**** ActionsMenu Class
  *		
  *	Class for switching the Action Buttons to a Drop Down Menu
@@ -3307,12 +3310,21 @@ function Sorting(settings) {
 	this.closeMenu();
 	var sorting = this; 
 	
-	document.addEventListener('mouseup', function(e) {
+	document.addEventListener('mouseup', function closeSortingMenu(e) {
 		//var theTarget = e.target.closest(actionsMenu.selectors.item);
-		if (!sorting.object.contains(e.target)) {
+		if (!sorting?.object?.contains(e.target)) {
 			sorting.closeMenu();
 		}
 	});
+/* 
+	this.onRemove = function (e){
+		document.removeEventListener('mouseup', function closeSortingMenu(e) {
+			//var theTarget = e.target.closest(actionsMenu.selectors.item);
+			if (!sorting.object.contains(e.target)) {
+				sorting.closeMenu();
+			}
+		});
+	} */
 	//console.log(this);
 }
 Sorting.prototype = Object.create(Component.prototype);

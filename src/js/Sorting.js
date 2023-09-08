@@ -35,12 +35,21 @@ function Sorting(settings) {
 	this.closeMenu();
 	var sorting = this; 
 	
-	document.addEventListener('mouseup', function(e) {
+	document.addEventListener('mouseup', function closeSortingMenu(e) {
 		//var theTarget = e.target.closest(actionsMenu.selectors.item);
-		if (!sorting.object.contains(e.target)) {
+		if (!sorting?.object?.contains(e.target)) {
 			sorting.closeMenu();
 		}
 	});
+/* 
+	this.onRemove = function (e){
+		document.removeEventListener('mouseup', function closeSortingMenu(e) {
+			//var theTarget = e.target.closest(actionsMenu.selectors.item);
+			if (!sorting.object.contains(e.target)) {
+				sorting.closeMenu();
+			}
+		});
+	} */
 	//console.log(this);
 }
 Sorting.prototype = Object.create(Component.prototype);

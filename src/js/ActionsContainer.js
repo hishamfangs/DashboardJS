@@ -1,5 +1,5 @@
 
-/**** Recordset Class
+/**** ActionsContainer Class
 |*		
 |*	Recordset Class for creating, attaching and managing
 |*	Recordsets, which in UI terms takes the shape of Tabs & Their Panels.
@@ -23,6 +23,8 @@
 	this.template.panel.item = $(this.template.panel.itemSelector);
 
 |********************/
+// TODO: Obsolete. Delete Or Merge with Record.
+
 function ActionsContainer(config, data, template, useExistingElement) {
 	Component.call(this, config, data, template, useExistingElement);
 	this.actions = config.actions;
@@ -64,6 +66,11 @@ ActionsContainer.prototype.constructor = ActionsContainer;
 
 */
 
+ActionsContainer.prototype.getTemplate = function (templateConfig) {	// pass Optional template to override default template
+	var template = Component.prototype.getTemplate.call(this, templateConfig);
+	return template;
+}
+
 ActionsContainer.defaultTemplate = {
 	wrapper: ".actions-container",
 	item: ".actions",
@@ -72,8 +79,3 @@ ActionsContainer.defaultTemplate = {
 	itemLink: "",
 	container: "tr"
 };
-
-ActionsContainer.prototype.getTemplate = function (templateConfig) {	// pass Optional template to override default template
-	var template = Component.prototype.getTemplate.call(this, templateConfig);
-	return template;
-}
