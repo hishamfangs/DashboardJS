@@ -32,7 +32,12 @@ Component.prototype.load = async function (settings){
 
 	// Process the Events set on the Component
 	// Ex: visibility, icon, onClick, onLoop, url
-	this.processEvents();
+	if (this.object){
+		// make sure the object is rendered
+		this.processEvents();
+	}else{
+		console.log('HTML Node for: ' + this.constructor.name + ' doesn\'t exist or has been removed from the DOM.');
+	}
 
 	//console.log(this.__proto__.constructor.name, this);
 };

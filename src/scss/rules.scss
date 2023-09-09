@@ -67,7 +67,7 @@ button.active{
 .userprofile-component{
 	margin-top: 40px;
 	text-align: center;
-	
+
 	.profile-title{
 		font-size: 0.8em;
 		margin-bottom: 10px;
@@ -550,21 +550,21 @@ button.active{
 }
 
 .loader-fade::before {
-	content: '';
-	position: absolute;
+	content: ""!important;
+	position: absolute!important;
 	width: 100%;
-	height:100%;
-	min-width: auto!important;
-	max-width: none!important;
-	background: transparent;
-	background-image: url(../assets/loader.gif);
-  background-size: auto min(150px, 80%);
-  background-repeat: no-repeat;
-  background-position: center 75%;	
-	z-index:999;
+	height: 100%!important;
+	min-width: auto !important;
+	max-width: none !important;
+	background: transparent!important;
+	background-image: url(../assets/loader.svg)!important;
+	background-size: auto min(150px, 80%)!important;
+	background-repeat: no-repeat!important;
+	background-position: center 75%!important;
+	z-index: 999;
 	opacity: 0;
-	transition: background-position 0.6s, opacity 0.6s;
-	transition-timing-function: cubic-bezier(0.07, 0.88, 0.14, 0.97);
+	transition: background-position 0.6s, opacity 0.6s!important;
+	transition-timing-function: cubic-bezier(0.07, 0.88, 0.14, 0.97)!important;
 }
 
 .loader::before {
@@ -599,3 +599,29 @@ button.active{
     background-position: 800px 0
   }
 }
+
+
+/***
+ *
+ *	Icons
+ *
+ */
+
+ 
+.edit-icon{
+	background: url(../assets/edit-icon.svg);
+	background-size: 115%!important;
+  background-position: center;
+}
+
+.info-icon{
+	background: url(../assets/info-icon.svg);
+}
+
+.pay-icon{
+	background: url(../assets/pay-icon.svg);	
+}
+.cancel-icon{
+	background: url(../assets/cancel-icon.svg);	
+}
+
