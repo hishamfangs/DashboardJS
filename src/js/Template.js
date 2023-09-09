@@ -225,7 +225,8 @@ Template.prototype.render = function (){
 						if (selectedNode) {
 							this.objects[selectorKey] = this.objects.item;
 						}else{
-							console.log("%cCannot find Node for " + this.name + " -> " + selectorKey + " : " + selector, "color: red");
+							// Node not found
+							//console.log("%cCannot find Node for " + this.name + " -> " + selectorKey + " : " + selector, "color: red");
 						}
 					}
 				}
@@ -353,8 +354,10 @@ Template.prototype.append = function (childObject, containerSelectorKeyName) {	/
 					if (appendToObjectDirectly){
 						if (this.objects[containerKeyName]){
 							this.objects[containerKeyName].appendChild(childObject.object);
-						}else{
+						}else if (this.objects.container[containerKeyName]){
 							this.objects.container[containerKeyName].appendChild(childObject.object);
+						}else{
+							throw "Error: " + this.name + " has no Container named: " + containerKeyName + " with a selector: " + container;
 						}
 					}else{
 						this.object.querySelectorAll(container).appendChild(childObject.object);

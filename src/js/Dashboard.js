@@ -44,7 +44,6 @@ Dashboard.prototype.initialize = async function (settings){
 		this.loadDashboard();
 	}
 	if (this.profile){
-		debugger;
 		var userProfile = new UserProfile({ config: this.profile, dashboard: this, templateManager: this.templateManager});
 		this.append(userProfile, 'profile');	
 	}
@@ -88,7 +87,7 @@ Dashboard.defaultTemplate = {
 		tabs: ".tabs-wrapper",
 		recordset: ".recordset-wrapper",
 		filtering:".filtering-wrapper",
-		profile: ".user-profile",
+		profile: ".userprofile-wrapper",
 		viewSwitcher:".view-mode",
 		sorting:".sorting-wrapper",	//.sort
 		paging: ".view-pagination"

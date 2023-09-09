@@ -5,26 +5,26 @@
 |*	Tabs Handle switching from one recordset to another, while
 |*	Panels hold the record. 
 |* 
-	Useage:
-	---------
-	dm = new DataManager();
-	dm.setData(data);
-	dm.sort({sortBy: "Age", sortDirection: "asc"});
-	dm.addKeyword("Hisham");
-	dm.goToPage(5);
-	dm.removeKeyword("Hisham");
-	dm.addSearchParameters({
-		field: "First Name", 
-		value:"Hisham", 
-		options: {
-			enableSpecialCharacters: false,
-			wholeWordSearch: false
-		}
-	});
-	console.log("data: ", dm.data);
-	console.log("count: ", dm.count);
+		Useage:
+		---------
+		dm = new DataManager();
+		dm.setData(data);
+		dm.sort({sortBy: "Age", sortDirection: "asc"});
+		dm.addKeyword("Hisham");
+		dm.goToPage(5);
+		dm.removeKeyword("Hisham");
+		dm.addSearchParameters({
+			field: "First Name", 
+			value:"Hisham", 
+			options: {
+				enableSpecialCharacters: false,
+				wholeWordSearch: false
+			}
+		});
+		console.log("data: ", dm.data);
+		console.log("count: ", dm.count);
 
-|********************/
+|******************* */
 function DataManager(config, data) {	// data is optional
 	// The DataManager Element retrieves data & processes it
 
@@ -107,7 +107,6 @@ DataManager.prototype.load = async function(countOnly){
 		var response = await fetch(url, options);
 		var res = await response.json();
 		console.log(res);
-		debugger;
 		this.setData(res.data, res.count);
 	}
 

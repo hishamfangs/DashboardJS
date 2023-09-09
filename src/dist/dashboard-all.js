@@ -1330,7 +1330,6 @@ Dashboard.prototype.initialize = async function (settings){
 		this.loadDashboard();
 	}
 	if (this.profile){
-		debugger;
 		var userProfile = new UserProfile({ config: this.profile, dashboard: this, templateManager: this.templateManager});
 		this.append(userProfile, 'profile');	
 	}
@@ -1374,7 +1373,7 @@ Dashboard.defaultTemplate = {
 		tabs: ".tabs-wrapper",
 		recordset: ".recordset-wrapper",
 		filtering:".filtering-wrapper",
-		profile: ".user-profile",
+		profile: ".userprofile-wrapper",
 		viewSwitcher:".view-mode",
 		sorting:".sorting-wrapper",	//.sort
 		paging: ".view-pagination"
@@ -1469,26 +1468,26 @@ DashboardEvent.prototype.result = null;
 |*	Tabs Handle switching from one recordset to another, while
 |*	Panels hold the record. 
 |* 
-	Useage:
-	---------
-	dm = new DataManager();
-	dm.setData(data);
-	dm.sort({sortBy: "Age", sortDirection: "asc"});
-	dm.addKeyword("Hisham");
-	dm.goToPage(5);
-	dm.removeKeyword("Hisham");
-	dm.addSearchParameters({
-		field: "First Name", 
-		value:"Hisham", 
-		options: {
-			enableSpecialCharacters: false,
-			wholeWordSearch: false
-		}
-	});
-	console.log("data: ", dm.data);
-	console.log("count: ", dm.count);
+		Useage:
+		---------
+		dm = new DataManager();
+		dm.setData(data);
+		dm.sort({sortBy: "Age", sortDirection: "asc"});
+		dm.addKeyword("Hisham");
+		dm.goToPage(5);
+		dm.removeKeyword("Hisham");
+		dm.addSearchParameters({
+			field: "First Name", 
+			value:"Hisham", 
+			options: {
+				enableSpecialCharacters: false,
+				wholeWordSearch: false
+			}
+		});
+		console.log("data: ", dm.data);
+		console.log("count: ", dm.count);
 
-|********************/
+|******************* */
 function DataManager(config, data) {	// data is optional
 	// The DataManager Element retrieves data & processes it
 
@@ -1571,7 +1570,6 @@ DataManager.prototype.load = async function(countOnly){
 		var response = await fetch(url, options);
 		var res = await response.json();
 		console.log(res);
-		debugger;
 		this.setData(res.data, res.count);
 	}
 
@@ -3871,7 +3869,8 @@ Template.prototype.render = function (){
 						if (selectedNode) {
 							this.objects[selectorKey] = this.objects.item;
 						}else{
-							console.log("%cCannot find Node for " + this.name + " -> " + selectorKey + " : " + selector, "color: red");
+							// Node not found
+							//console.log("%cCannot find Node for " + this.name + " -> " + selectorKey + " : " + selector, "color: red");
 						}
 					}
 				}
@@ -3999,8 +3998,10 @@ Template.prototype.append = function (childObject, containerSelectorKeyName) {	/
 					if (appendToObjectDirectly){
 						if (this.objects[containerKeyName]){
 							this.objects[containerKeyName].appendChild(childObject.object);
-						}else{
+						}else if (this.objects.container[containerKeyName]){
 							this.objects.container[containerKeyName].appendChild(childObject.object);
+						}else{
+							throw "Error: " + this.name + " has no Container named: " + containerKeyName + " with a selector: " + container;
 						}
 					}else{
 						this.object.querySelectorAll(container).appendChild(childObject.object);
@@ -4246,31 +4247,17 @@ function isElement(element) {
 
 /**** UserProfile Class
  *		
- *	Recordset Class for creating, attaching and managing
- *	Recordsets, which in UI terms takes the shape of Tabs & Their Panels.
- *	Tabs Handle switching from one recordset to another, while
- *	Panels hold the record. 
+ *	UserProfile Class
  * 
 ******************* */
 
 function UserProfile(settings) {
-
 	Component.call(this, settings);
 	this.dashboard = settings.dashboard;
 	//this.setLink(url);
 }
 UserProfile.prototype = Object.create(Component.prototype);
 UserProfile.prototype.constructor = UserProfile;
-
-UserProfile.defaultTemplate = {
-	wrapper: "",
-	item: ".user-container",
-	itemText: ".name",
-	itemIcon: "",
-	itemLink: "",
-	itemImage: "img",
-	container: ""
-};
 
 /**** ViewSwitcher Class
 |*		
