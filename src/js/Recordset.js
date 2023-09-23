@@ -49,7 +49,16 @@ Recordset.prototype.refresh = async function (){
 
 	// Create Field Headers
 	this.removeChildren("fieldHeader");
-	var fieldheaderContainer = new FieldHeaderContainer({config: this.config.recordSettings, data: this.data, templateManager: this.templateManager});
+
+	// Get Fields from config object, else if it doesn't exist, generate the fields from the data
+	if (this?.config?.recordSettings){
+		var recordSettings = this.config.recordSettings;
+	}else{
+		var recordSettings = {
+			fields: this.dataManager.getFieldsFromData()
+		}
+	}
+	var fieldheaderContainer = new FieldHeaderContainer({config: recordSettings, data: this.data, templateManager: this.templateManager});
 	this.append(fieldheaderContainer, "fieldHeader");
 
 	this.removeChildren("records");
@@ -58,7 +67,7 @@ Recordset.prototype.refresh = async function (){
 		//this.dataManager.goToPage(5);
 		for (i in this.data) {
 			recordData = this.data[i];
-			var record = new Record({config: this.config.recordSettings, data: recordData, templateManager: this.templateManager});
+			var record = new Record({config: recordSettings, data: recordData, templateManager: this.templateManager});
 			//console.log(record);
 			this.append(record, "records");
 		}

@@ -423,7 +423,7 @@ button.active{
 
 /******* Actions Kebab Menu ****************/
 
-.kebab-menu {
+.actionsmenu-component {
 	transform: rotateZ(90deg);
   width: 20px;
   height: 30px;
@@ -437,12 +437,12 @@ button.active{
 }
 
 
-.kebab-menu img {
+.actionsmenu-component img {
   width: 100%;
   filter: drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.7));
 }
 
-.kebab-menu:hover {
+.actionsmenu-component:hover {
   background: rgb(0 0 0 / 67%);
 }
 

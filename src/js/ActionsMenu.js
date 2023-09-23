@@ -55,13 +55,3 @@ ActionsMenu.prototype.closeMenu = function () {
 		this.record.removeClass('open')
 	}
 };
-
-ActionsMenu.defaultTemplate = {
-	wrapper: "",
-	item: ".kebab-menu",
-	itemText: "",
-	itemIcon: "",
-	itemLink: "",
-	itemImage: "",
-	container: ""
-};

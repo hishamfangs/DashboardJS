@@ -21,31 +21,8 @@ function Action(settings) {
 	if (!settings.config.language) {
 		settings.config.language = this.language = "all";
 	}
-
-	/***************************************************************/
-	/******************* Default actions ***************************/
-	// Before running the inherited Constructor
-	// Check the default Actions if any are found, and set the properties from there
-	
-
 	// Call Default 
 	Component.call(this, settings);
-
-	// The final Action Object
-	actionItem = {
-		name: this.name,
-		domId: this.uid,
-		class: this.class,
-		icon: this.icon,
-		url: this.url,
-		onClick: this.onClick,
-		language: this.language,
-		translation: this.translatedName
-	};
-
-	// Set the Text Element
-	this.object.querySelector(this.template.selectors.itemText).innerHTML = this.translatedName;
-
 }
 
 Action.prototype = Object.create(Component.prototype);

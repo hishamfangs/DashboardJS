@@ -18,6 +18,8 @@
 ******************* */
 
 function Component(settings) {
+	// Returns a Promise that is waiting for the template to be loaded, and saves it to this.loadingTemplate 
+	// so if required when you use templateURL property, you can check the Promise if the template is loaded before continuing
 	this.loadingTemplate = this.load(settings);
 }
 

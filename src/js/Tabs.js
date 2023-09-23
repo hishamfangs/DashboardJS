@@ -84,6 +84,20 @@ Tabs.prototype.processTabs = function (){
 			translatedName = tabConfig.translation[currentLanguage];
 		};
 		this.translatedName = translatedName;
+		// Check if the data supplied is an array with no tabnames, then use the same data set for all tabs
+		if (this.data){
+			// Copy the dataset to a originalData
+			if (Array.isArray(this.data) && !this.originalData){
+				this.originalData = clone(this.data);
+				this.data = {};
+			}
+			if (this.originalData){
+				if (!this.data){
+					this.data = {};
+				}
+				this.data[t] = this.originalData;
+			}
+		}
 	}
 };
 

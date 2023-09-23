@@ -24,6 +24,7 @@
 
 |********************/
 // TODO: Obsolete. Delete Or Merge with Record.
+// Ideally this should be used for Actions containers
 
 function ActionsContainer(config, data, template, useExistingElement) {
 	Component.call(this, config, data, template, useExistingElement);

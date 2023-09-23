@@ -63,7 +63,7 @@ Filtering.prototype.refresh = function (){
 	this.dashboard.getChild(this.tab.name).refresh();
 	//this.tab.pagination.tab = this.tab.name;
 	//this.tab.pagination.dataManager = this.dataManager;
-	
+	debugger;
 	this.tab.pagination.refresh();
 	//this.tab.tabs.refresh();
 };

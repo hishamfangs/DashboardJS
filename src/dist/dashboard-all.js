@@ -21,31 +21,8 @@ function Action(settings) {
 	if (!settings.config.language) {
 		settings.config.language = this.language = "all";
 	}
-
-	/***************************************************************/
-	/******************* Default actions ***************************/
-	// Before running the inherited Constructor
-	// Check the default Actions if any are found, and set the properties from there
-	
-
 	// Call Default 
 	Component.call(this, settings);
-
-	// The final Action Object
-	actionItem = {
-		name: this.name,
-		domId: this.uid,
-		class: this.class,
-		icon: this.icon,
-		url: this.url,
-		onClick: this.onClick,
-		language: this.language,
-		translation: this.translatedName
-	};
-
-	// Set the Text Element
-	this.object.querySelector(this.template.selectors.itemText).innerHTML = this.translatedName;
-
 }
 
 Action.prototype = Object.create(Component.prototype);
@@ -77,6 +54,7 @@ Action.prototype.constructor = Action;
 
 |********************/
 // TODO: Obsolete. Delete Or Merge with Record.
+// Ideally this should be used for Actions containers
 
 function ActionsContainer(config, data, template, useExistingElement) {
 	Component.call(this, config, data, template, useExistingElement);
@@ -191,16 +169,6 @@ ActionsMenu.prototype.closeMenu = function () {
 	}
 };
 
-ActionsMenu.defaultTemplate = {
-	wrapper: "",
-	item: ".kebab-menu",
-	itemText: "",
-	itemIcon: "",
-	itemLink: "",
-	itemImage: "",
-	container: ""
-};
-
 /**** Component Class
  *		
  *	Base Class for All Dashboard Components
@@ -221,6 +189,8 @@ ActionsMenu.defaultTemplate = {
 ******************* */
 
 function Component(settings) {
+	// Returns a Promise that is waiting for the template to be loaded, and saves it to this.loadingTemplate 
+	// so if required when you use templateURL property, you can check the Promise if the template is loaded before continuing
 	this.loadingTemplate = this.load(settings);
 }
 
@@ -1307,8 +1277,21 @@ Component.prototype.getChildById = function(id){
 ****************************************** */
 
 function Dashboard(settings) {
-	// The Dashboard Component by Default modifies the Existing Template in the current document without cloning it. (useExistingElement = true)
-	// Unlike every other Dashboard ELement, which defaults to false (useExistingElement = false), which clones the template to be appended manually
+	// The Dashboard Component requires a settings object, with a config object attached, however, if none exist, a default one is created.
+	if (!settings){
+		settings = {};
+	}
+	if (!settings.config){
+		settings.config = {
+			initialActiveTab: "All Records",
+			tabs: {
+				'All Records':{
+					
+				}
+			}
+		}
+	}
+
 	settings.config.dashboard = this;
 	this.initialize(settings);
 }
@@ -1317,7 +1300,9 @@ Dashboard.prototype = Object.create(Component.prototype);
 Dashboard.prototype.constructor = Dashboard;
 
 Dashboard.prototype.initialize = async function (settings){
-
+	// The Dashboard Component by Default modifies the Existing Template in the current document without cloning it. (useExistingElement = true)
+	// Unlike every other Component, which defaults to false (useExistingElement = false), which clones the template to be appended manually
+	// Unless appendTo is passed, which overrides useExistingElement and set it to false.
 	if (typeof settings.useExistingElement === "undefined"){
 		var useExistingElement = true;
 	}
@@ -1572,8 +1557,8 @@ DataManager.prototype.setConfig = function (config){
 DataManager.prototype.load = async function(countOnly){
 	if (this.fetch?.url){
 		let {options, url} = this.generateFetchParameters(countOnly);
-		var response = await fetch(url, options);
-		var res = await response.json();
+		this.loading = await fetch(url, options);
+		var res = await this.loading.json();
 		console.log(res);
 		this.setData(res.data, res.count);
 	}
@@ -1897,6 +1882,15 @@ DataManager.prototype.processSorting = function (){
 DataManager.prototype.getData = function(){
 	return this.data.paged;
 };
+DataManager.prototype.getFieldsFromData = function(){
+	let fields = {};
+	if (this?.data?.paged?.length){
+		for (let d in this.data.paged[0]){
+			fields[d] = {};
+		}
+	}
+	return fields;
+};
 DataManager.prototype.updateProcessedDataset = function(){
 	this.processedData = this.data.paged;
 };
@@ -2202,7 +2196,7 @@ Filtering.prototype.refresh = function (){
 	this.dashboard.getChild(this.tab.name).refresh();
 	//this.tab.pagination.tab = this.tab.name;
 	//this.tab.pagination.dataManager = this.dataManager;
-	
+	debugger;
 	this.tab.pagination.refresh();
 	//this.tab.tabs.refresh();
 };
@@ -2931,6 +2925,7 @@ Paging.prototype.refresh = function (){
 		endPage = this.dataManager.pages;
 	}
 	
+	// Create Go To begining Button
 	var pageStart = new PageButton({
 		config: {
 			pageNumber: '1', 
@@ -2946,6 +2941,7 @@ Paging.prototype.refresh = function (){
 	});
 	this.append(pageStart);
 
+	// Create Go To Previous Block Button
 	var prevBlock = new PageButton({
 		config: {
 			pageNumber: '', 
@@ -2959,6 +2955,7 @@ Paging.prototype.refresh = function (){
 		templateManager: this.templateManager});
 	this.append(prevBlock);
 
+	// Create Page Buttons
 	for (var p=startPage; p<=endPage; p++) {
 		var pageBtn = new PageButton({
 			config: {
@@ -2976,7 +2973,7 @@ Paging.prototype.refresh = function (){
 		this.append(pageBtn);
 	}
 
-	
+	// Create Go To Next Block Button
 	var nextBlock = new PageButton({
 		config: {
 			pageNumber: '', 
@@ -2991,6 +2988,7 @@ Paging.prototype.refresh = function (){
 	});
 	this.append(nextBlock);
 
+	// Create Go to End Button
 	var pageEnd = new PageButton({
 		config: {
 			pageNumber: this.dataManager.pages, 
@@ -3253,7 +3251,16 @@ Recordset.prototype.refresh = async function (){
 
 	// Create Field Headers
 	this.removeChildren("fieldHeader");
-	var fieldheaderContainer = new FieldHeaderContainer({config: this.config.recordSettings, data: this.data, templateManager: this.templateManager});
+
+	// Get Fields from config object, else if it doesn't exist, generate the fields from the data
+	if (this?.config?.recordSettings){
+		var recordSettings = this.config.recordSettings;
+	}else{
+		var recordSettings = {
+			fields: this.dataManager.getFieldsFromData()
+		}
+	}
+	var fieldheaderContainer = new FieldHeaderContainer({config: recordSettings, data: this.data, templateManager: this.templateManager});
 	this.append(fieldheaderContainer, "fieldHeader");
 
 	this.removeChildren("records");
@@ -3262,7 +3269,7 @@ Recordset.prototype.refresh = async function (){
 		//this.dataManager.goToPage(5);
 		for (i in this.data) {
 			recordData = this.data[i];
-			var record = new Record({config: this.config.recordSettings, data: recordData, templateManager: this.templateManager});
+			var record = new Record({config: recordSettings, data: recordData, templateManager: this.templateManager});
 			//console.log(record);
 			this.append(record, "records");
 		}
@@ -3494,14 +3501,13 @@ Tab.prototype.goToPage = async function(page){
 };
 
 Tab.prototype.refresh = async function(){
-	this.fields = Component.getFieldSettings(this.recordSettings.fields, this.language);
 	
 	this.setBreadCrumbs();
 	this.setRecordset();
 	this.setPagination();
-	this.setSorting();
 	this.setFiltering();
 	this.setView();
+	this.setSorting();
 };
 
 Tab.prototype.setBreadCrumbs = function (){
@@ -3532,11 +3538,19 @@ Tab.prototype.setFiltering = function (){
 	this.dashboard.append(filtering, 'filtering');
 };
 
-Tab.prototype.setSorting = function (){
+Tab.prototype.setSorting = async function (){
 	var sorting = this.dashboard.getChild('Sort By')
 	if (sorting){
 		sorting.remove();
 	}
+	if (!this?.recordSettings?.fields || JSON.stringify(this?.recordSettings?.fields)=='{}'){
+		await this.dataManager.loading;
+		this.fields = this.dataManager.getFieldsFromData();	
+		this.fields = Component.getFieldSettings(this.fields, this.language);
+	}else{
+		this.fields = Component.getFieldSettings(this.recordSettings.fields, this.language);
+	}
+
 	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager});
 	this.dashboard.append(sorting, 'sorting');
 };
@@ -3648,6 +3662,20 @@ Tabs.prototype.processTabs = function (){
 			translatedName = tabConfig.translation[currentLanguage];
 		};
 		this.translatedName = translatedName;
+		// Check if the data supplied is an array with no tabnames, then use the same data set for all tabs
+		if (this.data){
+			// Copy the dataset to a originalData
+			if (Array.isArray(this.data) && !this.originalData){
+				this.originalData = clone(this.data);
+				this.data = {};
+			}
+			if (this.originalData){
+				if (!this.data){
+					this.data = {};
+				}
+				this.data[t] = this.originalData;
+			}
+		}
 	}
 };
 

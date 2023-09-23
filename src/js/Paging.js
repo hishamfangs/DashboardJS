@@ -49,6 +49,7 @@ Paging.prototype.refresh = function (){
 		endPage = this.dataManager.pages;
 	}
 	
+	// Create Go To begining Button
 	var pageStart = new PageButton({
 		config: {
 			pageNumber: '1', 
@@ -64,6 +65,7 @@ Paging.prototype.refresh = function (){
 	});
 	this.append(pageStart);
 
+	// Create Go To Previous Block Button
 	var prevBlock = new PageButton({
 		config: {
 			pageNumber: '', 
@@ -77,6 +79,7 @@ Paging.prototype.refresh = function (){
 		templateManager: this.templateManager});
 	this.append(prevBlock);
 
+	// Create Page Buttons
 	for (var p=startPage; p<=endPage; p++) {
 		var pageBtn = new PageButton({
 			config: {
@@ -94,7 +97,7 @@ Paging.prototype.refresh = function (){
 		this.append(pageBtn);
 	}
 
-	
+	// Create Go To Next Block Button
 	var nextBlock = new PageButton({
 		config: {
 			pageNumber: '', 
@@ -109,6 +112,7 @@ Paging.prototype.refresh = function (){
 	});
 	this.append(nextBlock);
 
+	// Create Go to End Button
 	var pageEnd = new PageButton({
 		config: {
 			pageNumber: this.dataManager.pages, 

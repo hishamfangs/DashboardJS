@@ -104,8 +104,8 @@ DataManager.prototype.setConfig = function (config){
 DataManager.prototype.load = async function(countOnly){
 	if (this.fetch?.url){
 		let {options, url} = this.generateFetchParameters(countOnly);
-		var response = await fetch(url, options);
-		var res = await response.json();
+		this.loading = await fetch(url, options);
+		var res = await this.loading.json();
 		console.log(res);
 		this.setData(res.data, res.count);
 	}
@@ -428,6 +428,15 @@ DataManager.prototype.processSorting = function (){
 
 DataManager.prototype.getData = function(){
 	return this.data.paged;
+};
+DataManager.prototype.getFieldsFromData = function(){
+	let fields = {};
+	if (this?.data?.paged?.length){
+		for (let d in this.data.paged[0]){
+			fields[d] = {};
+		}
+	}
+	return fields;
 };
 DataManager.prototype.updateProcessedDataset = function(){
 	this.processedData = this.data.paged;

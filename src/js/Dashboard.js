@@ -16,8 +16,21 @@
 ****************************************** */
 
 function Dashboard(settings) {
-	// The Dashboard Component by Default modifies the Existing Template in the current document without cloning it. (useExistingElement = true)
-	// Unlike every other Dashboard ELement, which defaults to false (useExistingElement = false), which clones the template to be appended manually
+	// The Dashboard Component requires a settings object, with a config object attached, however, if none exist, a default one is created.
+	if (!settings){
+		settings = {};
+	}
+	if (!settings.config){
+		settings.config = {
+			initialActiveTab: "All Records",
+			tabs: {
+				'All Records':{
+					
+				}
+			}
+		}
+	}
+
 	settings.config.dashboard = this;
 	this.initialize(settings);
 }
@@ -26,7 +39,9 @@ Dashboard.prototype = Object.create(Component.prototype);
 Dashboard.prototype.constructor = Dashboard;
 
 Dashboard.prototype.initialize = async function (settings){
-
+	// The Dashboard Component by Default modifies the Existing Template in the current document without cloning it. (useExistingElement = true)
+	// Unlike every other Component, which defaults to false (useExistingElement = false), which clones the template to be appended manually
+	// Unless appendTo is passed, which overrides useExistingElement and set it to false.
 	if (typeof settings.useExistingElement === "undefined"){
 		var useExistingElement = true;
 	}

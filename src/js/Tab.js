@@ -76,14 +76,13 @@ Tab.prototype.goToPage = async function(page){
 };
 
 Tab.prototype.refresh = async function(){
-	this.fields = Component.getFieldSettings(this.recordSettings.fields, this.language);
 	
 	this.setBreadCrumbs();
 	this.setRecordset();
 	this.setPagination();
-	this.setSorting();
 	this.setFiltering();
 	this.setView();
+	this.setSorting();
 };
 
 Tab.prototype.setBreadCrumbs = function (){
@@ -114,11 +113,19 @@ Tab.prototype.setFiltering = function (){
 	this.dashboard.append(filtering, 'filtering');
 };
 
-Tab.prototype.setSorting = function (){
+Tab.prototype.setSorting = async function (){
 	var sorting = this.dashboard.getChild('Sort By')
 	if (sorting){
 		sorting.remove();
 	}
+	if (!this?.recordSettings?.fields || JSON.stringify(this?.recordSettings?.fields)=='{}'){
+		await this.dataManager.loading;
+		this.fields = this.dataManager.getFieldsFromData();	
+		this.fields = Component.getFieldSettings(this.fields, this.language);
+	}else{
+		this.fields = Component.getFieldSettings(this.recordSettings.fields, this.language);
+	}
+
 	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager});
 	this.dashboard.append(sorting, 'sorting');
 };

@@ -522,6 +522,22 @@ const config = {
 
 var dashboard = new FutureLabs.Dashboard({
   config: config,
+	/* data: [{
+      "Name": "Jessie Bambergans",
+      "Status": "Married",
+      "Date": "1980-08-10",
+      "Gender": "Female"
+    },{
+      "Name": "Jerome Berner",
+      "Status": "Single",
+      "Date": "1980-08-10",
+      "Gender": "Male"
+    },{
+      "Name": "Ruba Jackman",
+      "Status": "Married",
+      "Date": "1984-01-05",
+      "Gender": "Female"
+    }], */
 	templateURL: 'dashboard.html',
 	appendTo: document.querySelector(".dashboard-container")
 });
