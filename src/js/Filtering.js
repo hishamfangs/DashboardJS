@@ -22,6 +22,11 @@ function Filtering(settings) {
 	this.dashboard = this.tab.dashboard
 
 	this.objects.itemButton.addEventListener('click', onClickFiltering);
+	this.objects.itemInput.addEventListener('keyup', function(event) {
+		if (event.key === "Enter") {
+			onClickFiltering();
+		}
+	});
 	this.refresh();
 
 	function onClickFiltering(){

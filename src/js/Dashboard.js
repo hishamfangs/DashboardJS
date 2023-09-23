@@ -88,8 +88,8 @@ Dashboard.defaultTemplate = {
 		recordset: ".recordset-wrapper",
 		filtering:".filtering-wrapper",
 		profile: ".userprofile-wrapper",
-		viewSwitcher:".view-mode",
-		sorting:".sorting-wrapper",	//.sort
-		paging: ".view-pagination"
+		viewSwitcher:".viewswitcher-wrapper",
+		sorting:".sorting-wrapper",
+		//paging: ".paging-wrapper"
 	}			
 };

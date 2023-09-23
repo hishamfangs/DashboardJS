@@ -62,7 +62,11 @@ button.active {
   cursor: not-allowed !important;
 }
 
-/**** User Profile ******/
+/**************** 
+ *
+ * 	User Profile
+ * 
+ **********/
 .userprofile-component {
   margin-top: 40px;
   text-align: center;
@@ -386,9 +390,17 @@ button.active {
   margin-top: 20px;
   margin-left: -20px;
   margin-right: -20px;
-  width: 100%;
+  width: auto;
   text-align: center;
   margin-bottom: -22px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: stretch;
+}
+
+.record-component.actions-menu .actions-wrapper {
+  display: block;
 }
 
 .tab-component:hover .icon {

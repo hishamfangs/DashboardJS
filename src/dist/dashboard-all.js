@@ -1379,9 +1379,9 @@ Dashboard.defaultTemplate = {
 		recordset: ".recordset-wrapper",
 		filtering:".filtering-wrapper",
 		profile: ".userprofile-wrapper",
-		viewSwitcher:".view-mode",
-		sorting:".sorting-wrapper",	//.sort
-		paging: ".view-pagination"
+		viewSwitcher:".viewswitcher-wrapper",
+		sorting:".sorting-wrapper",
+		//paging: ".paging-wrapper"
 	}			
 };
 
@@ -2161,6 +2161,11 @@ function Filtering(settings) {
 	this.dashboard = this.tab.dashboard
 
 	this.objects.itemButton.addEventListener('click', onClickFiltering);
+	this.objects.itemInput.addEventListener('keyup', function(event) {
+		if (event.key === "Enter") {
+			onClickFiltering();
+		}
+	});
 	this.refresh();
 
 	function onClickFiltering(){
