@@ -56,14 +56,13 @@ Filtering.prototype.renderKeywords = function (){
 		this.append(keyword)
 	}
 };
-Filtering.prototype.refresh = function (){
+Filtering.prototype.refresh = async function (){
 	this.renderKeywords();
 	this.filterRecordset();
 	// get Tab Recordset and Refresh
-	this.dashboard.getChild(this.tab.name).refresh();
-	//this.tab.pagination.tab = this.tab.name;
-	//this.tab.pagination.dataManager = this.dataManager;
 	debugger;
+	await this.dashboard.getChild(this.tab.name).refresh();
+	await this.dataManager.loading;
 	this.tab.pagination.refresh();
 	//this.tab.tabs.refresh();
 };

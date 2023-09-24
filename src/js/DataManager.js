@@ -107,6 +107,7 @@ DataManager.prototype.load = async function(countOnly){
 		this.loading = await fetch(url, options);
 		var res = await this.loading.json();
 		console.log(res);
+		debugger;
 		this.setData(res.data, res.count);
 	}
 
@@ -195,8 +196,9 @@ DataManager.prototype.processData = function (){
 		var count = this.count;
 		var itemsPerPage = this.itemsPerPage;
 		if (count){
-			var pages = Math.ceil(count/itemsPerPage);
-			this.pages = pages;
+			this.pages = Math.ceil(count/itemsPerPage);
+		}else{
+			this.pages = 1;
 		}
 	}
 };

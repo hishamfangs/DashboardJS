@@ -522,7 +522,45 @@ const config = {
 
 var dashboard = new FutureLabs.Dashboard({
   config: config,
-	/* data: [{
+	/* config: {
+		tabs:{
+			"All Records":{
+				recordSettings:{
+					actions:{
+						"More details...": {
+							icon: 'info-icon',
+							onClick: function(){
+								alert('Clicked More Info ...');
+							}
+						},  	// Default View action Will appear
+						"Pay": {
+							icon: "pay-icon",
+							visibility: function (actionObj) {
+								// returns a string representing the visibility
+								return "disable";
+							},
+							onClick: function(){
+								alert('Clicked Pay!');
+							}
+						},
+						"Edit": {
+							icon: 'edit-icon',
+							onClick: function(){
+								alert('Clicked Edit');
+							}
+						},
+						"Cancel": {
+							icon: 'cancel-icon',
+							onClick: function(){
+								alert('Clicked Cancel');
+							}
+						}
+					}
+				}
+			}
+		}
+	} ,*/
+/* 	data: [{
       "Name": "Jessie Bambergans",
       "Status": "Married",
       "Date": "1980-08-10",

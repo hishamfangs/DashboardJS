@@ -600,7 +600,7 @@ button.active {
 }
 
 .recordset-component {
-  min-height: 300px;
+  min-height: 200px;
 }
 
 @keyframes placeHolderShimmer {
