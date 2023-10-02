@@ -20,6 +20,7 @@ function Record(settings) {
 	Component.call(this, settings);
 	// Process Field Settings
 	this.fields = Component.getFieldSettings(this.fields, this.language);
+	var defaultWidth = Component.getDefaultFieldWidth(this.fields);
 
 	// Apply Default Image
 	if (this?.image?.url && this.data?.[this.image.url]){
@@ -43,18 +44,25 @@ function Record(settings) {
 		for (var i = 0; i < fieldKeys.length; i++) {
 			var fieldKey = fieldKeys[i];
 			thisFieldSettings = this.fields[fieldKey];
-			var field = new Field({config: thisFieldSettings, data: this.data[thisFieldSettings.dataField], templateManager: this.templateManager, useExistingElement: this.useExistingElement});
+			var field = new Field({config: thisFieldSettings, data: this.data[thisFieldSettings.dataField], templateManager: this.templateManager, useExistingElement: this.useExistingElement, language: this.language});
 			//console.log(field);
 			this.append(field, "fields");
+			if (thisFieldSettings.width){
+				field.object.style.width = thisFieldSettings.width;
+			}else{
+				field.object.style.width = defaultWidth;
+			}
 		}
 	}
 
+	var actionsWidth = 0;
 	// Add Actions
 	if (this.actions) {
 		/*		config.clone = true;
 				config.context = this;				
 					var actionsContainer = new ActionsContainer(config, data);
 		 */
+
 		var actionKeys = Object.keys(this.actions);
 		for (var i = 0; i < actionKeys.length; i++) {
 			// Loop through the actions object and 
@@ -67,11 +75,12 @@ function Record(settings) {
 				}
 				actionConfig.name = actionKey;
 				// Create an action	
-				var action = new Action({config: actionConfig, data: this.data, templateManager: this.templateManager, useExistingElement: this.useExistingElement});
+				var action = new Action({config: actionConfig, data: this.data, templateManager: this.templateManager, useExistingElement: this.useExistingElement, language: this.language});
 
 				// Attach action to current Record
 				this.append(action, "actions");
-
+				
+				
 			}
 		}
 		if (this.actionsType == 'menu'){

@@ -19,7 +19,7 @@
 
 
 function Recordset(settings) {
-	Component.call(this, {...settings, dataManager: settings.dataManager.getData()});
+	Component.call(this, {...settings, dataManager: settings.dataManager.getData(), language: settings.language});
 	this.dataManager = settings.dataManager;
 	this.refresh();
 	//console.log(this);
@@ -50,16 +50,17 @@ Recordset.prototype.refresh = async function (){
 	// Create Field Headers
 	this.removeChildren("fieldHeader");
 
-	// Get Fields from config object, else if it doesn't exist, generate the fields from the data
+	// Get Fields from config object, else if it doesn't exist, automatically generate the fields from the data
 	let recordSettings = {};
 	if (this?.config?.recordSettings){
 		recordSettings = this?.config?.recordSettings;
 	}
 	if (!this?.config?.recordSettings?.fields){
 		recordSettings.fields = this.dataManager.getFieldsFromData();
+		this.recordSettings = recordSettings;
 	}
 
-	var fieldheaderContainer = new FieldHeaderContainer({config: recordSettings, data: this.data, templateManager: this.templateManager});
+	var fieldheaderContainer = new FieldHeaderContainer({config: recordSettings, data: this.data, templateManager: this.templateManager, language: this.language});
 	this.append(fieldheaderContainer, "fieldHeader");
 
 	this.removeChildren("records");
@@ -69,13 +70,21 @@ Recordset.prototype.refresh = async function (){
 		for (i in this.data) {
 			recordData = this.data[i];
 			if (recordData){
-				var record = new Record({config: recordSettings, data: recordData, templateManager: this.templateManager});
+				var record = new Record({config: recordSettings, data: recordData, templateManager: this.templateManager, language: this.language});
 				//console.log(record);
 				this.append(record, "records");	
 			}
 		}
 	}
 	this.switchView(this.config.viewMode);
+
+	// Set the Width of the Actions based on the largest action width in the entire recordset
+	this.setActionsListViewWidth();
+
+	// Add 'enable-action-menu' Class to indicate that this recordset uses the action-menu
+	if (recordSettings.actionsType=="menu"){
+		this.addClass("enable-action-menu");
+	}
 };
 
 Recordset.prototype.switchView = function (viewMode){
@@ -88,3 +97,32 @@ Recordset.defaultTemplate = {
 		fieldHeader: ".fieldheader-wrapper"
 	}
 };
+
+Recordset.prototype.setActionsListViewWidth = function (){
+	// Set the Width of the Actions based on the largest action width in the entire recordset
+	let largestWidth = 0;
+	// Loop to get the largest Width
+	for (let rec in this.children.records){
+		let record = this.children.records[rec];
+		//let actionsWrapper = record.objects.container.actions;
+		let actions = record.children.actions;
+		let totalWidth = 0;
+		for (let a in actions){
+			let action = actions[a];
+			totalWidth += action.width;
+		}
+		if (largestWidth < totalWidth){
+			largestWidth = totalWidth;
+		}
+	}
+	// Loop to apply the largest width to all the records.
+	for (let rec in this.children.records){
+		let record = this.children.records[rec];
+		let actionsWrapper = record.objects.container.actions;
+		actionsWrapper.style.width = largestWidth + 'px';
+	}
+	// Apply same width to Action Field Header
+	let fieldContainer = this.getChild("FieldHeaderContainer");
+	fieldContainer.objects.actionsHeader.style.width = largestWidth + 'px';
+
+}

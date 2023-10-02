@@ -243,7 +243,7 @@ button.active {
   outline: none;
   font-size: 0.8em;
   display: inline-block;
-  height: 16.5px;
+  height: 17px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
   box-sizing: content-box;
@@ -364,12 +364,6 @@ button.active {
   color: white;
 }
 
-.fieldheadercontainer-container {
-  width: calc(100% - 210px);
-  display: inline-block;
-  vertical-align: middle;
-}
-
 .cards .fieldheadercontainer-component {
   margin-top: 40px;
 }
@@ -393,7 +387,7 @@ button.active {
   justify-content: space-between;
 }
 
-.record-component:hover {
+.cards .record-component:hover {
   border-bottom: 3px solid #2f68fd;
   box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
 }
@@ -402,12 +396,6 @@ button.active {
   position: absolute;
 }
 
-.list .record-component {
-  width: 100%;
-  border-bottom: 1px solid rgba(137, 137, 137, 0);
-  padding: 10px 20px;
-  display: block;
-}
 .list .record-component:nth-child(even) {
   background: rgb(247, 247, 247);
 }
@@ -422,13 +410,6 @@ button.active {
   row-gap: 0px !important;
   margin: 0px;
 }
-.list .record-image {
-  width: 40px !important;
-  height: 30px !important;
-  margin-right: 10px;
-  display: inline-block;
-  vertical-align: middle;
-}
 
 .cards .record-image {
   width: calc(100% + 40px);
@@ -439,33 +420,6 @@ button.active {
 }
 
 /**** Fields *****/
-.cards .field-component {
-  position: relative;
-}
-
-.cards .fields-wrapper {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 15px;
-  justify-items: stretch;
-}
-
-.list .fields-wrapper {
-  width: calc(100% - 210px);
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.list .field-component {
-  width: 20%;
-  float: none;
-  display: inline-block;
-  text-align: start;
-  vertical-align: middle;
-  padding: 0 5px;
-  box-sizing: border-box;
-}
-
 .field-title {
   display: block;
   font-size: 0.8em;
@@ -508,12 +462,6 @@ button.active {
 }
 
 /****** Actions **************/
-.actions-header {
-  display: inline-block;
-  width: 150px;
-  vertical-align: middle;
-}
-
 .list .actions-container {
   display: inline-block;
   width: 150px;
@@ -521,10 +469,8 @@ button.active {
 }
 
 .cards .action-component {
-  padding: 10px 0;
   border-right: 1px solid #ececec;
   border-top: 1px solid #ececec;
-  flex: 1 1 auto;
 }
 .cards .action-component:hover {
   box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.5);
@@ -564,6 +510,11 @@ button.active {
   top: calc(50% - 20px);
 }
 
+.cards .actions-menu .action-component {
+  border-right: 0px;
+  border-top: 0px;
+}
+
 .actions-menu .actionsmenu-wrapper {
   display: block;
   position: absolute;
@@ -591,9 +542,6 @@ button.active {
   text-align: start;
 }
 .actions-menu .action-component {
-  display: block;
-  border: 0px;
-  padding: 0px;
   border-bottom: 1px solid #c8c8c8;
 }
 .actions-menu .action-component:first-child {

@@ -19,13 +19,20 @@
 function FieldHeaderContainer(settings){
 	Component.call(this, settings);
 	var fields = Component.getFieldSettings(this.fields, this.language);
-
-	for (var key in fields) {
+	var defaultWidth = Component.getDefaultFieldWidth(fields);
+	for (let key in fields) {
 		if (fields.hasOwnProperty(key)) {
 			var fieldSettings = fields[key];
-			var field = new FieldHeader({config: fieldSettings, templateManager: settings.templateManager});
+			var field = new FieldHeader({config: fieldSettings, templateManager: settings.templateManager, language: this.language});
 			//console.log("fieldHeader", field);
 			this.append(field);
+
+			if (fieldSettings.width){
+				field.object.style.width = fieldSettings.width;
+			}else{
+				field.object.style.width = defaultWidth;
+			}
+
 		}
 	}
 	if (!this.image){
@@ -37,5 +44,6 @@ FieldHeaderContainer.prototype.constructor = FieldHeaderContainer;
 
 
 FieldHeaderContainer.defaultTemplate = {
-	imageSpacer: ".image-spacer"
+	imageSpacer: ".image-spacer",
+	actionsHeader: ".actions-header"
 };

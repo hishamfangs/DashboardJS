@@ -234,14 +234,20 @@ button.active {
 
 /***** List Field Headers ******/
 .list .fieldheadercontainer-component {
-  display: block;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  padding: 10px 20px;
+}
+
+.list .enable-action-menu .fieldheadercontainer-component {
+  padding: 10px 60px 10px 20px;
 }
 
 .list .fieldheader-component {
   display: inline-block;
   width: 20%;
   text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
-  padding: 0 5px;
   box-sizing: border-box;
 }
 
@@ -275,6 +281,7 @@ button.active {
 
 .cards .field-component {
   position: relative;
+  width: auto !important;
 }
 
 .cards .field-container {
@@ -292,6 +299,17 @@ button.active {
   margin-bottom: 20px;
 }
 
+.cards .field-component {
+  position: relative;
+}
+
+.cards .fields-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  justify-items: stretch;
+}
+
 /***** List *******/
 .list .header {
   display: block;
@@ -299,7 +317,7 @@ button.active {
 
 .image-spacer {
   display: inline-block;
-  width: 50px;
+  width: 40px;
 }
 
 .list .record-wrapper {
@@ -315,15 +333,18 @@ button.active {
   width: 100%;
   border-bottom: 1px solid rgba(137, 137, 137, 0);
   padding: 10px 20px;
-  display: block;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+}
+
+.list .record-component.actions-menu {
+  padding: 10px 60px 10px 20px;
 }
 
 .list .record-component:nth-child(even) {
   background: rgb(247, 247, 247);
-}
-
-.list .record-component:hover {
-  z-index: 2;
 }
 
 .list .record-container {
@@ -335,14 +356,21 @@ button.active {
   margin: 0px;
 }
 
+.list .fields-wrapper {
+  display: block;
+  flex: 1 1 auto;
+  /* 	justify-content: space-between;
+  	align-items: center; */
+}
+
 .list .field-component {
-  width: 20%;
+  width: 10%;
   float: none;
   display: inline-block;
   text-align: start;
   vertical-align: middle;
-  padding: 0 5px;
   box-sizing: border-box;
+  flex: 1 1 auto;
 }
 
 .list .field-container {
@@ -358,9 +386,12 @@ button.active {
 }
 
 .fieldheadercontainer-container {
-  width: calc(100% - 210px);
-  display: inline-block;
-  vertical-align: middle;
+  display: block;
+  /* 	justify-content: space-between;
+  	align-items: center;
+  	gap: 15px; */
+  justify-items: stretch;
+  flex: 1 1 auto;
 }
 
 .list .field-title {
@@ -370,9 +401,10 @@ button.active {
 .list .record-image {
   width: 40px !important;
   height: 30px !important;
-  margin-right: 10px;
+  /* margin-right: 10px; */
   display: inline-block;
   vertical-align: middle;
+  flex: 1 0 auto;
 }
 
 /****************
@@ -386,11 +418,19 @@ button.active {
   vertical-align: middle;
 }
 
+.enable-action-menu .actions-header {
+  display: none;
+}
+
+.enable-action-menu .actions-header {
+  display: none;
+}
+
 .cards .actions-wrapper {
   margin-top: 20px;
   margin-left: -20px;
   margin-right: -20px;
-  width: auto;
+  width: auto !important;
   text-align: center;
   margin-bottom: -22px;
   display: flex;
@@ -398,9 +438,23 @@ button.active {
   justify-content: space-around;
   align-items: stretch;
 }
+.cards .action-component {
+  padding: 10px 0;
+  flex: 1 1 auto;
+}
+
+.list .actions-wrapper {
+  display: flex;
+  align-items: center;
+}
+.list .record-component:not(.actions-menu) .action-component {
+  width: 60px;
+  text-align: center;
+}
 
 .record-component.actions-menu .actions-wrapper {
   display: block;
+  width: auto !important;
 }
 
 .tab-component:hover .icon {
@@ -502,6 +556,13 @@ button.active {
   margin: 0px;
   min-width: 120px;
   text-align: start;
+}
+
+.actions-menu .action-component {
+  display: block;
+  border: 0px;
+  padding: 0px;
+  width: auto !important;
 }
 
 .record-component:not(.actions-menu) .action-icon {

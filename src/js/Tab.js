@@ -26,8 +26,8 @@ function Tab(settings) {
 			settings.tabs.goToTab(tabConfig.name);	
 		};
 	}
-
-	Component.call(this, {config: tabConfig, data: settings.dataManager.getData(), templateManager: settings.templateManager, useExistingElement: settings.useExistingElement});
+	debugger;
+	Component.call(this, {config: tabConfig, data: settings.dataManager.getData(), templateManager: settings.templateManager, useExistingElement: settings.useExistingElement, language: settings.language});
 
 	this.dataManager = settings.dataManager;
 	this.tabs = settings.tabs;
@@ -86,7 +86,7 @@ Tab.prototype.refresh = async function(){
 };
 
 Tab.prototype.setBreadCrumbs = function (){
-	this.dashboard.setText('<span class="bc-tab-title">'+this.name+': </span>' +  (this.description? this.description:''), 'tabBreadCrumbs');
+	this.dashboard.setText('<span class="bc-tab-title">'+(this.translatedName?this.translatedName:this.name)+': </span>' +  (this.description? this.description:''), 'tabBreadCrumbs');
 };
 
 Tab.prototype.setRecordset = function (){
@@ -94,13 +94,13 @@ Tab.prototype.setRecordset = function (){
 	if (recordset){
 		recordset.refresh();
 	}else{
-		recordset = new Recordset({config: this.originalConfig, dataManager: this.dataManager, templateManager: this.templateManager});
+		recordset = new Recordset({config: this.originalConfig, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
 		this.dashboard.append(recordset, "recordset");			
 	}
 };
 
 Tab.prototype.setPagination = function (){
-	var pagination = new Paging({tab: this, config: {name: this.name}, dataManager: this.dataManager, templateManager: this.templateManager, useExistingElement:true});
+	var pagination = new Paging({tab: this, config: {name: this.name}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language, useExistingElement:true});
 	this.pagination = pagination;
 };
 
@@ -109,7 +109,7 @@ Tab.prototype.setFiltering = function (){
 	if (filtering){
 		filtering.remove();
 	}
-	var filtering = new Filtering({tab: this,  config: {name: 'Search'}, dataManager: this.dataManager, templateManager: this.templateManager});
+	var filtering = new Filtering({tab: this,  config: {name: 'Search'}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
 	this.dashboard.append(filtering, 'filtering');
 };
 
@@ -126,7 +126,7 @@ Tab.prototype.setSorting = async function (){
 		this.fields = Component.getFieldSettings(this.recordSettings.fields, this.language);
 	}
 
-	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager});
+	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
 	this.dashboard.append(sorting, 'sorting');
 };
 
@@ -135,7 +135,7 @@ Tab.prototype.setView = function (){
 	if (viewSwitcher){
 		viewSwitcher.remove();
 	}
-	var viewSwitcher = new ViewSwitcher({tab: this, config: {name: 'View', viewMode: this.viewMode}, dataManager: this.dataManager, templateManager: this.templateManager});
+	var viewSwitcher = new ViewSwitcher({tab: this, config: {name: 'View', viewMode: this.viewMode}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
 	this.dashboard.append(viewSwitcher, 'viewSwitcher');
 };
 

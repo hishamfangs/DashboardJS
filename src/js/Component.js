@@ -44,7 +44,7 @@ Component.prototype.load = async function (settings){
 	//console.log(this.__proto__.constructor.name, this);
 };
 
-Component.prototype.init = function ({config, data, templateManager, useExistingElement, selectors, templateURL, appendTo}) {
+Component.prototype.init = function ({config, data, templateManager, useExistingElement, selectors, templateURL, appendTo, language}) {
 	// Loop through the config properties and add them 
 	// to the local context 
 	// then add a reference the original copy of config as well.
@@ -105,10 +105,14 @@ Component.prototype.init = function ({config, data, templateManager, useExisting
 		// Default Value
 		this.clone = true;
 	}
-	if (!config.hasOwnProperty("language")) {
+	if (language) {
+		// Default Value
+		this.language = language;
+	}else {
 		// Default Value
 		this.language = "en-US";
 	}
+	
 	if (!config.hasOwnProperty("name")) {
 		// Default Value
 		this.name = this.__proto__.constructor.name;
@@ -193,6 +197,13 @@ Component.prototype.render = async function () {
 				object.style.cssText += s + ":" + this.style[s] + ";";
 			}
 		}
+		if (this.width){
+			if (String(this.width).indexOf("px")>-1 || String(this.width).indexOf("%")>-1){
+				object.style.width = this.width;
+			}else{
+				object.style.width = this.width+"px";
+			}
+		}
 	}
 
 	// Set the HTML Object 
@@ -272,6 +283,9 @@ Component.prototype.getTemplate = function (name, selectors, useExistingElement)
 Component.prototype.renderValues = function () {
 	// Value of Title
 	var value = processedValue = this.name;
+	if (this.translatedName){
+		value = this.translatedName
+	}
 /* 	if (this.onGetValue) {
 		processedValue = this.onGetValue;
 		if (typeof processedValue === "function") {
@@ -284,6 +298,7 @@ Component.prototype.renderValues = function () {
 
 	// Apply Title
 	value = ifEmptyReplaceWithSpace(value);	// If empty string replace with space (to avoid collapsing the row)
+	
 	//this.template.objects.itemText.innerHTML = value;
 	if (this.template.objects.item) {	
 		this.template.objects.item.setAttribute("title", value);
@@ -1016,6 +1031,26 @@ Component.prototype.fadeInLeft = function() {
 	}, 5);
 	return event;
 }
+
+Component.getDefaultFieldWidth = function (fields){
+	let numOfFields = Object.keys(fields).length;
+	let pixels = 0;
+	let percentages = 0;
+	for (var key in fields) {
+		if (fields.hasOwnProperty(key)) {
+			var fieldSettings = fields[key];
+			if (fieldSettings.width){
+				numOfFields--;
+				if (fieldSettings.width.indexOf("%")>-1){
+					percentages += parseFloat(fieldSettings.width.replace("%", ""));
+				}else if (fieldSettings.width.indexOf("px")>-1){
+					pixels += parseFloat(fieldSettings.width.replace("px", ""));
+				}
+			}
+		}
+	}
+	return 'calc(((100% - '+percentages+'%) - '+pixels+'px) / '+numOfFields+')';
+};
 
 Component.prototype.getChild = function(name, containerKey){
 	// If containerKey is specified

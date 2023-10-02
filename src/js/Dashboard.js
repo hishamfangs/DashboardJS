@@ -7,6 +7,7 @@
  *	@param {Object} 					settings 														The settings Object
  *  @param {string}						settings.config												Required: The config object of the dashboard
  *  @param {string}						settings.data													Optional: The data to run the dashboard
+ * 	@param {string}						settings.language											Optional: the language & culture of the Dashboard (defaults to en-US)
  *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
  *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
  * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
@@ -59,7 +60,7 @@ Dashboard.prototype.initialize = async function (settings){
 		this.loadDashboard();
 	}
 	if (this.profile){
-		var userProfile = new UserProfile({ config: this.profile, dashboard: this, templateManager: this.templateManager});
+		var userProfile = new UserProfile({ config: this.profile, dashboard: this, templateManager: this.templateManager, language: this.language});
 		this.append(userProfile, 'profile');	
 	}
 };
@@ -82,7 +83,7 @@ Dashboard.prototype.loadHTML = async function (templateURL, appendTo){
 } */
 
 Dashboard.prototype.loadDashboard = function(){
-	var tabs = new Tabs({config: this.config, data: this.data, templateManager: this.templateManager});
+	var tabs = new Tabs({config: this.config, data: this.data, templateManager: this.templateManager, language: this.language});
 	this.append(tabs, "tabs");
 };
 

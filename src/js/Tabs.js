@@ -27,6 +27,7 @@ Tabs.prototype.loadTabs = async function(){
 
 	for (var t in this.tabs){
 		var tabConfig = this.tabs[t]; 
+		tabConfig.dashboard = this.dashboard;
 
 		// Check if ajax Fetch is configured either on the tab level or on the global config level
 		var fetch = tabConfig.fetch || this.config.fetch;
@@ -34,7 +35,7 @@ Tabs.prototype.loadTabs = async function(){
 		// Load DataManager with configuration
 		dataManager = new DataManager({fetch: fetch}, this.data?.[tabConfig.name]);
 
-		var tab = new Tab({tabs: this, config: tabConfig, dataManager: dataManager, templateManager: this.templateManager});
+		var tab = new Tab({tabs: this, config: tabConfig, dataManager: dataManager, templateManager: this.templateManager, language: this.language});
 		this.tabs[t].dataManager = dataManager;
 		this.tabs[t].tab = tab;
 		this.append(tab);
@@ -72,16 +73,11 @@ Tabs.prototype.processTabs = function (){
 			tabConfig.name = t;
 		}
 
-		// Set Language, Default Value = en-US
-		var currentLanguage = "en-US";
-		if (tabConfig.hasOwnProperty('language')) {
-			currentLanguage = tabConfig.language;
-		}
-
+		
 		// Set Translated Name
 		var translatedName = tabConfig.name;
-		if (tabConfig?.translation?.[currentLanguage]) {
-			translatedName = tabConfig.translation[currentLanguage];
+		if (tabConfig?.translation?.[this.language]) {
+			translatedName = tabConfig.translation[this.language];
 		};
 		this.translatedName = translatedName;
 		// Check if the data supplied is an array with no tabnames, then use the same data set for all tabs

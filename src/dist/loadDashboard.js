@@ -281,6 +281,9 @@ const config = {
 	initialActiveTab: "User Profiles",
 	tabs: {
 		'User Profiles': {
+			translation: {
+				'ar-AE':'ملفات تعريف المستخدم'
+			},
 			icon: "fas fa-address-book",
 			description: 'This is the first Test Tab',
 			viewMode: 'Cards',
@@ -397,6 +400,7 @@ const config = {
 							'grid-column': 'span 3'
 						},
 						class: 'justify',
+						width: '200px',
 						onGetValue: function (item){
 							// If there is no value
 							if (!item.data){
@@ -521,6 +525,7 @@ const config = {
 };
 
 var dashboard = new FutureLabs.Dashboard({
+	language: 'ar-AE',
   config: config,
 	/* config: {
 		tabs:{

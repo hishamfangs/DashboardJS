@@ -21,6 +21,9 @@ function Action(settings) {
 	if (!settings.config.language) {
 		settings.config.language = this.language = "all";
 	}
+	if (!settings.config.width){
+		settings.config.width = 60;
+	}
 	// Call Default 
 	Component.call(this, settings);
 }
@@ -215,7 +218,7 @@ Component.prototype.load = async function (settings){
 	//console.log(this.__proto__.constructor.name, this);
 };
 
-Component.prototype.init = function ({config, data, templateManager, useExistingElement, selectors, templateURL, appendTo}) {
+Component.prototype.init = function ({config, data, templateManager, useExistingElement, selectors, templateURL, appendTo, language}) {
 	// Loop through the config properties and add them 
 	// to the local context 
 	// then add a reference the original copy of config as well.
@@ -276,10 +279,14 @@ Component.prototype.init = function ({config, data, templateManager, useExisting
 		// Default Value
 		this.clone = true;
 	}
-	if (!config.hasOwnProperty("language")) {
+	if (language) {
+		// Default Value
+		this.language = language;
+	}else {
 		// Default Value
 		this.language = "en-US";
 	}
+	
 	if (!config.hasOwnProperty("name")) {
 		// Default Value
 		this.name = this.__proto__.constructor.name;
@@ -364,6 +371,13 @@ Component.prototype.render = async function () {
 				object.style.cssText += s + ":" + this.style[s] + ";";
 			}
 		}
+		if (this.width){
+			if (String(this.width).indexOf("px")>-1 || String(this.width).indexOf("%")>-1){
+				object.style.width = this.width;
+			}else{
+				object.style.width = this.width+"px";
+			}
+		}
 	}
 
 	// Set the HTML Object 
@@ -443,6 +457,9 @@ Component.prototype.getTemplate = function (name, selectors, useExistingElement)
 Component.prototype.renderValues = function () {
 	// Value of Title
 	var value = processedValue = this.name;
+	if (this.translatedName){
+		value = this.translatedName
+	}
 /* 	if (this.onGetValue) {
 		processedValue = this.onGetValue;
 		if (typeof processedValue === "function") {
@@ -455,6 +472,7 @@ Component.prototype.renderValues = function () {
 
 	// Apply Title
 	value = ifEmptyReplaceWithSpace(value);	// If empty string replace with space (to avoid collapsing the row)
+	
 	//this.template.objects.itemText.innerHTML = value;
 	if (this.template.objects.item) {	
 		this.template.objects.item.setAttribute("title", value);
@@ -1188,6 +1206,26 @@ Component.prototype.fadeInLeft = function() {
 	return event;
 }
 
+Component.getDefaultFieldWidth = function (fields){
+	let numOfFields = Object.keys(fields).length;
+	let pixels = 0;
+	let percentages = 0;
+	for (var key in fields) {
+		if (fields.hasOwnProperty(key)) {
+			var fieldSettings = fields[key];
+			if (fieldSettings.width){
+				numOfFields--;
+				if (fieldSettings.width.indexOf("%")>-1){
+					percentages += parseFloat(fieldSettings.width.replace("%", ""));
+				}else if (fieldSettings.width.indexOf("px")>-1){
+					pixels += parseFloat(fieldSettings.width.replace("px", ""));
+				}
+			}
+		}
+	}
+	return 'calc(((100% - '+percentages+'%) - '+pixels+'px) / '+numOfFields+')';
+};
+
 Component.prototype.getChild = function(name, containerKey){
 	// If containerKey is specified
 	if (containerKey){
@@ -1268,6 +1306,7 @@ Component.prototype.getChildById = function(id){
  *	@param {Object} 					settings 														The settings Object
  *  @param {string}						settings.config												Required: The config object of the dashboard
  *  @param {string}						settings.data													Optional: The data to run the dashboard
+ * 	@param {string}						settings.language											Optional: the language & culture of the Dashboard (defaults to en-US)
  *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
  *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
  * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
@@ -1320,7 +1359,7 @@ Dashboard.prototype.initialize = async function (settings){
 		this.loadDashboard();
 	}
 	if (this.profile){
-		var userProfile = new UserProfile({ config: this.profile, dashboard: this, templateManager: this.templateManager});
+		var userProfile = new UserProfile({ config: this.profile, dashboard: this, templateManager: this.templateManager, language: this.language});
 		this.append(userProfile, 'profile');	
 	}
 };
@@ -1343,7 +1382,7 @@ Dashboard.prototype.loadHTML = async function (templateURL, appendTo){
 } */
 
 Dashboard.prototype.loadDashboard = function(){
-	var tabs = new Tabs({config: this.config, data: this.data, templateManager: this.templateManager});
+	var tabs = new Tabs({config: this.config, data: this.data, templateManager: this.templateManager, language: this.language});
 	this.append(tabs, "tabs");
 };
 
@@ -1560,7 +1599,6 @@ DataManager.prototype.load = async function(countOnly){
 		this.loading = await fetch(url, options);
 		var res = await this.loading.json();
 		console.log(res);
-		debugger;
 		this.setData(res.data, res.count);
 	}
 
@@ -1898,7 +1936,6 @@ DataManager.prototype.updateProcessedDataset = function(){
 };
 
 DataManager.prototype.goToPage = async function (page){
-	debugger;
 	this.setPaging(page);
 	this.processPaging();
 };
@@ -2072,13 +2109,20 @@ FieldHeader.prototype.constructor = FieldHeader;
 function FieldHeaderContainer(settings){
 	Component.call(this, settings);
 	var fields = Component.getFieldSettings(this.fields, this.language);
-
-	for (var key in fields) {
+	var defaultWidth = Component.getDefaultFieldWidth(fields);
+	for (let key in fields) {
 		if (fields.hasOwnProperty(key)) {
 			var fieldSettings = fields[key];
-			var field = new FieldHeader({config: fieldSettings, templateManager: settings.templateManager});
+			var field = new FieldHeader({config: fieldSettings, templateManager: settings.templateManager, language: this.language});
 			//console.log("fieldHeader", field);
 			this.append(field);
+
+			if (fieldSettings.width){
+				field.object.style.width = fieldSettings.width;
+			}else{
+				field.object.style.width = defaultWidth;
+			}
+
 		}
 	}
 	if (!this.image){
@@ -2090,7 +2134,8 @@ FieldHeaderContainer.prototype.constructor = FieldHeaderContainer;
 
 
 FieldHeaderContainer.defaultTemplate = {
-	imageSpacer: ".image-spacer"
+	imageSpacer: ".image-spacer",
+	actionsHeader: ".actions-header"
 };
 /**************************************************************************************************
  * 	Class FileLoader(rootNode)
@@ -2195,7 +2240,7 @@ Filtering.prototype.refresh = async function (){
 	this.renderKeywords();
 	this.filterRecordset();
 	// get Tab Recordset and Refresh
-	debugger;
+
 	await this.dashboard.getChild(this.tab.name).refresh();
 	await this.dataManager.loading;
 	this.tab.pagination.refresh();
@@ -3125,6 +3170,7 @@ function Record(settings) {
 	Component.call(this, settings);
 	// Process Field Settings
 	this.fields = Component.getFieldSettings(this.fields, this.language);
+	var defaultWidth = Component.getDefaultFieldWidth(this.fields);
 
 	// Apply Default Image
 	if (this?.image?.url && this.data?.[this.image.url]){
@@ -3148,18 +3194,25 @@ function Record(settings) {
 		for (var i = 0; i < fieldKeys.length; i++) {
 			var fieldKey = fieldKeys[i];
 			thisFieldSettings = this.fields[fieldKey];
-			var field = new Field({config: thisFieldSettings, data: this.data[thisFieldSettings.dataField], templateManager: this.templateManager, useExistingElement: this.useExistingElement});
+			var field = new Field({config: thisFieldSettings, data: this.data[thisFieldSettings.dataField], templateManager: this.templateManager, useExistingElement: this.useExistingElement, language: this.language});
 			//console.log(field);
 			this.append(field, "fields");
+			if (thisFieldSettings.width){
+				field.object.style.width = thisFieldSettings.width;
+			}else{
+				field.object.style.width = defaultWidth;
+			}
 		}
 	}
 
+	var actionsWidth = 0;
 	// Add Actions
 	if (this.actions) {
 		/*		config.clone = true;
 				config.context = this;				
 					var actionsContainer = new ActionsContainer(config, data);
 		 */
+
 		var actionKeys = Object.keys(this.actions);
 		for (var i = 0; i < actionKeys.length; i++) {
 			// Loop through the actions object and 
@@ -3172,11 +3225,12 @@ function Record(settings) {
 				}
 				actionConfig.name = actionKey;
 				// Create an action	
-				var action = new Action({config: actionConfig, data: this.data, templateManager: this.templateManager, useExistingElement: this.useExistingElement});
+				var action = new Action({config: actionConfig, data: this.data, templateManager: this.templateManager, useExistingElement: this.useExistingElement, language: this.language});
 
 				// Attach action to current Record
 				this.append(action, "actions");
-
+				
+				
 			}
 		}
 		if (this.actionsType == 'menu'){
@@ -3222,7 +3276,7 @@ Record.prototype.createFields = function () {
 
 
 function Recordset(settings) {
-	Component.call(this, {...settings, dataManager: settings.dataManager.getData()});
+	Component.call(this, {...settings, dataManager: settings.dataManager.getData(), language: settings.language});
 	this.dataManager = settings.dataManager;
 	this.refresh();
 	//console.log(this);
@@ -3253,16 +3307,17 @@ Recordset.prototype.refresh = async function (){
 	// Create Field Headers
 	this.removeChildren("fieldHeader");
 
-	// Get Fields from config object, else if it doesn't exist, generate the fields from the data
+	// Get Fields from config object, else if it doesn't exist, automatically generate the fields from the data
 	let recordSettings = {};
 	if (this?.config?.recordSettings){
 		recordSettings = this?.config?.recordSettings;
 	}
 	if (!this?.config?.recordSettings?.fields){
 		recordSettings.fields = this.dataManager.getFieldsFromData();
+		this.recordSettings = recordSettings;
 	}
 
-	var fieldheaderContainer = new FieldHeaderContainer({config: recordSettings, data: this.data, templateManager: this.templateManager});
+	var fieldheaderContainer = new FieldHeaderContainer({config: recordSettings, data: this.data, templateManager: this.templateManager, language: this.language});
 	this.append(fieldheaderContainer, "fieldHeader");
 
 	this.removeChildren("records");
@@ -3272,13 +3327,21 @@ Recordset.prototype.refresh = async function (){
 		for (i in this.data) {
 			recordData = this.data[i];
 			if (recordData){
-				var record = new Record({config: recordSettings, data: recordData, templateManager: this.templateManager});
+				var record = new Record({config: recordSettings, data: recordData, templateManager: this.templateManager, language: this.language});
 				//console.log(record);
 				this.append(record, "records");	
 			}
 		}
 	}
 	this.switchView(this.config.viewMode);
+
+	// Set the Width of the Actions based on the largest action width in the entire recordset
+	this.setActionsListViewWidth();
+
+	// Add 'enable-action-menu' Class to indicate that this recordset uses the action-menu
+	if (recordSettings.actionsType=="menu"){
+		this.addClass("enable-action-menu");
+	}
 };
 
 Recordset.prototype.switchView = function (viewMode){
@@ -3291,6 +3354,35 @@ Recordset.defaultTemplate = {
 		fieldHeader: ".fieldheader-wrapper"
 	}
 };
+
+Recordset.prototype.setActionsListViewWidth = function (){
+	// Set the Width of the Actions based on the largest action width in the entire recordset
+	let largestWidth = 0;
+	// Loop to get the largest Width
+	for (let rec in this.children.records){
+		let record = this.children.records[rec];
+		//let actionsWrapper = record.objects.container.actions;
+		let actions = record.children.actions;
+		let totalWidth = 0;
+		for (let a in actions){
+			let action = actions[a];
+			totalWidth += action.width;
+		}
+		if (largestWidth < totalWidth){
+			largestWidth = totalWidth;
+		}
+	}
+	// Loop to apply the largest width to all the records.
+	for (let rec in this.children.records){
+		let record = this.children.records[rec];
+		let actionsWrapper = record.objects.container.actions;
+		actionsWrapper.style.width = largestWidth + 'px';
+	}
+	// Apply same width to Action Field Header
+	let fieldContainer = this.getChild("FieldHeaderContainer");
+	fieldContainer.objects.actionsHeader.style.width = largestWidth + 'px';
+
+}
 
 /**** Sorting Class
  *		
@@ -3455,8 +3547,8 @@ function Tab(settings) {
 			settings.tabs.goToTab(tabConfig.name);	
 		};
 	}
-
-	Component.call(this, {config: tabConfig, data: settings.dataManager.getData(), templateManager: settings.templateManager, useExistingElement: settings.useExistingElement});
+	debugger;
+	Component.call(this, {config: tabConfig, data: settings.dataManager.getData(), templateManager: settings.templateManager, useExistingElement: settings.useExistingElement, language: settings.language});
 
 	this.dataManager = settings.dataManager;
 	this.tabs = settings.tabs;
@@ -3515,7 +3607,7 @@ Tab.prototype.refresh = async function(){
 };
 
 Tab.prototype.setBreadCrumbs = function (){
-	this.dashboard.setText('<span class="bc-tab-title">'+this.name+': </span>' +  (this.description? this.description:''), 'tabBreadCrumbs');
+	this.dashboard.setText('<span class="bc-tab-title">'+(this.translatedName?this.translatedName:this.name)+': </span>' +  (this.description? this.description:''), 'tabBreadCrumbs');
 };
 
 Tab.prototype.setRecordset = function (){
@@ -3523,13 +3615,13 @@ Tab.prototype.setRecordset = function (){
 	if (recordset){
 		recordset.refresh();
 	}else{
-		recordset = new Recordset({config: this.originalConfig, dataManager: this.dataManager, templateManager: this.templateManager});
+		recordset = new Recordset({config: this.originalConfig, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
 		this.dashboard.append(recordset, "recordset");			
 	}
 };
 
 Tab.prototype.setPagination = function (){
-	var pagination = new Paging({tab: this, config: {name: this.name}, dataManager: this.dataManager, templateManager: this.templateManager, useExistingElement:true});
+	var pagination = new Paging({tab: this, config: {name: this.name}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language, useExistingElement:true});
 	this.pagination = pagination;
 };
 
@@ -3538,7 +3630,7 @@ Tab.prototype.setFiltering = function (){
 	if (filtering){
 		filtering.remove();
 	}
-	var filtering = new Filtering({tab: this,  config: {name: 'Search'}, dataManager: this.dataManager, templateManager: this.templateManager});
+	var filtering = new Filtering({tab: this,  config: {name: 'Search'}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
 	this.dashboard.append(filtering, 'filtering');
 };
 
@@ -3555,7 +3647,7 @@ Tab.prototype.setSorting = async function (){
 		this.fields = Component.getFieldSettings(this.recordSettings.fields, this.language);
 	}
 
-	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager});
+	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
 	this.dashboard.append(sorting, 'sorting');
 };
 
@@ -3564,7 +3656,7 @@ Tab.prototype.setView = function (){
 	if (viewSwitcher){
 		viewSwitcher.remove();
 	}
-	var viewSwitcher = new ViewSwitcher({tab: this, config: {name: 'View', viewMode: this.viewMode}, dataManager: this.dataManager, templateManager: this.templateManager});
+	var viewSwitcher = new ViewSwitcher({tab: this, config: {name: 'View', viewMode: this.viewMode}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
 	this.dashboard.append(viewSwitcher, 'viewSwitcher');
 };
 
@@ -3609,6 +3701,7 @@ Tabs.prototype.loadTabs = async function(){
 
 	for (var t in this.tabs){
 		var tabConfig = this.tabs[t]; 
+		tabConfig.dashboard = this.dashboard;
 
 		// Check if ajax Fetch is configured either on the tab level or on the global config level
 		var fetch = tabConfig.fetch || this.config.fetch;
@@ -3616,7 +3709,7 @@ Tabs.prototype.loadTabs = async function(){
 		// Load DataManager with configuration
 		dataManager = new DataManager({fetch: fetch}, this.data?.[tabConfig.name]);
 
-		var tab = new Tab({tabs: this, config: tabConfig, dataManager: dataManager, templateManager: this.templateManager});
+		var tab = new Tab({tabs: this, config: tabConfig, dataManager: dataManager, templateManager: this.templateManager, language: this.language});
 		this.tabs[t].dataManager = dataManager;
 		this.tabs[t].tab = tab;
 		this.append(tab);
@@ -3654,16 +3747,11 @@ Tabs.prototype.processTabs = function (){
 			tabConfig.name = t;
 		}
 
-		// Set Language, Default Value = en-US
-		var currentLanguage = "en-US";
-		if (tabConfig.hasOwnProperty('language')) {
-			currentLanguage = tabConfig.language;
-		}
-
+		
 		// Set Translated Name
 		var translatedName = tabConfig.name;
-		if (tabConfig?.translation?.[currentLanguage]) {
-			translatedName = tabConfig.translation[currentLanguage];
+		if (tabConfig?.translation?.[this.language]) {
+			translatedName = tabConfig.translation[this.language];
 		};
 		this.translatedName = translatedName;
 		// Check if the data supplied is an array with no tabnames, then use the same data set for all tabs

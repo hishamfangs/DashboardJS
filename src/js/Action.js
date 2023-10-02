@@ -21,6 +21,9 @@ function Action(settings) {
 	if (!settings.config.language) {
 		settings.config.language = this.language = "all";
 	}
+	if (!settings.config.width){
+		settings.config.width = 60;
+	}
 	// Call Default 
 	Component.call(this, settings);
 }

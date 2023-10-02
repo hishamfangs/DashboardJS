@@ -107,7 +107,6 @@ DataManager.prototype.load = async function(countOnly){
 		this.loading = await fetch(url, options);
 		var res = await this.loading.json();
 		console.log(res);
-		debugger;
 		this.setData(res.data, res.count);
 	}
 
@@ -445,7 +444,6 @@ DataManager.prototype.updateProcessedDataset = function(){
 };
 
 DataManager.prototype.goToPage = async function (page){
-	debugger;
 	this.setPaging(page);
 	this.processPaging();
 };

@@ -60,7 +60,7 @@ Filtering.prototype.refresh = async function (){
 	this.renderKeywords();
 	this.filterRecordset();
 	// get Tab Recordset and Refresh
-	debugger;
+
 	await this.dashboard.getChild(this.tab.name).refresh();
 	await this.dataManager.loading;
 	this.tab.pagination.refresh();
