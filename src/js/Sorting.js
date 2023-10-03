@@ -15,7 +15,7 @@
 ******************* */
 
 function Sorting(settings) {
-
+	debugger;
 	Component.call(this, {
 		config: {
 			...settings.config, 
@@ -25,7 +25,8 @@ function Sorting(settings) {
 		}, 
 		data: dataManager.getData(), 
 		templateManager: settings.templateManager, 
-		useExistingElement: settings.useExistingElement
+		useExistingElement: settings.useExistingElement,
+		language: settings.language
 	});
 	this.dataManager = settings.dataManager;
 	this.tab = settings.tab
@@ -64,7 +65,8 @@ Sorting.prototype.closeMenu = function(){
 
 Sorting.prototype.createItems = function (){
 	for (var f in this.fields){
-		var item = new SortingItem({sorting: this, config: {...this.fields[f], tab: this.tab, fieldKey: f}, templateManager: this.templateManager, useExistingElement: false});
+		debugger;
+		var item = new SortingItem({sorting: this, config: {...this.fields[f], tab: this.tab, fieldKey: f}, templateManager: this.templateManager, useExistingElement: false, language: this.language});
 		this.append(item)
 	}
 };

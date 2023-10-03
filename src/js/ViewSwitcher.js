@@ -41,7 +41,8 @@ ViewSwitcher.prototype.refresh = function (){
 				onClick: function(){
 					viewSwitcher.switchView('cards');
 				},
-				id: this.tab+'_view_cards'
+				id: this.tab+'_view_cards',
+				image:'../assets/cards.png'
 			}, 
 		templateManager: this.templateManager
 	});
@@ -54,7 +55,8 @@ ViewSwitcher.prototype.refresh = function (){
 			onClick: function(){
 				viewSwitcher.switchView('list');
 			},
-			id: this.tab+'_view_list'
+			id: this.tab+'_view_list',
+			image:'../assets/list.png'
 		}, 
 		templateManager: this.templateManager
 	});

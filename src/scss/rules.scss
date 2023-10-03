@@ -195,6 +195,7 @@ button.active{
 	max-height: 300px;
 	padding: 5px 0px;
 }
+
 /** View Mode **/
 
 .viewswitcher-text,
@@ -202,10 +203,24 @@ button.active{
 	display: inline-block;
 }
 .viewswitcher-container{
-	display: flex;
+	display: inline-flex;
   align-items: center;
+	vertical-align: middle;
 }
-
+.viewswitcherbutton-image {
+	width: auto;
+	height: 100%;
+	filter: brightness(5);
+}
+.viewswitcherbutton-component.active .viewswitcherbutton-image {
+	filter: brightness(4);
+}
+.viewswitcher-container button {
+	margin: 0 5px;
+	width: 60px;
+	padding: 5px 3px;
+	height: 30px;
+}
 /*******  
  *
  *	Records

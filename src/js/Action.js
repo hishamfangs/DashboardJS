@@ -15,11 +15,9 @@
 ******************* */
 
 function Action(settings) {
-	// Default Language is treated differently in Actions & Fields than it is in the Dashboard & Records.
-	// If a language is left blank, for Actions & Fields it will default to "all", which means show for all languages
-	// For Dashboard & Records, it defaults to "en-US", so the default language is always english. 
+	// If an action language is left blank, for Actions & Fields it will default to "all", which means show for all languages
 	if (!settings.config.language) {
-		settings.config.language = this.language = "all";
+		settings.config.language = "all";
 	}
 	if (!settings.config.width){
 		settings.config.width = 60;

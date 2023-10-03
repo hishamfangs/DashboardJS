@@ -333,12 +333,18 @@ const config = {
 				actions: {
 					"More details...": {
 						icon: 'info-icon',
+						translation: {
+							'ar-AE': 'معلومات أخرى'
+						},
 						onClick: function(){
 							alert('Clicked More Info ...');
 						}
 					},  	// Default View action Will appear
 					"Pay": {
 						icon: "pay-icon",
+						translation: {
+							'ar-AE': 'دفع'
+						},
 						visibility: function (actionObj) {
 							// returns a string representing the visibility
 							return "disable";
@@ -349,12 +355,18 @@ const config = {
 					},
 					"Edit": {
 						icon: 'edit-icon',
+						translation: {
+							'ar-AE': 'تعديل'
+						},
 						onClick: function(){
 							alert('Clicked Edit');
 						}
 					},
 					"Cancel": {
 						icon: 'cancel-icon',
+						translation: {
+							'ar-AE': 'إلغاء'
+						},
 						onClick: function(){
 							alert('Clicked Cancel');
 						}
@@ -413,12 +425,18 @@ const config = {
 				actions: {
 					"More details...": {
 						icon: 'info-icon',
+						translation: {
+							'ar-AE': 'معلومات أخرى'
+						},
 						onClick: function(){
 							alert('Clicked More Info ...');
 						}
 					},  	// Default View action Will appear
 					"Pay": {
 						icon: "pay-icon",
+						translation: {
+							'ar-AE': 'دفع'
+						},
 						visibility: function (actionObj) {
 							// returns a string representing the visibility
 							return "disable";
@@ -429,12 +447,18 @@ const config = {
 					},
 					"Edit": {
 						icon: 'edit-icon',
+						translation: {
+							'ar-AE': 'تعديل'
+						},
 						onClick: function(){
 							alert('Clicked Edit');
 						}
 					},
 					"Cancel": {
 						icon: 'cancel-icon',
+						translation: {
+							'ar-AE': 'إلغاء'
+						},
 						onClick: function(){
 							alert('Clicked Cancel');
 						}
@@ -492,12 +516,18 @@ const config = {
 				actions: {
 					"More details...": {
 						icon: 'info-icon',
+						translation: {
+							'ar-AE': 'معلومات أخرى'
+						},
 						onClick: function(){
 							alert('Clicked More Info ...');
 						}
 					},  	// Default View action Will appear
 					"Pay": {
 						icon: "pay-icon",
+						translation: {
+							'ar-AE': 'دفع'
+						},
 						visibility: function (actionObj) {
 							// returns a string representing the visibility
 							return "disable";
@@ -508,12 +538,18 @@ const config = {
 					},
 					"Edit": {
 						icon: 'edit-icon',
+						translation: {
+							'ar-AE': 'تعديل'
+						},
 						onClick: function(){
 							alert('Clicked Edit');
 						}
 					},
 					"Cancel": {
 						icon: 'cancel-icon',
+						translation: {
+							'ar-AE': 'إلغاء'
+						},
 						onClick: function(){
 							alert('Clicked Cancel');
 						}
@@ -525,7 +561,6 @@ const config = {
 };
 
 var dashboard = new FutureLabs.Dashboard({
-	language: 'ar-AE',
   config: config,
 	/* config: {
 		tabs:{

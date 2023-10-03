@@ -26,7 +26,7 @@ function Tab(settings) {
 			settings.tabs.goToTab(tabConfig.name);	
 		};
 	}
-	debugger;
+
 	Component.call(this, {config: tabConfig, data: settings.dataManager.getData(), templateManager: settings.templateManager, useExistingElement: settings.useExistingElement, language: settings.language});
 
 	this.dataManager = settings.dataManager;
@@ -125,7 +125,7 @@ Tab.prototype.setSorting = async function (){
 	}else{
 		this.fields = Component.getFieldSettings(this.recordSettings.fields, this.language);
 	}
-
+	debugger;
 	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
 	this.dashboard.append(sorting, 'sorting');
 };

@@ -15,13 +15,13 @@
 ******************* */
 
 function SortingItem(settings) {
-	
+	debugger;
 	settings.config.onClick = function (){
 		// Toggle Sorting Direction
 		settings.sorting.dataManager.toggleSorting();
 		settings.sorting.dataManager.sort({
 			sortBy: settings.config.fieldKey,
-			sortFieldText: settings.config.name
+			sortFieldText: settings.config.translatedName?settings.config.translatedName:settings.config.name
 		});
 		
 		//tab.dashboard.getChild(tab.name, 'recordset').remove()

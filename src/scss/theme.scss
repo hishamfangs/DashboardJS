@@ -194,6 +194,7 @@ table{
 }
 .active .tab-text{
   color: $call-to-action;
+	padding: 0 5px;
 }
 
 /**************** 
@@ -263,7 +264,7 @@ button.active{
 }
 
 .sorting-component {
-	.sorting-text{
+	.sorting_text{
 		background: $input-background;
 		color: #ffffff;
 		border: 0px;
@@ -322,14 +323,6 @@ button.active{
 .viewswitcher-text{
 	font-size: 0.8em;
 	color: $primary;
-}
-
-.viewswitcher-container button{
-	margin: 0 5px;
-}
-.viewswitcher-container{
-	display: inline-flex;
-  align-items: center;
 }
 
 

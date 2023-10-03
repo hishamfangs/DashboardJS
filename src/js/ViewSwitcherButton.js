@@ -19,7 +19,7 @@ function ViewSwitcherButton(settings) {
 	Component.call(this, settings);
 	this.viewSwitcher = settings.viewSwitcher;
 	this.dashboard = settings.viewSwitcher.dashboard;
-	this.setText(this.name);
+	//this.setText(this.name);
 	//clone field
 	//var fieldObject = this.object;
 	//this.setText(this.config.name?this.config.name:this.config.pageNumber);

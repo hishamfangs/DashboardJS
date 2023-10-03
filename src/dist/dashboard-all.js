@@ -15,11 +15,9 @@ var FutureLabs = (function () {/**** Action Class
 ******************* */
 
 function Action(settings) {
-	// Default Language is treated differently in Actions & Fields than it is in the Dashboard & Records.
-	// If a language is left blank, for Actions & Fields it will default to "all", which means show for all languages
-	// For Dashboard & Records, it defaults to "en-US", so the default language is always english. 
+	// If an action language is left blank, for Actions & Fields it will default to "all", which means show for all languages
 	if (!settings.config.language) {
-		settings.config.language = this.language = "all";
+		settings.config.language = "all";
 	}
 	if (!settings.config.width){
 		settings.config.width = 60;
@@ -3401,7 +3399,7 @@ Recordset.prototype.setActionsListViewWidth = function (){
 ******************* */
 
 function Sorting(settings) {
-
+	debugger;
 	Component.call(this, {
 		config: {
 			...settings.config, 
@@ -3411,7 +3409,8 @@ function Sorting(settings) {
 		}, 
 		data: dataManager.getData(), 
 		templateManager: settings.templateManager, 
-		useExistingElement: settings.useExistingElement
+		useExistingElement: settings.useExistingElement,
+		language: settings.language
 	});
 	this.dataManager = settings.dataManager;
 	this.tab = settings.tab
@@ -3450,7 +3449,8 @@ Sorting.prototype.closeMenu = function(){
 
 Sorting.prototype.createItems = function (){
 	for (var f in this.fields){
-		var item = new SortingItem({sorting: this, config: {...this.fields[f], tab: this.tab, fieldKey: f}, templateManager: this.templateManager, useExistingElement: false});
+		debugger;
+		var item = new SortingItem({sorting: this, config: {...this.fields[f], tab: this.tab, fieldKey: f}, templateManager: this.templateManager, useExistingElement: false, language: this.language});
 		this.append(item)
 	}
 };
@@ -3493,13 +3493,13 @@ Sorting.defaultTemplate = {
 ******************* */
 
 function SortingItem(settings) {
-	
+	debugger;
 	settings.config.onClick = function (){
 		// Toggle Sorting Direction
 		settings.sorting.dataManager.toggleSorting();
 		settings.sorting.dataManager.sort({
 			sortBy: settings.config.fieldKey,
-			sortFieldText: settings.config.name
+			sortFieldText: settings.config.translatedName?settings.config.translatedName:settings.config.name
 		});
 		
 		//tab.dashboard.getChild(tab.name, 'recordset').remove()
@@ -3547,7 +3547,7 @@ function Tab(settings) {
 			settings.tabs.goToTab(tabConfig.name);	
 		};
 	}
-	debugger;
+
 	Component.call(this, {config: tabConfig, data: settings.dataManager.getData(), templateManager: settings.templateManager, useExistingElement: settings.useExistingElement, language: settings.language});
 
 	this.dataManager = settings.dataManager;
@@ -3646,7 +3646,7 @@ Tab.prototype.setSorting = async function (){
 	}else{
 		this.fields = Component.getFieldSettings(this.recordSettings.fields, this.language);
 	}
-
+	debugger;
 	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
 	this.dashboard.append(sorting, 'sorting');
 };
@@ -4432,7 +4432,8 @@ ViewSwitcher.prototype.refresh = function (){
 				onClick: function(){
 					viewSwitcher.switchView('cards');
 				},
-				id: this.tab+'_view_cards'
+				id: this.tab+'_view_cards',
+				image:'../assets/cards.png'
 			}, 
 		templateManager: this.templateManager
 	});
@@ -4445,7 +4446,8 @@ ViewSwitcher.prototype.refresh = function (){
 			onClick: function(){
 				viewSwitcher.switchView('list');
 			},
-			id: this.tab+'_view_list'
+			id: this.tab+'_view_list',
+			image:'../assets/list.png'
 		}, 
 		templateManager: this.templateManager
 	});
@@ -4492,7 +4494,7 @@ function ViewSwitcherButton(settings) {
 	Component.call(this, settings);
 	this.viewSwitcher = settings.viewSwitcher;
 	this.dashboard = settings.viewSwitcher.dashboard;
-	this.setText(this.name);
+	//this.setText(this.name);
 	//clone field
 	//var fieldObject = this.object;
 	//this.setText(this.config.name?this.config.name:this.config.pageNumber);
