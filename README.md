@@ -11,6 +11,29 @@ Simplest Example:
 ----------
 ```javascript
 var dashboard = new Dashboard({
+  data: [{
+      "Name": "Jessie Bambergans",
+      "Status": "Married",
+      "Date": "1980-08-10",
+      "Gender": "Female"
+    },{
+      "Name": "Jerome Berner",
+      "Status": "Single",
+      "Date": "1980-08-10",
+      "Gender": "Male"
+    },{
+      "Name": "Ruba Jackman",
+      "Status": "Married",
+      "Date": "1984-01-05",
+      "Gender": "Female"
+  }]
+});
+```
+
+Exmaple with Customization options for the fields & actions:
+----------
+```javascript
+var dashboard = new Dashboard({
   config: {
     tabs: {
       'User Profiles': {
