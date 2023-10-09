@@ -31,12 +31,16 @@ This is the basic HTML to load the dashboard
 		<div class="dashboard-container">
 			
 		</div>
-		<script src="https://github.com/hishamfangs/DashboardJS/dist/loadDashboard.js"></script>	
+		<script src="https://github.com/hishamfangs/DashboardJS/dist/load-dashboard.js"></script>	
 	</body>	
 </html>
 ```
 
 ### Simplest Example:
+
+```
+load-dashboard.js:
+```
 
 ```javascript
 var dashboard = new Dashboard({
@@ -126,6 +130,8 @@ var dashboard = new Dashboard({
       "Date": "1984-01-05",
       "Gender": "Female"
     }]
-  }
+  },
+  templateURL: 'https://github.com/hishamfangs/DashboardJS/dist/dashboard.html',
+  appendTo: document.querySelector(".dashboard-container")
 });
 ```
