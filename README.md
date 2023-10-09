@@ -30,7 +30,7 @@ var dashboard = new Dashboard({
 });
 ```
 
-Exmaple with Customization options for the fields & actions:
+Example with customization options for the fields & actions:
 ----------
 ```javascript
 var dashboard = new Dashboard({
