@@ -236,10 +236,6 @@ button.active {
 }
 
 .record-component {
-  background: white;
-  font-size: 12px;
-  padding: 20px;
-  transition: 0.3s box-shadow;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -422,7 +418,7 @@ button.active {
   /* margin-right: 10px; */
   display: inline-block;
   vertical-align: middle;
-  flex: 1 0 auto;
+  flex: 0 0 auto;
 }
 
 /****************
@@ -442,6 +438,14 @@ button.active {
 
 .enable-action-menu .actions-header {
   display: none;
+}
+
+.actionsmenu-wrapper {
+  display: none;
+}
+
+.list .actions-menu .actionsmenu-wrapper {
+  top: calc(50% - 20px);
 }
 
 .cards .actions-wrapper {
@@ -527,6 +531,7 @@ button.active {
   top: 0px;
   right: 20px;
   width: 20px;
+  z-index: 2;
 }
 
 .list .actions-menu .actionsmenu-wrapper {
@@ -711,4 +716,32 @@ button.active {
 
 .cancel-icon {
   background: url(../assets/cancel-icon.svg);
+}
+
+@media screen and (max-width: 768px) {
+  .list .fieldheader-wrapper {
+    display: none;
+  }
+  .list .fields-wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+  .list .field-title {
+    display: block;
+    position: relative;
+  }
+  .list .go-right .field-title,
+  .list .go-left .field-title {
+    text-align: start;
+  }
+  .list .field-component {
+    width: 100% !important;
+  }
+  .list .record-component {
+    display: flex;
+    flex-direction: column;
+  }
+  .list .record-component.actions-menu {
+    padding: 20px;
+  }
 }

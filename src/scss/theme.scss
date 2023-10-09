@@ -415,10 +415,6 @@ button.active{
 	padding: 20px;
 	transition: 0.3s box-shadow;
 	border-bottom: 3px solid #89898961;
-	position: relative;
-	display: flex;
-	flex-direction: column;
-	justify-content: space-between;
 }
 .cards .record-component:hover{
 	border-bottom: 3px solid $call-to-action;
@@ -539,13 +535,6 @@ button.active{
   background: rgb(0 0 0 / 67%);
 }
 
-.actionsmenu-wrapper{
-	display: none;
-}
-.list .actions-menu .actionsmenu-wrapper {
-	top: calc(50% - 20px);
-}
-
 .cards {
 	.actions-menu{
 		.action-component {
@@ -556,13 +545,6 @@ button.active{
 }
 
 .actions-menu {
-	.actionsmenu-wrapper{
-		display: block;
-		position: absolute;
-		top: 0px;
-		right: 20px;
-		width: 20px;
-	}
 	.actions-wrapper{
 		position: absolute;
 		margin: 0px;
@@ -645,4 +627,81 @@ button.active{
 		margin-top: 5px;
 		display: block;
 	}
+}
+@media screen and (max-width: 1500px){
+	.dashboard-component {
+    width: 90%;
+	}
+}
+@media screen and (max-width: 1300px){
+	.dashboard-component {
+    width: 95%;
+	}
+}
+@media screen and (max-width: 1024px){
+	.dashboard-component {
+    width: auto;
+		display: block;
+		margin: 0px;
+	}
+	.sidebar {
+    width: auto;
+		border-radius: 14px;
+		margin-bottom: 20px;
+	}
+	.userprofile-component {
+    margin-top: 0px;
+	}
+	.main{
+		border-radius: 14px;
+	}
+	.record-wrapper {
+		grid-template-columns: 1fr 1fr!important;
+	}
+	.tabs-container{
+		display: flex;
+    justify-content: space-around;
+	}
+	.tabs-component {
+    padding: 20px 0 0;
+	}
+	.tab-component::before {
+		min-width: 0px;
+		max-width: 0px;
+		height: 0px;
+		top: -20px;
+	}
+	.tab-component.active::before {
+    min-width: 100%;
+    max-width: 100%;
+	}
+
+}
+@media screen and (max-width: 700px){
+	.cards .record-wrapper {
+		display: block;
+	}
+}
+
+@media screen and (max-width: 768px) {
+  .breadcrumbs-wrapper{
+    flex-direction: column;
+    gap: 10px;
+  }
+  .filtering-wrapper {
+    width: 100%;
+  }
+  .dashboard-tools{
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  .dashboard-tools > *:nth-child(3){
+    grid-column: span 2;
+    /* width: 100%; */
+    margin: auto;
+  }
+  .viewswitcher-wrapper{
+    text-align:end;
+  }
 }
