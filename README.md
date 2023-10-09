@@ -30,7 +30,7 @@ var dashboard = new Dashboard({
 });
 ```
 
-Example with customization options for the fields & actions:
+Example with customization options for the tabs, fields & actions:
 ----------
 ```javascript
 var dashboard = new Dashboard({
@@ -50,7 +50,7 @@ var dashboard = new Dashboard({
               onClick: function(){
                 alert('Clicked More Info ...');
               }
-            },  	// Default View action Will appear
+            },  	
             "Pay": {
               icon: "pay-icon",
               visibility: function (actionObj) {
