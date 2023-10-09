@@ -1,7 +1,7 @@
 # DashboardJS
 
-DashboardJS is a free, modular, open source dashboard component to display records in a sleek and modern way, built entirely in vanilla Js, with zero dependancies. 
-You can have different tabs that show different recordsets complete with pagination, sorting, filtering, and you can switch views for each recordset between Card view, List view, and Chart view.
+DashboardJS is a free, modular, responsive, open source dashboard component to display records in a sleek and modern way, built entirely in vanilla Js, with zero dependancies. 
+You can have different tabs that show different recordsets complete with pagination, sorting, filtering, and you can switch views for each recordset between Card view, and List view.
 
 DashboardJS is fully themeable, all you need is knowledge of HTML & CSS.
 
