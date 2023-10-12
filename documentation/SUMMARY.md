@@ -4,6 +4,7 @@
 
 ## Configuration Options
 
+* [Data](configuration-options/data.md)
 * [Tabs](configuration-options/tabs.md)
 * [Record Settings](configuration-options/record-settings.md)
 * [Fields](configuration-options/fields.md)
