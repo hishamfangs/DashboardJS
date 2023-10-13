@@ -8,7 +8,6 @@ Set the data on the data property when initiating the dashboard:
 
 &#x20;
 
-````javascript
 ```javascript
 var dashboard = new FutureLabs.Dashboard({
   config: {
@@ -92,4 +91,3 @@ var dashboard = new FutureLabs.Dashboard({
   appendTo: document.querySelector(".dashboard-container")
 });
 ```
-````
