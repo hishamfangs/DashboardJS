@@ -13,6 +13,7 @@
 * [Filtering](configuration-options/filtering.md)
 * [View Modes](configuration-options/view-modes.md)
 * [Pagination](configuration-options/pagination.md)
+* [Internationalization & Localization](configuration-options/internationalization-and-localization.md)
 
 ## Classes & APIs
 
