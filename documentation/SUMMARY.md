@@ -4,7 +4,8 @@
 
 ## Configuration Options
 
-* [Data](configuration-options/data.md)
+* [Data](configuration-options/data/README.md)
+  * [Fetch API](configuration-options/data/fetch-api.md)
 * [Tabs](configuration-options/tabs.md)
 * [Record Settings](configuration-options/record-settings.md)
 * [Fields](configuration-options/fields.md)
