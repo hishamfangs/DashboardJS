@@ -76,7 +76,7 @@ var dashboard = new Dashboard({
           fields: {
             Date: { name: "Date of Birth" },
             Status: { name: "Marital Status"},
-            Name: {	name: "Name"},
+            Name: { name: "Name"},
             Gender: { name: "Gender" }
           },
           actions: {
