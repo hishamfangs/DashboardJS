@@ -67,6 +67,7 @@ DataManager.prototype.setDefaults = function (){
 			wholeWordSearch: false
 		}
 	};
+	this.tabName = "";
 };
 
 DataManager.prototype.setConfig = function (config){
@@ -85,6 +86,9 @@ DataManager.prototype.setConfig = function (config){
 		if (config.sorting){
 			this.setSorting(config.sorting);
 		}
+		if (config.tabName){
+			this.tabName = config.tabName;
+		}		
 		if (config.search){
 			if (config.search.options){
 				for (var c in config.search.options){
@@ -127,12 +131,13 @@ DataManager.prototype.generateFetchParameters = function (countOnly){
 	}
 	// Generate Parameters & Set Defaults
 	defaultParameters = {
-		pageKey : 'page',
+		page : 'page',
 		itemsPerPage: 'itemsPerPage',
 		count: 'count',
 		getCount: 'getCount',
 		filterBy: 'filterBy',
-		sortBy: 'sortBy'
+		sortBy: 'sortBy',
+		tabName: 'tabName'
 	};
 	dashboardParameters = {...defaultParameters}; 
 	if (this.fetch.dashboardParameters){
@@ -140,11 +145,12 @@ DataManager.prototype.generateFetchParameters = function (countOnly){
 	}
 
 	const data = new URLSearchParams();
-	data.append(dashboardParameters.pageKey, this.page);
+	data.append(dashboardParameters.page, this.page);
 	data.append(dashboardParameters.itemsPerPage, this.itemsPerPage);
 	data.append(dashboardParameters.getCount, countOnly||false);
 	data.append(dashboardParameters.filterBy, JSON.stringify(this.filtering.keywords));
-	data.append(dashboardParameters.sortBy, JSON.stringify(this.sorting));		
+	data.append(dashboardParameters.sortBy, JSON.stringify(this.sorting));
+	data.append(dashboardParameters.tabName, this.tabName);
 	
 	if (fetchOptions.method=='POST'){
 		fetchOptions.body = data;

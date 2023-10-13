@@ -219,7 +219,8 @@ Component.prototype.loadHTML = async function (templateURL, appendTo){
 		var templateLoader = new FileLoader(templateURL);
 		var rootNode = await templateLoader.loadHTML();
 		if (appendTo){
-			appendTo.appendChild(rootNode);
+			let appendToObject = document.querySelector(appendTo);
+			appendToObject.appendChild(rootNode);
 		}
 		var templateManager = new TemplateManager(rootNode);
 		return templateManager
