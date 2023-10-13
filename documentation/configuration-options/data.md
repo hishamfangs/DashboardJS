@@ -10,7 +10,6 @@ Set the data on the data property when initiating the dashboard:
 
 ```javascript
 var dashboard = new FutureLabs.Dashboard({
-  config: {
   data: {
     'User Profiles': [{
       'Name': 'Jessica Bambergans',
@@ -44,7 +43,8 @@ var dashboard = new FutureLabs.Dashboard({
       'Gender': 'Female'
     }]
   },
-  tabs: {
+  config: {
+    tabs: {
       'User Profiles': {
         recordSettings:{
           fields: {
