@@ -52,36 +52,6 @@ var dashboard = new FutureLabs.Dashboard({
             Status: { name: 'Marital Status'},
             Name: {	name: 'Name'},
             Gender: { name: 'Gender' }
-          },
-          actions: {
-            'More details...': {
-              icon: 'info-icon',
-              onClick: function(actionObj){
-                alert('Clicked More Info ...');
-              }
-            }, 
-            'Pay': {
-              icon: 'pay-icon',
-              visibility: function (actionObj) {
-                // returns a string representing the visibility
-                return 'disable';
-              },
-              onClick: function(actionObj){
-                alert('Clicked Pay!');
-              }
-            },
-            'Edit': {
-              icon: 'edit-icon',
-              onClick: function(actionObj){
-                alert('Clicked Edit');
-              }
-            },
-            'Cancel': {
-              icon: 'cancel-icon',
-              onClick: function(actionObj){
-                alert('Clicked Cancel');
-              }
-            }
           }
         }
       }
