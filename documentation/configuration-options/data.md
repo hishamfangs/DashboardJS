@@ -6,8 +6,6 @@ You can either supply the data synchronously to populate the dashboard when init
 
 Set the data on the data property when initiating the dashboard:
 
-&#x20;
-
 ```javascript
 var dashboard = new FutureLabs.Dashboard({
   data: {
@@ -92,7 +90,7 @@ var dashboard = new FutureLabs.Dashboard({
 
 #### Optional Fetch parameters
 
-You can pass an options object to the fetch parameter
+You can also pass an optional options object to the fetch parameter
 
 ```javascript
 var dashboard = new FutureLabs.Dashboard({
@@ -114,7 +112,7 @@ var dashboard = new FutureLabs.Dashboard({
 
 ```
 
-You can also redefine the pagination, sorting, and filtering parameters send by the fetch API
+You can also redefine the default pagination, sorting, and filtering parameters sent by the fetch API:
 
 ```javascript
 var dashboard = new FutureLabs.Dashboard({
