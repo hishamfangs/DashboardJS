@@ -573,6 +573,7 @@ button.active {
 .record-component:not(.actions-menu) .action-text {
   margin-top: 5px;
   display: block;
+  font-size: 0.8em;
 }
 
 @media screen and (max-width: 1500px) {

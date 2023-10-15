@@ -2178,7 +2178,7 @@ FileLoader.prototype.loadHTML = async function(){
 	var doc = parser.parseFromString(html, 'text/html');
 
 	// Get the rootNode
-	var rootNode = doc.querySelector("*");
+	var rootNode = doc.querySelector("body");
 	console.log(rootNode);
 	return rootNode;
 }
@@ -3564,6 +3564,9 @@ function Tab(settings) {
 	// Save Original Config without the OnClick added, so we can pass it down to the Recordset.
 	this.originalConfig = {...settings.config};
 	this.refreshCount();
+	if (this.icon){
+		this.objects.itemIcon.classList.remove("default-icon");
+	}
 };
 
 Tab.prototype = Object.create(Component.prototype);

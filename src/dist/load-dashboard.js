@@ -19,7 +19,7 @@ const config = {
 			translation: {
 				'ar-AE':'ملفات تعريف المستخدم'
 			},
-			icon: "fas fa-address-book",
+			icon: "far fa-user",
 			description: 'A list of all approved users',
 			viewMode: 'Cards',
 			recordsGrid:{
@@ -44,12 +44,18 @@ const config = {
 					Date: { name: "Date of Birth", position: "left", dataType: "Date",  translation: { "ar-AE": "السن" } },
 					Status: { name: "Marital Status", position: "right", dataType: "Number", translation: { "ar-AE": "خد كثير" } },
 					Name: {
-						name: "Name", position: "left", translation: { "ar-AE": "الإسم" }, icon: "fas fa-user-circle",
+						name: "Name", position: "left",
+						translation: { "ar-AE": "الإسم" }, 
 						onClick: function (element, record) {
 							console.log("Field Clicked: element, data:", element, record);
 						}
 					},
-					Gender: { name: "Gender", position: "right", dataType: "Text", translation: { "ar-AE": "السن" } },
+					Gender: { 
+						name: "Gender", 
+						position: "right", 
+						dataType: "Text", 
+						translation: { "ar-AE": "السن" } 
+					},
 					Description: {
 						position: "left",
 						style:{
@@ -110,7 +116,6 @@ const config = {
 			}
 		},
 		Invoices: {
-			icon: "fas fa-address-book",
 			description: 'This is the first Test Tab',
 			viewMode: 'Cards',
 			recordsGrid:{
@@ -138,9 +143,22 @@ const config = {
 							console.log("Field Clicked! field:", field);
 						}
 					},						
-					Date: { name: "Date of Birth", position: "left", dataType: "Date",  translation: { "ar-AE": "السن" } },
-					Status: { name: "Marital Status", translation: { "ar-AE": "خد كثير" } },
-					Gender: { name: "Gender", position: "right", dataType: "Text", translation: { "ar-AE": "السن" } },
+					Date: { 
+						name: "Date of Birth", 
+						position: "left", 
+						dataType: "Date",  
+						translation: { "ar-AE": "السن" } 
+					},
+					Status: { 
+						name: "Marital Status", 
+						translation: { "ar-AE": "خد كثير" } 
+					},
+					Gender: { 
+						name: "Gender", 
+						position: "right", 
+						dataType: "Text", 
+						translation: { "ar-AE": "السن" } 
+					},
 					Description: {
 						position: "left",
 						style:{
@@ -202,7 +220,7 @@ const config = {
 			}
 		},
 		'Payment Receipts': {
-			icon: "fas fa-address-book",
+			icon: "fas fa-receipt",
 			description: 'This is the first Test Tab',
 			viewMode: 'Cards',
 			recordsGrid:{
@@ -224,15 +242,32 @@ const config = {
 					'justify-items': 'stretch'
 				},
 				fields: {
-					Date: { name: "Date of Birth", position: "left", dataType: "Date",  translation: { "ar-AE": "السن" } },
-					Status: { name: "Marital Status", position: "right", dataType: "Number", translation: { "ar-AE": "خد كثير" } },
+					Date: { 
+						name: "Date of Birth", 
+						position: "left", 
+						dataType: "Date",  
+						translation: { "ar-AE": "السن" } 
+					},
+					Status: { 
+						name: "Marital Status", 
+						position: "right", 
+						dataType: "Number", 
+						translation: { "ar-AE": "خد كثير" } 
+					},
 					Name: {
-						name: "Name", position: "left", translation: { "ar-AE": "الإسم" }, icon: "fas fa-user-circle",
+						name: "Name", 
+						position: "left", 
+						translation: { "ar-AE": "الإسم" },
 						onClick: function (element, record) {
 							console.log("Field Clicked: element, data:", element, record);
 						}
 					},
-					Gender: { name: "Gender", position: "right", dataType: "Text", translation: { "ar-AE": "السن" } },
+					Gender: { 
+						name: "Gender", 
+						position: "right", 
+						dataType: "Text", 
+						translation: { "ar-AE": "السن" } 
+					},
 					Description: {
 						position: "left",
 						style:{
@@ -244,49 +279,6 @@ const config = {
 							if (!item.data){
 								return '<span style="color: gray">N/A</span>'
 							}
-						}
-					}
-				},
-				actionsType: 'menu',	// menu or buttons
-				actions: {
-					"More details...": {
-						icon: 'info-icon',
-						translation: {
-							'ar-AE': 'معلومات أخرى'
-						},
-						onClick: function(){
-							alert('Clicked More Info ...');
-						}
-					},  	// Default View action Will appear
-					"Pay": {
-						icon: "pay-icon",
-						translation: {
-							'ar-AE': 'دفع'
-						},
-						visibility: function (actionObj) {
-							// returns a string representing the visibility
-							return "disable";
-						},
-						onClick: function(){
-							alert('Clicked Pay!');
-						}
-					},
-					"Edit": {
-						icon: 'edit-icon',
-						translation: {
-							'ar-AE': 'تعديل'
-						},
-						onClick: function(){
-							alert('Clicked Edit');
-						}
-					},
-					"Cancel": {
-						icon: 'cancel-icon',
-						translation: {
-							'ar-AE': 'إلغاء'
-						},
-						onClick: function(){
-							alert('Clicked Cancel');
 						}
 					}
 				}
