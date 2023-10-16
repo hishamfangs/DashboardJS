@@ -42,8 +42,7 @@ gulp.task('scripts', function() {
 					ViewSwitcher: ViewSwitcher,
 					ViewSwitcherButton: ViewSwitcherButton
 				};
-			`
-			+ '})();';
+			})();`;
 		}))		
 	.pipe(gulp.dest('src/dist'))
 		.pipe(browserSync.stream());
