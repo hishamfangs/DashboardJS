@@ -10,7 +10,7 @@ DashboardJS works either Synchronously (full data loaded and fed into the Dashbo
 Simplest Example:
 ----------
 ```javascript
-var dashboard = new Dashboard({
+var dashboard = new FutureLabs.Dashboard({
   data: [{
       "Name": "Jessie Bambergans",
       "Status": "Married",
@@ -29,11 +29,13 @@ var dashboard = new Dashboard({
   }]
 });
 ```
+![dashboard-simple](https://github.com/hishamfangs/DashboardJS/assets/48479688/0a0c84fc-979f-45a2-a83c-2e8113826586)
+
 
 Example with customization options for the tabs, fields & actions:
 ----------
 ```javascript
-var dashboard = new Dashboard({
+var dashboard = new FutureLabs.Dashboard({
   config: {
     tabs: {
       'User Profiles': {
@@ -98,3 +100,4 @@ var dashboard = new Dashboard({
   }
 });
 ```
+![dashboard-with-actions](https://github.com/hishamfangs/DashboardJS/assets/48479688/f944e6d9-9b91-4db8-86d1-ef7cbc364268)
