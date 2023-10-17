@@ -15,7 +15,6 @@
 ******************* */
 
 function Sorting(settings) {
-	debugger;
 	Component.call(this, {
 		config: {
 			...settings.config, 
@@ -37,7 +36,7 @@ function Sorting(settings) {
 	var sorting = this; 
 	
 	document.addEventListener('mouseup', function closeSortingMenu(e) {
-		//var theTarget = e.target.closest(actionsMenu.selectors.item);
+		// Close the Sorting Menu when the user clicks outside the menu
 		if (!sorting?.object?.contains(e.target)) {
 			sorting.closeMenu();
 		}
@@ -65,7 +64,7 @@ Sorting.prototype.closeMenu = function(){
 
 Sorting.prototype.createItems = function (){
 	for (var f in this.fields){
-		debugger;
+		// Create Menu Items for sorting based on the fields
 		var item = new SortingItem({sorting: this, config: {...this.fields[f], tab: this.tab, fieldKey: f}, templateManager: this.templateManager, useExistingElement: false, language: this.language});
 		this.append(item)
 	}

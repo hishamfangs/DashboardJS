@@ -44,6 +44,7 @@ function Record(settings) {
 		for (var i = 0; i < fieldKeys.length; i++) {
 			var fieldKey = fieldKeys[i];
 			thisFieldSettings = this.fields[fieldKey];
+			thisFieldSettings.record = this.data;
 			var field = new Field({config: thisFieldSettings, data: this.data[thisFieldSettings.dataField], templateManager: this.templateManager, useExistingElement: this.useExistingElement, language: this.language});
 			//console.log(field);
 			this.append(field, "fields");

@@ -401,7 +401,7 @@ Component.prototype.processEvents = function () {
 		}
 	} else if (typeof visibility === "function") {
 		// Run Visibility function
-		visibility = visibility(this);
+		visibility = visibility(this, this.record);
 		if (visibility == "disable" || visibility == "enable" || visibility == "show") {
 			show = true;
 		} else if (visibility == "hide") {

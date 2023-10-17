@@ -15,7 +15,6 @@
 ******************* */
 
 function SortingItem(settings) {
-	debugger;
 	settings.config.onClick = function (){
 		// Toggle Sorting Direction
 		settings.sorting.dataManager.toggleSorting();
@@ -24,7 +23,7 @@ function SortingItem(settings) {
 			sortFieldText: settings.config.translatedName?settings.config.translatedName:settings.config.name
 		});
 		
-		//tab.dashboard.getChild(tab.name, 'recordset').remove()
+		// Toggle the Menu to open or close accoring to state
 		settings.sorting.toggleMenu();
 		settings.sorting.tab.tabs.goToTab(settings.sorting.tab.name);
 	}

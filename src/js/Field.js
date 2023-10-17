@@ -33,7 +33,7 @@ Field.prototype.renderFieldValues = function (){
 	if (this.onGetValue) {
 		processedValue = this.onGetValue;
 		if (typeof processedValue === "function") {
-			processedValue = processedValue(this);
+			processedValue = processedValue(this, this.record);
 		}
 		if (processedValue){
 			fieldValue = processedValue;

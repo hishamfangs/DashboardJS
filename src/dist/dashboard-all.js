@@ -2020,7 +2020,7 @@ Field.prototype.renderFieldValues = function (){
 	if (this.onGetValue) {
 		processedValue = this.onGetValue;
 		if (typeof processedValue === "function") {
-			processedValue = processedValue(this);
+			processedValue = processedValue(this, this.record);
 		}
 		if (processedValue){
 			fieldValue = processedValue;
@@ -3199,6 +3199,7 @@ function Record(settings) {
 		for (var i = 0; i < fieldKeys.length; i++) {
 			var fieldKey = fieldKeys[i];
 			thisFieldSettings = this.fields[fieldKey];
+			thisFieldSettings.record = this.data;
 			var field = new Field({config: thisFieldSettings, data: this.data[thisFieldSettings.dataField], templateManager: this.templateManager, useExistingElement: this.useExistingElement, language: this.language});
 			//console.log(field);
 			this.append(field, "fields");
@@ -3406,7 +3407,6 @@ Recordset.prototype.setActionsListViewWidth = function (){
 ******************* */
 
 function Sorting(settings) {
-	debugger;
 	Component.call(this, {
 		config: {
 			...settings.config, 
@@ -3428,7 +3428,7 @@ function Sorting(settings) {
 	var sorting = this; 
 	
 	document.addEventListener('mouseup', function closeSortingMenu(e) {
-		//var theTarget = e.target.closest(actionsMenu.selectors.item);
+		// Close the Sorting Menu when the user clicks outside the menu
 		if (!sorting?.object?.contains(e.target)) {
 			sorting.closeMenu();
 		}
@@ -3456,7 +3456,7 @@ Sorting.prototype.closeMenu = function(){
 
 Sorting.prototype.createItems = function (){
 	for (var f in this.fields){
-		debugger;
+		// Create Menu Items for sorting based on the fields
 		var item = new SortingItem({sorting: this, config: {...this.fields[f], tab: this.tab, fieldKey: f}, templateManager: this.templateManager, useExistingElement: false, language: this.language});
 		this.append(item)
 	}
@@ -3500,7 +3500,6 @@ Sorting.defaultTemplate = {
 ******************* */
 
 function SortingItem(settings) {
-	debugger;
 	settings.config.onClick = function (){
 		// Toggle Sorting Direction
 		settings.sorting.dataManager.toggleSorting();
@@ -3509,7 +3508,7 @@ function SortingItem(settings) {
 			sortFieldText: settings.config.translatedName?settings.config.translatedName:settings.config.name
 		});
 		
-		//tab.dashboard.getChild(tab.name, 'recordset').remove()
+		// Toggle the Menu to open or close accoring to state
 		settings.sorting.toggleMenu();
 		settings.sorting.tab.tabs.goToTab(settings.sorting.tab.name);
 	}
