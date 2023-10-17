@@ -34,7 +34,7 @@ FileLoader.prototype.loadHTML = async function(){
 	var doc = parser.parseFromString(html, 'text/html');
 
 	// Get the rootNode
-	var rootNode = doc.querySelector("body");
+	var rootNode = doc.querySelector("body > div");
 	console.log(rootNode);
 	return rootNode;
 }

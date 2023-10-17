@@ -44,7 +44,7 @@ gulp.task('scripts', function() {
 				};
 			})();`;
 		}))		
-	.pipe(gulp.dest('src/dist'))
+	.pipe(gulp.dest('src/deploy'))
 		.pipe(browserSync.stream());
 });
 

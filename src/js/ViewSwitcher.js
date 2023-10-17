@@ -42,7 +42,7 @@ ViewSwitcher.prototype.refresh = function (){
 					viewSwitcher.switchView('cards');
 				},
 				id: this.tab+'_view_cards',
-				image:'../assets/cards.png'
+				image:'assets/cards.png'
 			}, 
 		templateManager: this.templateManager
 	});
@@ -56,7 +56,7 @@ ViewSwitcher.prototype.refresh = function (){
 				viewSwitcher.switchView('list');
 			},
 			id: this.tab+'_view_list',
-			image:'../assets/list.png'
+			image:'assets/list.png'
 		}, 
 		templateManager: this.templateManager
 	});

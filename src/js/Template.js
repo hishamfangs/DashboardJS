@@ -178,7 +178,7 @@ Template.prototype.render = function (){
 			this.objects.wrapper = this.templateManager.liveDOMNode.querySelector(this.selectors.wrapper);
 			//console.log("%cGenerating Template by using existing element for " + this.name + " -> wrapper : " + this.selectors.wrapper, "color: blue", this.objects.wrapper);
 		} 
-		this.objects.item = this.templateManager.liveDOMNode.querySelector(this.selectors.wrapper + " " + this.selectors.item);		
+		this.objects.item = this.templateManager.liveDOMNode.matches(this.selectors.wrapper + " " + this.selectors.item)?this.templateManager.liveDOMNode:this.templateManager.liveDOMNode.querySelector(this.selectors.wrapper + " " + this.selectors.item);		
 		// If the DOM object we are trying to use has been emptied out from the liveDOMNode, grab a copy from the DOMNode
 		if (this.objects.item && this.objects.item.innerHTML==''){
 			if (this.selectors.wrapper) {
@@ -198,7 +198,7 @@ Template.prototype.render = function (){
 			this.objects.wrapper = this.templateManager.DOMNode.querySelector(this.selectors.wrapper);
 			//console.log("%cGenerating New Template for " + this.name + " -> wrapper : " + this.selectors.wrapper, "color: blue", this.objects.wrapper);
 		}
-		this.objects.item = this.templateManager.DOMNode.querySelector(this.selectors.wrapper + " " + this.selectors.item).cloneNode(true);
+		this.objects.item = this.templateManager.DOMNode.matches(this.selectors.wrapper + " " + this.selectors.item)?this.templateManager.DOMNode.cloneNode(true):this.templateManager.DOMNode.querySelector(this.selectors.wrapper + " " + this.selectors.item).cloneNode(true);		
 		//console.log("%cGenerating New Template for " + this.name + " -> item : " + this.selectors.item, "color: blue", this.objects.item);
 	}
 
