@@ -151,6 +151,9 @@ var dashboard = new FutureLabs.Dashboard({
           'gap': '20px',
           'justify-items': 'stretch'          
         },
+        // Pagination. Define how many records per page.
+        // Defaults to 12!
+        itemsPerPage: 12,
         recordSettings:{
           // Renders an image for each record
           image: {
