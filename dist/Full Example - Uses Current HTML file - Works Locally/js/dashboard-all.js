@@ -3732,7 +3732,7 @@ Tabs.prototype.loadTabs = async function(){
 		var fetch = tabConfig.fetch || this.config.fetch;
 
 		// Load DataManager with configuration
-		dataManager = new DataManager({fetch: fetch, tabName:tabConfig.name}, this.data?.[tabConfig.name]);
+		dataManager = new DataManager({fetch: fetch, tabName:tabConfig.name, itemsPerPage: tabConfig.itemsPerPage}, this.data?.[tabConfig.name]);
 
 		var tab = new Tab({tabs: this, config: tabConfig, dataManager: dataManager, templateManager: this.templateManager, language: this.language});
 		this.tabs[t].dataManager = dataManager;

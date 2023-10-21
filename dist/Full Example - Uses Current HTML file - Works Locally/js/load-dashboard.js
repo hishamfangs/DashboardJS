@@ -1,9 +1,9 @@
-/************************************	Load Dashboard	*************************************/
+/************************************  Load Dashboard  *************************************/
 /******************************************************************************************
-|* 	Date: March 10th, 2018
-|* 	Author: Hisham El Fangary
-|* 	Description: Load the Dashboard, attach it to a container.
-|* 	
+|*   Date: March 10th, 2018
+|*   Author: Hisham El Fangary
+|*   Description: Load the Dashboard, attach it to a container.
+|*   
 *******************************************************************************************/
 
 var dashboard = new FutureLabs.Dashboard({
@@ -48,6 +48,9 @@ var dashboard = new FutureLabs.Dashboard({
 					'gap': '20px',
 					'justify-items': 'stretch'					
 				},
+				// Pagination. Define how many records per page.
+				// Defaults to 12!
+				itemsPerPage: 12,
 				recordSettings:{
 					// Renders an image for each record
 					image: {
