@@ -24,6 +24,7 @@ function Action(settings) {
 	}
 	// Call Default 
 	Component.call(this, settings);
+	this.record = this.data;
 }
 
 Action.prototype = Object.create(Component.prototype);

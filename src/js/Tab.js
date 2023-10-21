@@ -89,7 +89,22 @@ Tab.prototype.refresh = async function(){
 };
 
 Tab.prototype.setBreadCrumbs = function (){
-	this.dashboard.setText('<span class="bc-tab-title">'+(this.translatedName?this.translatedName:this.name)+': </span>' +  (this.description? this.description:''), 'tabBreadCrumbs');
+	let description = this.getDescription();
+	this.dashboard.setText('<span class="bc-tab-title">'+(this.translatedName?this.translatedName:this.name)+': </span>' +  description, 'tabBreadCrumbs');
+};
+Tab.prototype.getDescription = function (){
+	let description = '';
+	if (typeof this.description == 'string'){
+		description = this.description;
+	}else if (typeof this.description == 'object'){
+		if (this.language){
+			description = this.description[this.language];
+		}
+		if (!description){
+			description = this.description['en-US'];
+		}
+	}
+	return description;
 };
 
 Tab.prototype.setRecordset = function (){
@@ -128,7 +143,7 @@ Tab.prototype.setSorting = async function (){
 	}else{
 		this.fields = Component.getFieldSettings(this.recordSettings.fields, this.language);
 	}
-	debugger;
+	// Set the Sor
 	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
 	this.dashboard.append(sorting, 'sorting');
 };
