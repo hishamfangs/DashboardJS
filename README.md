@@ -470,3 +470,7 @@ var dashboard = new FutureLabs.Dashboard({
 });
 ```
 ![full-dashboard-preview](https://github.com/hishamfangs/DashboardJS/assets/48479688/d052e066-9a48-47d9-a18f-7d992ab80b6d)
+
+List View:
+
+![dashboard-listview](https://github.com/hishamfangs/DashboardJS/assets/48479688/0a57a0e5-cefb-42a7-bb31-0b0180e9897e)
