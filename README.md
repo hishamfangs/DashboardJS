@@ -115,8 +115,12 @@ var dashboard = new FutureLabs.Dashboard({
   }
 });
 ```
-![dashboard-with-actions](https://github.com/hishamfangs/DashboardJS/assets/48479688/f944e6d9-9b91-4db8-86d1-ef7cbc364268)
 
+Card View:
+![dashboard-some-options](https://github.com/hishamfangs/DashboardJS/assets/48479688/1a8cc65b-5b57-4d52-95a2-f21aa8b0356f)
+
+List View:
+![dashboard-some-options-list](https://github.com/hishamfangs/DashboardJS/assets/48479688/080049a0-fdf6-4149-bda0-d9f97a57a522)
 
 
 Example with FULL customization options for the Dashboard:
@@ -473,4 +477,4 @@ var dashboard = new FutureLabs.Dashboard({
 
 List View:
 
-![dashboard-listview](https://github.com/hishamfangs/DashboardJS/assets/48479688/0a57a0e5-cefb-42a7-bb31-0b0180e9897e)
+![dashboard-listview](https://github.com/hishamfangs/DashboardJS/assets/48479688/a37d089c-b10f-4292-93bf-b4c517e09b62)
