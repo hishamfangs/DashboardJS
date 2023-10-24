@@ -116,6 +116,7 @@ var dashboard = new FutureLabs.Dashboard({
 						},
 						Description: {
 							position: "left",
+							width: "400px",
 							style:{
 								'grid-column': 'span 2'
 							},
@@ -123,7 +124,7 @@ var dashboard = new FutureLabs.Dashboard({
 							onGetValue: function (item){
 								// If there is no value
 								if (!item.data){
-									return '<span style="color: gray">N/A</span>'
+									return '<span style="color: #c3c3c3">N/A</span>'
 								}
 							},
 							translation: { "ar-AE": "الوصف" }
@@ -178,7 +179,7 @@ var dashboard = new FutureLabs.Dashboard({
 				}
 			},
 			Invoices: {
-				description: 'This show all invoices',
+				description: 'This shows all invoices',
 				viewMode: 'Cards',
 				recordsGrid:{
 					'grid-template-columns': '1fr 1fr 1fr',
