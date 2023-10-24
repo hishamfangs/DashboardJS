@@ -44,18 +44,21 @@ var dashboard = new FutureLabs.Dashboard({
         recordSettings:{
           fields: {
             Date: {
-              name: "Date of Birth"
+              name: "Date of Birth",
+              width: "100px",		// Width of the field in List View
+              dataType: "Date"		// This treats the field like a date, and formats the date graphically
             },
             Status: {
               name: "Marital Status",
-              position: "right"   // Alignment Position in the Card View
+              position: "right"		// Alignment Position in the Card View (text-align)
             },
             Name: {
               name: "Name"
             },
             Gender: {
               name: "Gender",
-              position: "right"   // Alignment Position in the Card View
+              position: "right",	// Alignment Position in the Card View (text-align)
+              icon: "fas fa-venus-mars"	// class name for the icon. If you include fontawesome, you can use the classname for your icon here, or you can create your own custom icon classes in CSS	
             }
           },
           actions: {
@@ -229,7 +232,7 @@ var dashboard = new FutureLabs.Dashboard({
             },
             Description: {
               position: "left",
-							width: "400px",      // This sets the width of the field in List view
+              width: "400px",      // This sets the width of the field in List view
               style:{
                 'grid-column': 'span 2'
               },
