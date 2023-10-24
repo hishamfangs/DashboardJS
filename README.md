@@ -43,10 +43,20 @@ var dashboard = new FutureLabs.Dashboard({
       'User Profiles': {
         recordSettings:{
           fields: {
-            Date: { name: "Date of Birth" },
-            Status: { name: "Marital Status"},
-            Name: {	name: "Name"},
-            Gender: { name: "Gender" }
+            Date: {
+              name: "Date of Birth"
+            },
+            Status: {
+              name: "Marital Status",
+              position: "right"   // Alignment Position in the Card View
+            },
+            Name: {
+              name: "Name"
+            },
+            Gender: {
+              name: "Gender",
+              position: "right"   // Alignment Position in the Card View
+            }
           },
           actions: {
             "More details...": {
@@ -219,6 +229,7 @@ var dashboard = new FutureLabs.Dashboard({
             },
             Description: {
               position: "left",
+							width: "400px",      // This sets the width of the field in List view
               style:{
                 'grid-column': 'span 2'
               },
