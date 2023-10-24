@@ -351,6 +351,18 @@ button.active{
 	width: 40px;
 }
 .list {
+	.image-spacer::before {
+		content: " ";
+		width: 100%;
+		text-align:center;
+		background: #dfdfdf;
+		border-radius: 40px;
+		width: 10px;
+		height: 10px;
+		display: block;
+		margin-left:15px;
+		margin-top: 5px;
+	}
 	.header{
 		display: block;
 	}
