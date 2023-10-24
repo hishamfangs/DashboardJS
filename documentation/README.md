@@ -8,7 +8,7 @@ DashboardJS is fully themeable, all you need is knowledge of HTML & CSS.
 
 DashboardJS works either Synchronously (full data loaded and fed into the Dashboard component before initiation), or Asnychronously (Dashboard loads page by page through Fetch API).
 
-
+Download: [DashboardJS.zip](../dist/DashboardJS.zip)
 
 ### Setting up
 
