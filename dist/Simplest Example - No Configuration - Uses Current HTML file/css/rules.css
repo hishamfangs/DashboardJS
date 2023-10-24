@@ -277,6 +277,7 @@ button.active {
   width: 20%;
   text-shadow: 0px 0px 2px rgba(0, 0, 0, 0.2);
   box-sizing: border-box;
+  font-size: 0.9em;
 }
 
 /***** Fields ******/
@@ -348,6 +349,18 @@ button.active {
   width: 40px;
 }
 
+.list .image-spacer::before {
+  content: " ";
+  width: 100%;
+  text-align: center;
+  background: #dfdfdf;
+  border-radius: 40px;
+  width: 10px;
+  height: 10px;
+  display: block;
+  margin-left: 15px;
+  margin-top: 5px;
+}
 .list .header {
   display: block;
 }
