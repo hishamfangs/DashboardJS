@@ -43,10 +43,23 @@ var dashboard = new FutureLabs.Dashboard({
       'User Profiles': {
         recordSettings:{
           fields: {
-            Date: { name: "Date of Birth" },
-            Status: { name: "Marital Status"},
-            Name: {	name: "Name"},
-            Gender: { name: "Gender" }
+            Date: {
+              name: "Date of Birth",
+              width: "100px",		// Width of the field in List View
+              dataType: "Date"		// This treats the field like a date, and formats the date graphically
+            },
+            Status: {
+              name: "Marital Status",
+              position: "right"		// Alignment Position in the Card View (text-align)
+            },
+            Name: {
+              name: "Name"
+            },
+            Gender: {
+              name: "Gender",
+              position: "right",	// Alignment Position in the Card View (text-align)
+              icon: "fas fa-venus-mars"	// class name for the icon. If you include fontawesome, you can use the classname for your icon here, or you can create your own custom icon classes in CSS	
+            }
           },
           actions: {
             "More details...": {
@@ -151,6 +164,9 @@ var dashboard = new FutureLabs.Dashboard({
           'gap': '20px',
           'justify-items': 'stretch'          
         },
+        // Pagination. Define how many records per page.
+        // Defaults to 12!
+        itemsPerPage: 12,
         recordSettings:{
           // Renders an image for each record
           image: {
@@ -216,6 +232,7 @@ var dashboard = new FutureLabs.Dashboard({
             },
             Description: {
               position: "left",
+              width: "400px",      // This sets the width of the field in List view
               style:{
                 'grid-column': 'span 2'
               },
@@ -453,3 +470,7 @@ var dashboard = new FutureLabs.Dashboard({
 });
 ```
 ![full-dashboard-preview](https://github.com/hishamfangs/DashboardJS/assets/48479688/d052e066-9a48-47d9-a18f-7d992ab80b6d)
+
+List View:
+
+![dashboard-listview](https://github.com/hishamfangs/DashboardJS/assets/48479688/0a57a0e5-cefb-42a7-bb31-0b0180e9897e)
