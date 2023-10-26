@@ -4,8 +4,6 @@ description: Valid Properties
 
 # Tabs
 
-
-
 <details>
 
 <summary>viewMode <mark style="background-color:purple;">&#x3C;String></mark></summary>

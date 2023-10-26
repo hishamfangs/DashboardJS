@@ -62,7 +62,7 @@ var dashboard = new FutureLabs.Dashboard({
 
 ## Asynchronous Data through fetch API
 
-Configure the fetch property in the [config object here ->](config/fetch-api.md)
+Configure the fetch property in the [config object here ->](fetch-api.md)
 
 
 
