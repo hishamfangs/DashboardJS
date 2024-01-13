@@ -1,20 +1,23 @@
-var gulp        = require('gulp');
-var browserSync = require('browser-sync').create();
-var sass = require('gulp-sass')(require('sass'));
-var concat = require('gulp-concat');
-var uglify = require('gulp-uglify');
+var gulp = require("gulp");
+var browserSync = require("browser-sync").create();
+var sass = require("gulp-sass")(require("sass"));
+var concat = require("gulp-concat");
+var uglify = require("gulp-uglify");
 var insert = require("gulp-insert");
 
-
 // Concat All js files
-gulp.task('scripts', function() {
-	return gulp.src('src/js/*.js')
-		.pipe(concat('dashboard-all.js'))
-		//.pipe(uglify())
-		.pipe(insert.transform(function(contents, file) {
-			return 'var FutureLabs = (function () {' 
-			+ contents 
-			+ `
+gulp.task("scripts", function () {
+  return (
+    gulp
+      .src("src/dashboardjs/js/*.js")
+      .pipe(concat("dashboard-all.js"))
+      //.pipe(uglify())
+      .pipe(
+        insert.transform(function (contents, file) {
+          return (
+            "var FutureLabs = (function () {" +
+            contents +
+            `
 				return {
 					Action: Action,
 					ActionsContainer: ActionsContainer,
@@ -42,18 +45,22 @@ gulp.task('scripts', function() {
 					ViewSwitcher: ViewSwitcher,
 					ViewSwitcherButton: ViewSwitcherButton
 				};
-			})();`;
-		}))		
-	.pipe(gulp.dest('src/deploy'))
-	.pipe(browserSync.stream());
+			})();`
+          );
+        })
+      )
+      .pipe(gulp.dest("src/dashboardjs/deploy"))
+      .pipe(browserSync.stream())
+  );
 });
 
 // Compile sass into CSS & auto-inject into browsers
-gulp.task('sass', function() {
-		return gulp.src(['src/scss/*.scss'])
-				.pipe(sass())
-				.pipe(gulp.dest("src/css"))
-				.pipe(browserSync.stream());
+gulp.task("sass", function () {
+  return gulp
+    .src(["src/dashboardjs/scss/*.scss"])
+    .pipe(sass())
+    .pipe(gulp.dest("src/dashboardjs/css"))
+    .pipe(browserSync.stream());
 });
 
 // Move the javascript files into our /src/js folder
@@ -64,16 +71,19 @@ gulp.task('sass', function() {
 });
  */
 // Static Server + watching scss/html files
-gulp.task('serve', gulp.parallel('sass', 'scripts', function() {
+gulp.task(
+  "serve",
+  gulp.parallel("sass", "scripts", function () {
+    browserSync.init({
+      server: "./src",
+    });
 
-		browserSync.init({
-				server: "./src"  
-		});
+    gulp.watch(["src/dashboardjs/scss/*.scss"], gulp.parallel("sass"));
+    gulp.watch("src/dashboardjs/*.html").on("change", browserSync.reload);
+    gulp.watch("src/*.html").on("change", browserSync.reload);
+    gulp.watch("src/dashboardjs/js/*.js").on("change", browserSync.reload);
+    gulp.watch("src/dashboardjs/deploy/*.js").on("change", browserSync.reload);
+  })
+);
 
-		gulp.watch(['src/scss/*.scss'], gulp.parallel('sass'));
-		gulp.watch("src/*.html").on('change', browserSync.reload);
-		gulp.watch("src/js/*.js").on('change', browserSync.reload);
-		gulp.watch("src/deploy/*.js").on('change', browserSync.reload);		
-}));
-
-gulp.task('default', gulp.parallel('serve'));
+gulp.task("default", gulp.parallel("serve"));
