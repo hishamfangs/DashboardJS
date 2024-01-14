@@ -527,17 +527,17 @@ html {
   font-size: 0.8em;
 }
 @media screen and (max-width: 1500px) {
-  .dashboard-component .dashboard-component {
+  .dashboard-component {
     width: 90%;
   }
 }
 @media screen and (max-width: 1300px) {
-  .dashboard-component .dashboard-component {
+  .dashboard-component {
     width: 95%;
   }
 }
 @media screen and (max-width: 1024px) {
-  .dashboard-component .dashboard-component {
+  .dashboard-component {
     width: auto;
     display: block;
     margin: 0px;
@@ -574,12 +574,10 @@ html {
     max-width: 100%;
   }
 }
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 768px) {
   .dashboard-component.cards .record-wrapper {
     display: block;
   }
-}
-@media screen and (max-width: 768px) {
   .dashboard-component .breadcrumbs-wrapper {
     flex-direction: column;
     gap: 10px;
@@ -599,5 +597,27 @@ html {
   }
   .dashboard-component .viewswitcher-wrapper {
     text-align: end;
+  }
+  .dashboard-component .record-component {
+    margin-bottom: 20px;
+  }
+  .dashboard-component.cards .actions-menu .actions-wrapper {
+    left: 50%;
+  }
+  .dashboard-component.list .actions-menu .actions-wrapper {
+    top: calc(50% + 15px);
+    left: 50%;
+  }
+}
+@media screen and (max-width: 500px) {
+  .dashboard-component .dashboard-tools {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    text-align: center;
+  }
+  .dashboard-component .dashboard-tools > * {
+    grid-column: auto !important;
+    text-align: center;
   }
 }

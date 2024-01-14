@@ -20,6 +20,7 @@ html {
   font-weight: 500;
   font-family: "Quicksand", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #646464;
+  line-height: normal;
   /***
   *
   *	Dashboard Component
@@ -102,6 +103,10 @@ html {
   border-top-left-radius: 14px;
   border-bottom-left-radius: 14px;
 }
+.dashboard-component .sidebar .tab-link {
+  padding: 0 10px;
+  display: block;
+}
 .dashboard-component .main {
   background: #ececec;
   flex-grow: 1;
@@ -153,6 +158,8 @@ html {
   position: absolute;
   top: 0px;
   right: 30px;
+  width: 19px;
+  height: 19px;
 }
 .dashboard-component .tab-component:hover .tab-text {
   color: #ababab;
@@ -428,6 +435,7 @@ html {
   background: rgba(255, 255, 255, 0.44);
   z-index: 3;
   box-shadow: 0px 0px 3px rgba(0, 0, 0, 0.2);
+  box-sizing: content-box;
 }
 .dashboard-component .actionsmenu-component img {
   width: 100%;
@@ -519,17 +527,17 @@ html {
   font-size: 0.8em;
 }
 @media screen and (max-width: 1500px) {
-  .dashboard-component .dashboard-component {
+  .dashboard-component {
     width: 90%;
   }
 }
 @media screen and (max-width: 1300px) {
-  .dashboard-component .dashboard-component {
+  .dashboard-component {
     width: 95%;
   }
 }
 @media screen and (max-width: 1024px) {
-  .dashboard-component .dashboard-component {
+  .dashboard-component {
     width: auto;
     display: block;
     margin: 0px;
@@ -566,12 +574,10 @@ html {
     max-width: 100%;
   }
 }
-@media screen and (max-width: 700px) {
+@media screen and (max-width: 768px) {
   .dashboard-component.cards .record-wrapper {
     display: block;
   }
-}
-@media screen and (max-width: 768px) {
   .dashboard-component .breadcrumbs-wrapper {
     flex-direction: column;
     gap: 10px;
@@ -591,5 +597,27 @@ html {
   }
   .dashboard-component .viewswitcher-wrapper {
     text-align: end;
+  }
+  .dashboard-component .record-component {
+    margin-bottom: 20px;
+  }
+  .dashboard-component.cards .actions-menu .actions-wrapper {
+    left: 50%;
+  }
+  .dashboard-component.list .actions-menu .actions-wrapper {
+    top: calc(50% + 15px);
+    left: 50%;
+  }
+}
+@media screen and (max-width: 500px) {
+  .dashboard-component .dashboard-tools {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    text-align: center;
+  }
+  .dashboard-component .dashboard-tools > * {
+    grid-column: auto !important;
+    text-align: center;
   }
 }
