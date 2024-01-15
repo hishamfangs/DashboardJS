@@ -95,6 +95,7 @@ html{
 	}
 
 	button, input{
+		font-family: $font-family;
 		background: $input-background;
 		color: $input-text;
 		border: 0px;
@@ -274,13 +275,16 @@ html{
 			border-radius: 18px;
 			padding: 7px 12px;
 			outline: none;
-			font-size: 0.8em;
+			font-size: 12px;
 			display: inline-block;
 			height: 17px;
 			border-top-right-radius: 0px;
 			border-bottom-right-radius: 0px;
 			box-sizing: content-box;
 			vertical-align: middle;		
+		}
+		.buttonText{
+			font-size: 12px;
 		}
 		.dropdown-menu{
 			background: $input-background-darker;
