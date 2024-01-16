@@ -43,7 +43,7 @@ load-dashboard.js:
 ```
 
 ```javascript
-var dashboard = new new FutureLabs.Dashboard({
+var dashboard = new FutureLabs.Dashboard({
   data: [{
       "Name": "Jessie Bambergans",
       "Status": "Married",
