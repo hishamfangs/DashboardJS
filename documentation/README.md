@@ -21,9 +21,9 @@ This is the basic HTML to load the dashboard
 		<title>My Dashboard</title>
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-		<link rel="stylesheet" href="https://github.com/hishamfangs/DashboardJS/dist/css/rules.css">		
-		<link rel="stylesheet" href="https://github.com/hishamfangs/DashboardJS/dist/css/theme.css">		
-		<script src="https://github.com/hishamfangs/DashboardJS/dist/dashboard-all.js"></script>	
+		<link rel="stylesheet" href="./dashboardjs/css/rules.css">		
+		<link rel="stylesheet" href="./dashboardjs/css/theme.css">		
+		<script src="./dashboardjs/js/dashboard-all.js"></script>	
 		<script>	
 		</script> 
 	</head>
@@ -31,7 +31,7 @@ This is the basic HTML to load the dashboard
 		<div class="dashboard-container">
 			
 		</div>
-		<script src="https://github.com/hishamfangs/DashboardJS/dist/load-dashboard.js"></script>	
+		<script src="./dashboardjs/js/load-dashboard.js"></script>	
 	</body>	
 </html>
 ```
@@ -60,7 +60,7 @@ var dashboard = new Dashboard({
       "Date": "1984-01-05",
       "Gender": "Female"
   }],
-  templateURL: 'https://github.com/hishamfangs/DashboardJS/dist/dashboard.html',
+  templateURL: './dashboardjs/dashboard.html',
   appendTo: document.querySelector(".dashboard-container")
 });
 ```
@@ -131,7 +131,7 @@ var dashboard = new Dashboard({
       "Gender": "Female"
     }]
   },
-  templateURL: 'https://github.com/hishamfangs/DashboardJS/dist/dashboard.html',
+  templateURL: './dashboardjs/js/dashboard.html',
   appendTo: document.querySelector(".dashboard-container")
 });
 ```
