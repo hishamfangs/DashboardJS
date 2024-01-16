@@ -55,7 +55,7 @@ var dashboard = new FutureLabs.Dashboard({
       }
     }
   },
-  templateURL: 'dashboard.html',
+  templateURL: './dashboardjs/dashboard.html',
   appendTo: document.querySelector(".dashboard-container")
 });
 ```
