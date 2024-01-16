@@ -7,26 +7,23 @@
  * Main Colors
  *
 ***** */
-/****
- *
- *	General 
- *
- **** */
-html {
-  margin: 0px;
-}
-
+/***
+*
+*	Dashboard Component
+*
+******/
 .dashboard-component {
+  /****
+  *
+  *	General 
+  *
+  **** */
   font-weight: 500;
   font-family: "Quicksand", "Helvetica Neue", Helvetica, Arial, sans-serif;
   color: #646464;
   line-height: normal;
-  /***
-  *
-  *	Dashboard Component
-  *
-  ******/
-  width: 80%;
+  font-size: 13px;
+  box-sizing: border-box;
   margin: 40px auto;
   display: flex;
   position: relative;
@@ -76,7 +73,8 @@ html {
   color: #6b70c7;
   text-decoration: none;
 }
-.dashboard-component button, .dashboard-component input {
+.dashboard-component button, .dashboard-component input, .dashboard-component select, .dashboard-component textarea {
+  font-family: "Quicksand", "Helvetica Neue", Helvetica, Arial, sans-serif;
   background: #c6c8d3;
   color: #ffffff;
   border: 0px;
@@ -151,15 +149,15 @@ html {
 }
 .dashboard-component .badge {
   background: #fd2f2f;
-  font-size: 8px;
+  font-size: 0.8em;
   color: white;
   padding: 4px;
   border-radius: 14px;
   position: absolute;
   top: 0px;
   right: 30px;
-  width: 19px;
-  height: 19px;
+  min-width: 20px;
+  min-height: 20px;
 }
 .dashboard-component .tab-component:hover .tab-text {
   color: #ababab;
@@ -227,13 +225,16 @@ html {
   border-radius: 18px;
   padding: 7px 12px;
   outline: none;
-  font-size: 0.8em;
+  font-size: 12px;
   display: inline-block;
   height: 17px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
   box-sizing: content-box;
   vertical-align: middle;
+}
+.dashboard-component .sorting-component .buttonText {
+  font-size: 12px;
 }
 .dashboard-component .sorting-component .dropdown-menu {
   background: #b7b9c1;
@@ -545,13 +546,19 @@ html {
   .dashboard-component .sidebar {
     width: auto;
     border-radius: 14px;
-    margin-bottom: 20px;
+    border-bottom-left-radius: 0px;
+    border-bottom-right-radius: 0px;
+    margin-bottom: 0px;
   }
   .dashboard-component .userprofile-component {
-    margin-top: 0px;
+    padding-top: 20px;
   }
   .dashboard-component .main {
     border-radius: 14px;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+    box-shadow: none;
+    padding: 20px;
   }
   .dashboard-component .record-wrapper {
     grid-template-columns: 1fr 1fr !important;
@@ -575,9 +582,6 @@ html {
   }
 }
 @media screen and (max-width: 768px) {
-  .dashboard-component.cards .record-wrapper {
-    display: block;
-  }
   .dashboard-component .breadcrumbs-wrapper {
     flex-direction: column;
     gap: 10px;
@@ -609,7 +613,10 @@ html {
     left: 50%;
   }
 }
-@media screen and (max-width: 500px) {
+@media screen and (max-width: 600px) {
+  .dashboard-component.cards .record-wrapper {
+    display: block;
+  }
   .dashboard-component .dashboard-tools {
     display: grid;
     grid-template-columns: 1fr;
@@ -619,5 +626,8 @@ html {
   .dashboard-component .dashboard-tools > * {
     grid-column: auto !important;
     text-align: center;
+  }
+  .dashboard-component .pagebutton-component {
+    padding: 2px 8px;
   }
 }
