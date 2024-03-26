@@ -1,7 +1,6 @@
 # Pagination
 
-Pagination is enabled by default.\
-Config Properties:
+Pagination is enabled by default.
 
 ## Config Property:
 
