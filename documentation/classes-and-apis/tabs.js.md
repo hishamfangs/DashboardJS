@@ -1,2 +1,3 @@
 # Tabs.js
 
+API description coming soon...
