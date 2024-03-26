@@ -1,3 +1,7 @@
+---
+description: Free Javascript Dashboard / Record List Component
+---
+
 # Getting Started
 
 ## DashboardJS
