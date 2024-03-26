@@ -3,7 +3,7 @@
 ## DashboardJS
 
 \
-[DashboardJS](https://www.dashboardjs.net) (www.dashboardjs.net) is a free, modular, responsive, open source Dashboard / Record List component to display records in a sleek and modern way, built entirely in vanilla Js, with zero dependancies. You can have different tabs that show different recordsets complete with pagination, sorting, filtering, and you can switch views for each recordset between Card view, and List view.
+[DashboardJS](https://www.dashboardjs.net) (www.dashboardjs.net) is a free, modular, responsive, open source Dashboard / Record List component to display records in a sleek and modern way, built entirely in vanilla Js, with zero dependancies. You can have different tabs that show different recordsets complete with pagination, sorting, filtering, and you can switch views for each recordset between Card view, and List view, and each record, field and action come with a multitude of events that you can hook onto to process data and change behaviour.
 
 <figure><img src=".gitbook/assets/dashboardjs.png" alt=""><figcaption><p>DashboardJS in Card View Mode</p></figcaption></figure>
 
