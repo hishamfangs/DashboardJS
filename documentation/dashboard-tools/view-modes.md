@@ -18,7 +18,7 @@ var dashboard = new FutureLabs.Dashboard({
 
 <details>
 
-<summary>viewMode <mark style="color:blue;">property&#x3C;Javascript Object></mark></summary>
+<summary>viewMode <mark style="color:blue;">property&#x3C;String></mark></summary>
 
 * Cards
 * List
