@@ -26,7 +26,7 @@ config: {
             // Sets the default view mode for this tab: Cards view or List view
             viewMode: 'Cards',    // 'Cards' or 'List'
             // CSS GRID property/value pairs to format the records in Cards view.
-            // Below is the default css properties, can be changed to any valid CSS proeprty/value pairs
+            // Below is the default css properties, can be changed to any valid CSS property/value pairs
             recordsGrid:{                
                 'grid-template-columns': '1fr 1fr 1fr',
                 'gap': '20px',
