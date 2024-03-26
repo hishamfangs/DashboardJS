@@ -1,2 +1,3 @@
 # Recordset.js
 
+API description coming soon...
