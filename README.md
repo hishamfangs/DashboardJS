@@ -1,7 +1,7 @@
 # DashboardJS
 ![dashboard-full](https://github.com/hishamfangs/DashboardJS/assets/48479688/8100695e-95aa-4078-a742-8c914b7ebbd1)
 
-[DashboardJS](https://www.dashboardjs.net){:target="_blank"} is a free, modular, responsive, open source dashboard component to display records in a sleek and modern way, built entirely in vanilla Js, with zero dependancies. 
+[DashboardJS](https://www.dashboardjs.net) is a free, modular, responsive, open source dashboard component to display records in a sleek and modern way, built entirely in vanilla Js, with zero dependancies. 
 You can have different tabs that show different recordsets complete with pagination, sorting, filtering, and you can switch views for each recordset between Card view, and List view.
 
 DashboardJS is fully themeable, all you need is knowledge of HTML & CSS.
