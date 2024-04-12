@@ -1,4 +1,4 @@
-# DashboardJS
+# DashboardJS (version 1.1)
 ![dashboard-full](https://github.com/hishamfangs/DashboardJS/assets/48479688/8100695e-95aa-4078-a742-8c914b7ebbd1)
 
 [DashboardJS](https://www.dashboardjs.net) is a free, modular, responsive, open source dashboard component to display records in a sleek and modern way, built entirely in vanilla Js, with zero dependancies. 
@@ -7,6 +7,14 @@ You can have different tabs that show different recordsets complete with paginat
 DashboardJS is fully themeable, all you need is knowledge of HTML & CSS.
 
 DashboardJS works either Synchronously (full data loaded and fed into the Dashboard component before initiation), or Asnychronously (Dashboard loads page by page through Fetch API).
+
+Ver 1.1 Release Notes:
+-----------------------
+- Fixed Badge CSS, & set the default state to be box-sizing: border-box;
+- Design is more uniformly Rounded Edges.
+- Fixed bug where Some sorting items & Field Headers generated errors because they inherited the events from the fields.
+- Fixed Unique ID Generator functions so the name of the component is attached to it
+
 
 Simplest Example:
 ----------
