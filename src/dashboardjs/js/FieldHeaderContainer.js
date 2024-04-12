@@ -16,34 +16,43 @@
  *
 ******************* */
 
-function FieldHeaderContainer(settings){
+function FieldHeaderContainer(settings) {
 	Component.call(this, settings);
 	var fields = Component.getFieldSettings(this.fields, this.language);
 	var defaultWidth = Component.getDefaultFieldWidth(fields);
 	for (let key in fields) {
 		if (fields.hasOwnProperty(key)) {
 			var fieldSettings = fields[key];
-			var field = new FieldHeader({config: fieldSettings, templateManager: settings.templateManager, language: this.language});
+			// Delete all the events inherited from the Fields (they are useless for Sorting Items).
+			delete fieldSettings.visibility;
+			delete fieldSettings.onClick;
+			delete fieldSettings.icon;
+			delete fieldSettings.onLoop;
+			delete fieldSettings.url;
+			delete fieldSettings.onGetValue;
+			var field = new FieldHeader({
+				config: fieldSettings,
+				templateManager: settings.templateManager,
+				language: this.language,
+			});
 			//console.log("fieldHeader", field);
 			this.append(field);
 
-			if (fieldSettings.width){
+			if (fieldSettings.width) {
 				field.object.style.width = fieldSettings.width;
-			}else{
+			} else {
 				field.object.style.width = defaultWidth;
 			}
-
 		}
 	}
-	if (!this.image){
+	if (!this.image) {
 		this.objects.imageSpacer.hide();
 	}
 }
 FieldHeaderContainer.prototype = Object.create(Component.prototype);
-FieldHeaderContainer.prototype.constructor = FieldHeaderContainer;		
-
+FieldHeaderContainer.prototype.constructor = FieldHeaderContainer;
 
 FieldHeaderContainer.defaultTemplate = {
 	imageSpacer: ".image-spacer",
-	actionsHeader: ".actions-header"
+	actionsHeader: ".actions-header",
 };

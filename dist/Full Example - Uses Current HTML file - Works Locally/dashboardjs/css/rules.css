@@ -4,6 +4,10 @@
  * 	General
  * 
  **********/
+html, body, div, span, * {
+  box-sizing: border-box;
+}
+
 .dashboard-component {
   /**************** 
   *
@@ -324,8 +328,8 @@
   text-align: center;
   background: #dfdfdf;
   border-radius: 40px;
-  width: 10px;
-  height: 10px;
+  width: 5px;
+  height: 5px;
   display: block;
   margin-left: 15px;
   margin-top: 5px;

@@ -172,7 +172,7 @@ ActionsMenu.prototype.closeMenu = function () {
 };
 
 /**** Component Class
- *		
+ *
  *	Base Class for All Dashboard Components
  *	All Components will inherit this class
  * 	Arguments:
@@ -183,23 +183,22 @@ ActionsMenu.prototype.closeMenu = function () {
  *  @param {string}						settings.config												Required: The config object of the dashboard
  *  @param {string}						settings.data													Optional: The data to run the dashboard
  *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
- *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
- * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
+ *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}
+ * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node)
  * 	@param {string}						settings.templateURL									Optional: the url for the html template
  * 	@param {string}						settings.appendTo											Optional: the HTML node you will append this component to
  *
-******************* */
+ ******************* */
 
 function Component(settings) {
-	// Returns a Promise that is waiting for the template to be loaded, and saves it to this.loadingTemplate 
+	// Returns a Promise that is waiting for the template to be loaded, and saves it to this.loadingTemplate
 	// so if required when you use templateURL property, you can check the Promise if the template is loaded before continuing
 	this.loadingTemplate = this.load(settings);
 }
 
-Component.prototype.load = async function (settings){
-
+Component.prototype.load = async function (settings) {
 	// Initialize the Component by setting the config properties and adding them to the local scope
-	// and set the Data & template 
+	// and set the Data & template
 	this.init(settings);
 
 	// Render the Component as per the assigned config, data, & template
@@ -207,19 +206,32 @@ Component.prototype.load = async function (settings){
 
 	// Process the Events set on the Component
 	// Ex: visibility, icon, onClick, onLoop, url
-	if (this.object){
+	if (this.object) {
 		// make sure the object is rendered
 		this.processEvents();
-	}else{
-		console.log('HTML Node for: ' + this.constructor.name + ' doesn\'t exist or has been removed from the DOM.');
+	} else {
+		console.log(
+			"HTML Node for: " +
+				this.constructor.name +
+				" doesn't exist or has been removed from the DOM."
+		);
 	}
 
 	//console.log(this.__proto__.constructor.name, this);
 };
 
-Component.prototype.init = function ({config, data, templateManager, useExistingElement, selectors, templateURL, appendTo, language}) {
-	// Loop through the config properties and add them 
-	// to the local context 
+Component.prototype.init = function ({
+	config,
+	data,
+	templateManager,
+	useExistingElement,
+	selectors,
+	templateURL,
+	appendTo,
+	language,
+}) {
+	// Loop through the config properties and add them
+	// to the local context
 	// then add a reference the original copy of config as well.
 	if (config) {
 		var configKeys = Object.keys(config);
@@ -233,46 +245,47 @@ Component.prototype.init = function ({config, data, templateManager, useExisting
 		this.config = clone(config);
 	}
 
-	if (templateURL){
+	if (templateURL) {
 		this.templateURL = templateURL;
 	}
-	if (appendTo){
+	if (appendTo) {
 		this.appendTo = appendTo;
 	}
-	
-	if (this.templateSettings){
-/* 		if (this.config.template.selectors){
+
+	if (this.templateSettings) {
+		/* 		if (this.config.template.selectors){
 			this.template.selectors = 
 		} */
-	}else if (!this.templateSettings) {
+	} else if (!this.templateSettings) {
 		this.templateSettings = {};
-		this.templateSettings.selectors = this.__proto__.constructor.defaultTemplate;
+		this.templateSettings.selectors =
+			this.__proto__.constructor.defaultTemplate;
 	}
-	
+
 	if (!selectors) {
-		this.templateSettings.selectors = this.__proto__.constructor.defaultTemplate;
-	}else{
+		this.templateSettings.selectors =
+			this.__proto__.constructor.defaultTemplate;
+	} else {
 		this.templateSettings.selectors = selectors;
 	}
 
-	if (!useExistingElement){
+	if (!useExistingElement) {
 		this.templateSettings.useExistingElement = false;
-	}else{
+	} else {
 		this.templateSettings.useExistingElement = true;
 	}
 
 	if (templateManager) {
 		this.templateManager = templateManager;
 	}
-	if (templateURL){
+	if (templateURL) {
 		this.templateURL = templateURL;
 	}
 
 	// ****************** Setup defaults
-	// Order of priority: 
+	// Order of priority:
 	// Properties in Config take priority over everything
 	// Lastly comes the standard defaults (below), these will be set when neither the properties in this. (superclass defaults) nor the properties in config are set.
-
 
 	if (!config.hasOwnProperty("clone")) {
 		// Default Value
@@ -281,23 +294,23 @@ Component.prototype.init = function ({config, data, templateManager, useExisting
 	if (language) {
 		// Default Value
 		this.language = language;
-	}else {
+	} else {
 		// Default Value
 		this.language = "en-US";
 	}
-	
+
 	if (!config.hasOwnProperty("name")) {
 		// Default Value
 		this.name = this.__proto__.constructor.name;
 	}
 
 	if (!config.hasOwnProperty("class")) {
-		// Default Value		
+		// Default Value
 		this.class = "";
 	}
 
 	if (!config.hasOwnProperty("style")) {
-		// Default Value		
+		// Default Value
 		this.style = null;
 	}
 	// Translated Name
@@ -331,30 +344,29 @@ Component.prototype.init = function ({config, data, templateManager, useExisting
 	}
 
 	// Remove all Events to stop them from cascading down the elements
-	if (this.onAdd){
+	if (this.onAdd) {
 		config.onAdd = null;
 		delete config.onAdd;
 	}
 
 	// Generate Readable ID from Name
-	if (this.config.id){
+	if (this.config.id) {
 		this.id = this.config.id;
-	}else{
+	} else {
 		this.id = this.generateId();
 	}
 
 	// Generate Unique ID
-	if (this.config.id){
+	if (this.config.id) {
 		this.uid = this.config.id;
-	}else{
-		this.uid = Component.generateRandomId();
+	} else {
+		this.uid = Component.generateRandomId(this.id);
 	}
 };
 
 Component.prototype.render = async function () {
-
 	// Load Template From URL and use it to generate a Template Manager for this component.
-	if (this.templateURL){
+	if (this.templateURL) {
 		this.templateManager = await this.loadHTML(this.templateURL, this.appendTo);
 	}
 	this.template = this.getTemplate();
@@ -364,42 +376,45 @@ Component.prototype.render = async function () {
 		var object = null;
 	} else {
 		object.setAttribute("id", this.uid);
-		object.setAttribute("class", object.getAttribute("class") + " " + this.class);
-		if (this.style){
-			for (var s in this.style){
+		object.setAttribute(
+			"class",
+			object.getAttribute("class") + " " + this.class
+		);
+		if (this.style) {
+			for (var s in this.style) {
 				object.style.cssText += s + ":" + this.style[s] + ";";
 			}
 		}
-		if (this.width){
-			if (String(this.width).indexOf("px")>-1 || String(this.width).indexOf("%")>-1){
+		if (this.width) {
+			if (
+				String(this.width).indexOf("px") > -1 ||
+				String(this.width).indexOf("%") > -1
+			) {
 				object.style.width = this.width;
-			}else{
-				object.style.width = this.width+"px";
+			} else {
+				object.style.width = this.width + "px";
 			}
 		}
 	}
 
-	// Set the HTML Object 
+	// Set the HTML Object
 	this.object = object;
 	this.objects = this.template.objects;
 	this.renderValues();
-
 };
 
-Component.prototype.loadHTML = async function (templateURL, appendTo){
-	
-	if (templateURL){
+Component.prototype.loadHTML = async function (templateURL, appendTo) {
+	if (templateURL) {
 		var templateLoader = new FileLoader(templateURL);
 		var rootNode = await templateLoader.loadHTML();
-		if (appendTo){
+		if (appendTo) {
 			let appendToObject = document.querySelector(appendTo);
 			appendToObject.appendChild(rootNode);
 		}
 		var templateManager = new TemplateManager(rootNode);
-		return templateManager
+		return templateManager;
 	}
-}
-
+};
 
 // Default Template for every object will be the first div inside your document
 Component.defaultTemplate = {
@@ -408,14 +423,14 @@ Component.defaultTemplate = {
 	itemText: "",
 	itemIcon: "",
 	itemLink: "",
-	container: ""
+	container: "",
 };
 /******
  * Template Config File Sample
  * templateConfig = {
  * 		context: {
  *          object: doucment.body,
- *          template: null            
+ *          template: null
  *      },
  *      objects: {
  *    	    wrapper: doucment.body,
@@ -434,33 +449,38 @@ Component.defaultTemplate = {
  *          container: ""
  *      }
  * }
- * 
+ *
  */
 
 // Create Node objects from the selectors
 // Default selectors are used to create the Node objects ... or
 // Optional: 	Any Passed template will take priority over the default selectors & Node objects
-// 				You can pass ready Node objects, or custom selectors, or both.  
-Component.prototype.getTemplate = function (name, selectors, useExistingElement) { // pass Optional template to override default template
+// 				You can pass ready Node objects, or custom selectors, or both.
+Component.prototype.getTemplate = function (
+	name,
+	selectors,
+	useExistingElement
+) {
+	// pass Optional template to override default template
 	if (!selectors) {
-		selectors = this.templateSettings.selectors
+		selectors = this.templateSettings.selectors;
 	}
 	if (!name) {
-		name = this.__proto__.constructor.name
+		name = this.__proto__.constructor.name;
 	}
-	if (!useExistingElement && useExistingElement!==false) {
+	if (!useExistingElement && useExistingElement !== false) {
 		useExistingElement = this.templateSettings.useExistingElement;
 	}
-	return this.templateManager.getTemplate(name, selectors, useExistingElement)
+	return this.templateManager.getTemplate(name, selectors, useExistingElement);
 };
 
 Component.prototype.renderValues = function () {
 	// Value of Title
-	var value = processedValue = this.name;
-	if (this.translatedName){
-		value = this.translatedName
+	var value = (processedValue = this.name);
+	if (this.translatedName) {
+		value = this.translatedName;
 	}
-/* 	if (this.onGetValue) {
+	/* 	if (this.onGetValue) {
 		processedValue = this.onGetValue;
 		if (typeof processedValue === "function") {
 			processedValue = processedValue(this);
@@ -471,19 +491,18 @@ Component.prototype.renderValues = function () {
 	} */
 
 	// Apply Title
-	value = ifEmptyReplaceWithSpace(value);	// If empty string replace with space (to avoid collapsing the row)
-	
+	value = ifEmptyReplaceWithSpace(value); // If empty string replace with space (to avoid collapsing the row)
+
 	//this.template.objects.itemText.innerHTML = value;
-	if (this.template.objects.item) {	
+	if (this.template.objects.item) {
 		this.template.objects.item.setAttribute("title", value);
 	}
 
-	if (this.template.objects.itemText) {	
+	if (this.template.objects.itemText) {
 		this.setText(value);
 	}
 
-
-/* 
+	/* 
 	// Apply visibility
 	if (this.show) {
 		if (visibility == "disable") {
@@ -497,23 +516,28 @@ Component.prototype.renderValues = function () {
 	if (this.template.objects.itemImage && this.config.image) {
 		// Value of Image
 		this.setImage(this.config.image);
-	} else 	if (this.template.objects.itemBackgroundImage && this.config.image) {
+	} else if (this.template.objects.itemBackgroundImage && this.config.image) {
 		// Value of Image
-		this.setBackgroundImage(this.config.image, null,this.config.imageCardHeight);
+		this.setBackgroundImage(
+			this.config.image,
+			null,
+			this.config.imageCardHeight
+		);
 	}
 
 	// On Loop Event
 	if (this.onLoop) {
 		var fieldOnLoopEvent = this.onLoop;
 		// Apply the Action
-		//console.log("field", field);				
+		//console.log("field", field);
 		try {
 			fieldOnLoopEvent(this);
 		} catch (err) {
-			console.log("ERROR in onLoop for Field: " + this.name + ". error: " + err);
+			console.log(
+				"ERROR in onLoop for Field: " + this.name + ". error: " + err
+			);
 		}
 	}
-
 };
 
 Component.prototype.generateId = function (optionalName) {
@@ -538,16 +562,21 @@ Component.prototype.generateId = function (optionalName) {
 Component.generateIdFromName = function (name) {
 	var id = String(name).trim();
 	id = id.replace("'", "");
-	id = id.replace("\"", "");
-	id = id.replace(/[^\w]/gi, '_');
+	id = id.replace('"', "");
+	id = id.replace(/[^\w]/gi, "_");
 	id = id.toLowerCase();
 	return id;
 };
 
-Component.generateRandomId = function () {
+Component.generateRandomId = function (name) {
+	if (!name) {
+		name = "";
+	} else {
+		name = name + "-";
+	}
 	// I generate the UID from three parts here
 	// to ensure the random number provide enough bits.
-	var letterNumber = ((Math.random() * 24) | 0);
+	var letterNumber = (Math.random() * 24) | 0;
 	var firstPart = (Math.random() * 46656) | 0;
 	var secondPart = (Math.random() * 46656) | 0;
 	var thirdPart = (Math.random() * 46656) | 0;
@@ -556,7 +585,7 @@ Component.generateRandomId = function () {
 	firstPart = ("000" + firstPart.toString(36)).slice(-3);
 	secondPart = ("000" + secondPart.toString(36)).slice(-3);
 	thirdPart = ("000" + thirdPart.toString(36)).slice(-3);
-	return firstLetter + firstPart + secondPart + thirdPart;
+	return name + firstLetter + firstPart + secondPart + thirdPart;
 };
 
 Component.prototype.processEvents = function () {
@@ -564,7 +593,11 @@ Component.prototype.processEvents = function () {
 	var show = false;
 	if (typeof visibility === "string") {
 		// visibility is set as is, use it to determine show
-		if (visibility == "disable" || visibility == "enable" || visibility == "show") {
+		if (
+			visibility == "disable" ||
+			visibility == "enable" ||
+			visibility == "show"
+		) {
 			show = true;
 		} else if (visibility == "hide") {
 			show = false;
@@ -575,7 +608,11 @@ Component.prototype.processEvents = function () {
 	} else if (typeof visibility === "function") {
 		// Run Visibility function
 		visibility = visibility(this, this.record);
-		if (visibility == "disable" || visibility == "enable" || visibility == "show") {
+		if (
+			visibility == "disable" ||
+			visibility == "enable" ||
+			visibility == "show"
+		) {
 			show = true;
 		} else if (visibility == "hide") {
 			show = false;
@@ -605,7 +642,7 @@ Component.prototype.processEvents = function () {
 		}
 		if (this.objects.itemIcon) {
 			// Apply Icon
-			this.addClass(icon, 'itemIcon');
+			this.addClass(icon, "itemIcon");
 		}
 	}
 
@@ -615,33 +652,31 @@ Component.prototype.processEvents = function () {
 
 	if (visibility == "show" || visibility == "enable") {
 		if (this.url || this.onClick) {
- 			if (!this.template.selectors.itemLink) {
+			if (!this.template.selectors.itemLink) {
 				this.template.selectors.itemLink = this.template.selectors.item;
-			} 
-			if (!this.objects.itemLink){
+			}
+			if (!this.objects.itemLink) {
 				this.objects.itemLink = this.objects.item;
-			}			
+			}
 			if (this.url) {
 				this.setLink(this.url, null, this.urlTarget);
-	
+
 				var url = this.url;
-				// Check if it's a function, if it is, expect the url to be returned				
+				// Check if it's a function, if it is, expect the url to be returned
 				if (typeof url === "function") {
 					url = url(this);
 				}
-				
+
 				if (!url) {
 					// Remove <a> tag
 					if (this.object.getElementsByTagName("a").length > 0) {
 						this.object.querySelectorAll("a").unwrap();
 					}
-
 				} else {
 					this.objects.itemLink.setAttribute("href", url);
-					if (this.target){
+					if (this.target) {
 						this.objects.itemLink.setAttribute("target", this.target);
 					}
-				
 				}
 
 				// Stop Event Propagation
@@ -653,28 +688,34 @@ Component.prototype.processEvents = function () {
 				// First, check if the user wants to use a default action that exists in Dashboard.defaultActions
 				var itemOnClick = this.onClick;
 				// Apply the onclick Action
-				this.objects.itemLink.classList.add('cursor-pointer');
-				this.objects.itemLink.addClickHandler(processOnClick, { "dashboard": this, "record": this.data, "item": this, "theFunction": itemOnClick })
+				this.objects.itemLink.classList.add("cursor-pointer");
+				this.objects.itemLink.addClickHandler(processOnClick, {
+					dashboard: this,
+					record: this.data,
+					item: this,
+					theFunction: itemOnClick,
+				});
 				// Prevent Event Propagation Up the Tree
-				this.object.addEventListener('click', stopEventPropagation, false);
+				this.object.addEventListener("click", stopEventPropagation, false);
 			}
-
 		} else {
 			// Remove <a> tag
-			if (this.object.querySelectorAll(this.template.selectors.item + " > a").length) {
-				try{
-					this.object.querySelector(this.template.selectors.item + "> a").children[0].unwrap("a");
-				}catch(err){
-
-				}
+			if (
+				this.object.querySelectorAll(this.template.selectors.item + " > a")
+					.length
+			) {
+				try {
+					this.object
+						.querySelector(this.template.selectors.item + "> a")
+						.children[0].unwrap("a");
+				} catch (err) {}
 			}
 		}
-	}else if (visibility == 'disable'){
+	} else if (visibility == "disable") {
 		if (this.onClick) {
-			this.object.addEventListener('click', stopEventPropagation, false);
+			this.object.addEventListener("click", stopEventPropagation, false);
 		}
 	}
-
 
 	// If onLoop event
 	if (this.onLoop) {
@@ -687,123 +728,123 @@ Component.prototype.processEvents = function () {
 	this.url = url;
 	this.icon = icon;
 };
-Component.prototype.setText = function (value, selectorKey){
+Component.prototype.setText = function (value, selectorKey) {
 	this.template.setText(value, selectorKey);
 };
 
-Component.prototype.addClass = function (value, selectorKey){
+Component.prototype.addClass = function (value, selectorKey) {
 	this.template.addClass(value, selectorKey);
 };
-Component.prototype.removeClass = function (value, selectorKey){
-	try{
-		this.template.removeClass(value, selectorKey);
-	}catch(err){
-		console.log(err)
+Component.prototype.removeClass = function (value, selectorKey) {
+	try {
+		if (this.template) {
+			this.template.removeClass(value, selectorKey);
+		}
+	} catch (err) {
+		console.log(err);
 	}
 };
 
-Component.prototype.setImage = function (value, selectorKey){
+Component.prototype.setImage = function (value, selectorKey) {
 	this.template.setImage(value, selectorKey);
 };
 
-Component.prototype.setBackgroundImage = function (value, selectorKey, height){
+Component.prototype.setBackgroundImage = function (value, selectorKey, height) {
 	this.template.setBackgroundImage(value, selectorKey, height);
 };
 
-Component.prototype.setIcon = function (value, selectorKey){
+Component.prototype.setIcon = function (value, selectorKey) {
 	this.template.setIcon(value, selectorKey);
 };
 
-Component.prototype.removeIcon = function (selectorKey){
+Component.prototype.removeIcon = function (selectorKey) {
 	this.template.removeIcon(value, selectorKey);
 };
 
-Component.prototype.setLink = function (value, selectorKey, target){
+Component.prototype.setLink = function (value, selectorKey, target) {
 	// If there is no A tag, and the link is to be created on the 'item' itself, then a new link tag is created and returned
 	var newLink = this.template.setLink(value, selectorKey, target);
 
 	// Which then will take the place of the existing item in the object tree.
-	if (newLink){
+	if (newLink) {
 		var id = this.object.id;
-		this.object.id = this.object.id + "_replaced_by_a_tag"
+		this.object.id = this.object.id + "_replaced_by_a_tag";
 		this.object = newLink;
 		this.objects.item = newLink;
 		this.object.id = id;
 	}
 };
 
-Component.prototype.remove = function(){
+Component.prototype.remove = function () {
 	// If onRemove event
 	if (this.onRemove) {
 		var event = new DashboardEvent();
-		event.addCompletedEvent(function(element){
+		event.addCompletedEvent(function (element) {
 			element.delete();
 		}, this);
 		this.onRemove(event);
-	}else{
+	} else {
 		this.delete();
 	}
 };
 
-Component.prototype.removeChildren = function(selectorKey){
+Component.prototype.removeChildren = function (selectorKey) {
 	// If onRemove event
 	if (this.onRemove) {
 		var event = new DashboardEvent();
-		event.addCompletedEvent(function(element){
-			for(var c in this.children){
-				if (this.children[c] && (!selectorKey || selectorKey == c)){
-					for(var cc in this.children[c]){
-						if (this.children[c][cc]){
-							if (this.children[c][cc]){
+		event.addCompletedEvent(function (element) {
+			for (var c in this.children) {
+				if (this.children[c] && (!selectorKey || selectorKey == c)) {
+					for (var cc in this.children[c]) {
+						if (this.children[c][cc]) {
+							if (this.children[c][cc]) {
 								this.children[c][cc].delete();
 							}
 						}
-					}				
+					}
 				}
 			}
-			if (selectorKey){
-				if (this.children?.[selectorKey]){
+			if (selectorKey) {
+				if (this.children?.[selectorKey]) {
 					this.children[selectorKey] = [];
 				}
-			}else{
-				for(var c in this.children){
+			} else {
+				for (var c in this.children) {
 					this.children[c] = [];
 				}
 			}
 		}, this);
 		this.onRemove(event);
-	}else{
-		for(var c in this.children){
-			if (this.children[c] && (!selectorKey || selectorKey == c)){
-				for(var cc in this.children[c]){
-					if (this.children[c][cc]){
-						if (this.children[c][cc]){
+	} else {
+		for (var c in this.children) {
+			if (this.children[c] && (!selectorKey || selectorKey == c)) {
+				for (var cc in this.children[c]) {
+					if (this.children[c][cc]) {
+						if (this.children[c][cc]) {
 							this.children[c][cc].delete();
 						}
 					}
-				}				
+				}
 			}
 		}
-		if (selectorKey){
-			if (this.children?.[selectorKey]){
+		if (selectorKey) {
+			if (this.children?.[selectorKey]) {
 				this.children[selectorKey] = [];
 			}
-		}else{
-			for(var c in this.children){
+		} else {
+			for (var c in this.children) {
 				this.children[c] = [];
 			}
 		}
 	}
 };
 
-Component.prototype.delete = function(){
-	try{
+Component.prototype.delete = function () {
+	try {
 		this.object.parentNode.removeChild(this.object);
-	}catch(er){
-
-	}
-	for (var a in this){
-		if (this.hasOwnProperty(a)){
+	} catch (er) {}
+	for (var a in this) {
+		if (this.hasOwnProperty(a)) {
 			delete this[a];
 		}
 	}
@@ -842,76 +883,76 @@ Component.prototype.append = function (childObject, containerSelector) {	// Appe
 		console.log(err);
 	}
 } */
-Component.prototype.append = function (childElement, containerSelector) {	// Append to an optional Container
+Component.prototype.append = function (childElement, containerSelector) {
+	// Append to an optional Container
 	try {
 		pContainer = "container";
 		this.template.append(childElement, containerSelector);
-		if (!this.children){
+		if (!this.children) {
 			this.children = {};
 		}
-		if (containerSelector){
+		if (containerSelector) {
 			pContainer = containerSelector;
 		}
-		if (this.children[pContainer]){
+		if (this.children[pContainer]) {
 			var oldElement = this.children[pContainer];
-			if (oldElement instanceof Array){
-				this.children[pContainer].push(childElement)
-			}else{
+			if (oldElement instanceof Array) {
+				this.children[pContainer].push(childElement);
+			} else {
 				this.children[pContainer] = new Array();
 				this.children[pContainer].push(oldElement);
-				this.children[pContainer].push(childElement);	
+				this.children[pContainer].push(childElement);
 			}
-		}else{
+		} else {
 			this.children[pContainer] = [childElement];
 		}
 	} catch (err) {
 		console.log(err);
 	}
-	
+
 	if (childElement.onAdd) {
 		var event = new DashboardEvent();
 		childElement.onAdd(event);
-/* 		event.addCompletedEvent(function(ev, element){
+		/* 		event.addCompletedEvent(function(ev, element){
 			
 		}, this);	 */
-	}		
-}
+	}
+};
 
 Component.prototype.prepend = function (childElement, containerSelector) {
 	try {
 		var pContainer = "container";
 		this.template.prepend(childElement, containerSelector);
-		if (!this.children){
+		if (!this.children) {
 			this.children = {};
 		}
-		if (containerSelector){
+		if (containerSelector) {
 			pContainer = containerSelector;
 		}
-		if (this.children[pContainer]){
+		if (this.children[pContainer]) {
 			var oldElement = this.children[pContainer];
-			if (oldElement instanceof Array){
-				this.children[pContainer].unshift(childElement)
-			}else{
+			if (oldElement instanceof Array) {
+				this.children[pContainer].unshift(childElement);
+			} else {
 				this.children[pContainer] = new Array();
 				this.children[pContainer].unshift(oldElement);
-				this.children[pContainer].unshift(childElement);	
+				this.children[pContainer].unshift(childElement);
 			}
-		}else{
+		} else {
 			this.children[pContainer] = [childElement];
 		}
-
 	} catch (err) {
 		console.log(err);
 	}
-	
+
 	if (this.onAdd) {
 		var event = new DashboardEvent();
 		this.onAdd(event);
-/* 		event.addCompletedEvent(function(ev, element){
+		/* 		event.addCompletedEvent(function(ev, element){
 			
 		}, this);	 */
 	}
-}
+};
 
 /* 
 Component.prototype.appendTo = function (parentObject){
@@ -937,10 +978,8 @@ Component.prototype.appendTo = function (parentObject){
  */
 
 Component.getFieldSettings = function (fields, language) {
-
 	// Check if a Tab Object is Passed
 	if (typeof fields === "object") {
-
 		//console.log("Original Tab is ", originalTab);
 		//var dataset = tab.data;
 		//console.log("Dataset for Original Tab is ", dataset);
@@ -955,19 +994,18 @@ Component.getFieldSettings = function (fields, language) {
 		} */
 
 		// Set Language, Default Value = en-US
-		var currentLanguage = language?language:"en-US";
+		var currentLanguage = language ? language : "en-US";
 
+		// Set the Main Values
+		var processedFieldSettings = {};
 
-	// Set the Main Values
-	var processedFieldSettings = {};
+		//************************* Generates Headers
+		// If the fields are specified in a list, and it is set to Not show all fields,
+		// OR if fields were specified and no Dataset was sent
+		// then only loop through the specified field list.
+		// Otherwise, loop through all the fields from the dataset
 
-	//************************* Generates Headers
-	// If the fields are specified in a list, and it is set to Not show all fields,
-	// OR if fields were specified and no Dataset was sent 
-	// then only loop through the specified field list.
-	// Otherwise, loop through all the fields from the dataset
-
-/* 	if ((specifiedFields && !showAllFields) || (specifiedFields && !dataset)) {
+		/* 	if ((specifiedFields && !showAllFields) || (specifiedFields && !dataset)) {
 		// Loop through the Specified Fields only
 		theFieldsLooper = specifiedFields;
 	} else if (showAllFields) {
@@ -985,318 +1023,329 @@ Component.getFieldSettings = function (fields, language) {
 		}
 	} */
 
-	var fieldKeys = Object.keys(fields);
-	for (var i = 0; i < fieldKeys.length; i++) {
-		var fieldKey = fieldKeys[i];
-		// Field Object from the Specified Fields if exists
-		var fieldSettings = fields[fieldKey];
+		var fieldKeys = Object.keys(fields);
+		for (var i = 0; i < fieldKeys.length; i++) {
+			var fieldKey = fieldKeys[i];
+			// Field Object from the Specified Fields if exists
+			var fieldSettings = fields[fieldKey];
 
-		// Assign Default Values
-		var name = fieldKey;
-		var fieldKey = fieldKey;
-		var visible = true;
-		var language = "all";
-		var className = "";
-		var dataType = "String";
-		var url = "";
-		var position = "center";
-		var onClickFunction = null;
-		var translation = null;
-		var translatedName = null;
+			// Assign Default Values
+			var name = fieldKey;
+			var fieldKey = fieldKey;
+			var visible = true;
+			var language = "all";
+			var className = "";
+			var dataType = "String";
+			var url = "";
+			var position = "center";
+			var onClickFunction = null;
+			var translation = null;
+			var translatedName = null;
 
-		// Check if the fields are Specified, if so, overwrite default values
-		if (fieldSettings) {
-			// get name
-			if (fieldSettings.hasOwnProperty('name')) {
-				name = fieldSettings.name;
-			}
-			// get visibility 
-			if (fieldSettings.hasOwnProperty('visible')) {
-				visible = fieldSettings.visible;
-			}
+			// Check if the fields are Specified, if so, overwrite default values
+			if (fieldSettings) {
+				// get name
+				if (fieldSettings.hasOwnProperty("name")) {
+					name = fieldSettings.name;
+				}
+				// get visibility
+				if (fieldSettings.hasOwnProperty("visible")) {
+					visible = fieldSettings.visible;
+				}
 
-			// get Language 
-			if (fieldSettings.hasOwnProperty('language')) {
-				language = fieldSettings.language;
-			}
+				// get Language
+				if (fieldSettings.hasOwnProperty("language")) {
+					language = fieldSettings.language;
+				}
 
-			// get Classname 
-			if (fieldSettings.hasOwnProperty('class')) {
-				className = fieldSettings.class;
-			}
+				// get Classname
+				if (fieldSettings.hasOwnProperty("class")) {
+					className = fieldSettings.class;
+				}
 
-			// get DataType 
-			if (fieldSettings.hasOwnProperty('dataType')) {
-				dataType = fieldSettings.dataType;
-			}
+				// get DataType
+				if (fieldSettings.hasOwnProperty("dataType")) {
+					dataType = fieldSettings.dataType;
+				}
 
-			// get URL 
-			if (fieldSettings.hasOwnProperty('url')) {
-				url = fieldSettings.url;
-			}
+				// get URL
+				if (fieldSettings.hasOwnProperty("url")) {
+					url = fieldSettings.url;
+				}
 
-			// get onClick 
-			if (fieldSettings.hasOwnProperty('onClick')) {
-				onClickFunction = fieldSettings.onClick;
-			}
+				// get onClick
+				if (fieldSettings.hasOwnProperty("onClick")) {
+					onClickFunction = fieldSettings.onClick;
+				}
 
-			// get position 
-			if (fieldSettings.hasOwnProperty('position')) {
-				position = fieldSettings.position;
-			}
+				// get position
+				if (fieldSettings.hasOwnProperty("position")) {
+					position = fieldSettings.position;
+				}
 
-			// Translation
-			if (fieldSettings.hasOwnProperty('translation')) {
-				translation = fieldSettings.translation;
-			}
-
-
-		}
-		if (visible && (language == currentLanguage || language == "all")) {
-			var translatedName = name;
-			if (translation) {
-				if (translation[currentLanguage]) {
-					var translatedName = translation[currentLanguage];
+				// Translation
+				if (fieldSettings.hasOwnProperty("translation")) {
+					translation = fieldSettings.translation;
 				}
 			}
-			processedFieldSettings[fieldKey] = {};
-			processedFieldSettings[fieldKey].fieldKey = fieldKey;
-			processedFieldSettings[fieldKey].name = name;
-			processedFieldSettings[fieldKey].translatedName = translatedName;
-			processedFieldSettings[fieldKey].visible = visible;
-			processedFieldSettings[fieldKey].language = language;
-			processedFieldSettings[fieldKey].class = className;
-			processedFieldSettings[fieldKey].position = position;
-			processedFieldSettings[fieldKey].dataType = dataType;
-			processedFieldSettings[fieldKey].dataField = fieldKey;
-			processedFieldSettings[fieldKey].url = url;
-			processedFieldSettings[fieldKey].onClick = onClickFunction;
-			processedFieldSettings[fieldKey].translation = translation;
+			if (visible && (language == currentLanguage || language == "all")) {
+				var translatedName = name;
+				if (translation) {
+					if (translation[currentLanguage]) {
+						var translatedName = translation[currentLanguage];
+					}
+				}
+				processedFieldSettings[fieldKey] = {};
+				processedFieldSettings[fieldKey].fieldKey = fieldKey;
+				processedFieldSettings[fieldKey].name = name;
+				processedFieldSettings[fieldKey].translatedName = translatedName;
+				processedFieldSettings[fieldKey].visible = visible;
+				processedFieldSettings[fieldKey].language = language;
+				processedFieldSettings[fieldKey].class = className;
+				processedFieldSettings[fieldKey].position = position;
+				processedFieldSettings[fieldKey].dataType = dataType;
+				processedFieldSettings[fieldKey].dataField = fieldKey;
+				processedFieldSettings[fieldKey].url = url;
+				processedFieldSettings[fieldKey].onClick = onClickFunction;
+				processedFieldSettings[fieldKey].translation = translation;
 
-			// Loop through the remaining fieldProperties and add them if they don't exist
-			var processedField = processedFieldSettings[fieldKey];
-			if (fieldSettings && (typeof fieldSettings === "object" || typeof fieldSettings === "array")) {
-				var fieldPropertyKeys = Object.keys(fieldSettings);
-				for (var j in fieldPropertyKeys) {
-					propKey = fieldPropertyKeys[j];
-					// Check if the field exists in the processedFields
-					if (processedField[propKey] === undefined || processedField[propKey] === null) {
-						processedField[propKey] = fieldSettings[propKey];
+				// Loop through the remaining fieldProperties and add them if they don't exist
+				var processedField = processedFieldSettings[fieldKey];
+				if (
+					fieldSettings &&
+					(typeof fieldSettings === "object" ||
+						typeof fieldSettings === "array")
+				) {
+					var fieldPropertyKeys = Object.keys(fieldSettings);
+					for (var j in fieldPropertyKeys) {
+						propKey = fieldPropertyKeys[j];
+						// Check if the field exists in the processedFields
+						if (
+							processedField[propKey] === undefined ||
+							processedField[propKey] === null
+						) {
+							processedField[propKey] = fieldSettings[propKey];
+						}
 					}
 				}
 			}
 		}
+		return processedFieldSettings;
 	}
-	return processedFieldSettings;
-
-	}
-
 };
 
-Component.prototype.fadeOut = function() {
-
+Component.prototype.fadeOut = function () {
 	var fadeTarget = this.object;
 	var fadeEffect = setInterval(function () {
-		try{
+		try {
 			if (!fadeTarget.style.opacity) {
-					fadeTarget.style.opacity = 1;
+				fadeTarget.style.opacity = 1;
 			}
 			if (fadeTarget.style.opacity > 0) {
-					fadeTarget.style.opacity -= 0.1;
+				fadeTarget.style.opacity -= 0.1;
 			} else {
-					clearInterval(fadeEffect);
-			}			
-		}catch(err){
+				clearInterval(fadeEffect);
+			}
+		} catch (err) {
 			clearInterval(fadeEffect);
 		}
 	}, 50);
-}
+};
 
-Component.prototype.fadeLeft = function() {
+Component.prototype.fadeLeft = function () {
 	var fadeTarget = this.object;
 	fadeTarget.style.position = "absolute";
 	var event = new DashboardEvent();
 	var fadeEffect = setInterval(function () {
-		try{
+		try {
 			if (!fadeTarget.style.opacity) {
-					fadeTarget.style.opacity = 1;
+				fadeTarget.style.opacity = 1;
 			}
 			if (!fadeTarget.style.marginLeft) {
 				fadeTarget.style.marginLeft = "0%";
-			}		
+			}
 			if (!fadeTarget.style.marginRight) {
 				fadeTarget.style.marginRight = "0%";
-			}						
-			if ((parseInt(fadeTarget.style.marginRight)) < 150) {
-					//fadeTarget.style.opacity -= 0.05;
-					fadeTarget.style.marginLeft = (parseInt(fadeTarget.style.marginLeft) - 5) + "%";
-					fadeTarget.style.marginRight = (parseInt(fadeTarget.style.marginRight) + 5) + "%";
-			} else {			
-					clearInterval(fadeEffect);
-					event.triggerCompleted();
-			}			
-		}catch(err){
+			}
+			if (parseInt(fadeTarget.style.marginRight) < 150) {
+				//fadeTarget.style.opacity -= 0.05;
+				fadeTarget.style.marginLeft =
+					parseInt(fadeTarget.style.marginLeft) - 5 + "%";
+				fadeTarget.style.marginRight =
+					parseInt(fadeTarget.style.marginRight) + 5 + "%";
+			} else {
+				clearInterval(fadeEffect);
+				event.triggerCompleted();
+			}
+		} catch (err) {
 			clearInterval(fadeEffect);
 			event.triggerCompleted();
 		}
 	}, 10);
 	return event;
-}
+};
 
-
-Component.prototype.fadeRight = function() {
+Component.prototype.fadeRight = function () {
 	var fadeTarget = this.object;
 	var fadeEffect = setInterval(function () {
-		try{
+		try {
 			if (!fadeTarget.style.opacity) {
-					fadeTarget.style.opacity = 1;
+				fadeTarget.style.opacity = 1;
 			}
-			if (!fadeTarget.style.marginRight ) {
+			if (!fadeTarget.style.marginRight) {
 				fadeTarget.style.marginRight = 0;
-		}			
-			if (fadeTarget.style.opacity > 0) {
-					fadeTarget.style.opacity -= 0.1;
-					fadeTarget.style.marginRight = (parseInt(fadeTarget.style.marginRight) - 20) + "px";
-			} else {
-					clearInterval(fadeEffect);
 			}
-		}catch(err){
+			if (fadeTarget.style.opacity > 0) {
+				fadeTarget.style.opacity -= 0.1;
+				fadeTarget.style.marginRight =
+					parseInt(fadeTarget.style.marginRight) - 20 + "px";
+			} else {
+				clearInterval(fadeEffect);
+			}
+		} catch (err) {
 			clearInterval(fadeEffect);
 		}
 	}, 50);
-}
+};
 
-
-Component.prototype.fadeInLeft = function() {
+Component.prototype.fadeInLeft = function () {
 	var fadeTarget = this.object;
 	//fadeTarget.style.opacity = 0;
 	var event = new DashboardEvent();
-	
+
 	var fadeEffect = setInterval(function () {
-		try{
-		
+		try {
 			if (!fadeTarget.style.opacity) {
-					//fadeTarget.style.opacity = 1;
+				//fadeTarget.style.opacity = 1;
 			}
 			if (!fadeTarget.style.marginRight) {
 				fadeTarget.style.marginRight = "-150%";
-			}	
+			}
 			if (!fadeTarget.style.marginLeft) {
 				fadeTarget.style.marginLeft = "150%";
-			}						
-			if ((parseInt(fadeTarget.style.marginRight) + 8) <= 0) {
-					//fadeTarget.style.opacity = parseFloat(fadeTarget.style.opacity) + 0.13;
-					fadeTarget.style.marginRight = (parseInt(fadeTarget.style.marginRight) + 8) + "%";
-					fadeTarget.style.marginLeft = (parseInt(fadeTarget.style.marginLeft) - 8) + "%";
+			}
+			if (parseInt(fadeTarget.style.marginRight) + 8 <= 0) {
+				//fadeTarget.style.opacity = parseFloat(fadeTarget.style.opacity) + 0.13;
+				fadeTarget.style.marginRight =
+					parseInt(fadeTarget.style.marginRight) + 8 + "%";
+				fadeTarget.style.marginLeft =
+					parseInt(fadeTarget.style.marginLeft) - 8 + "%";
 			} else {
-					clearInterval(fadeEffect);
-					fadeTarget.style.opacity = 1;
-					fadeTarget.style.marginRight = "0%";
-					fadeTarget.style.marginLeft = "0%";
-					event.triggerCompleted();					
-			}			
-		}catch(err){
+				clearInterval(fadeEffect);
+				fadeTarget.style.opacity = 1;
+				fadeTarget.style.marginRight = "0%";
+				fadeTarget.style.marginLeft = "0%";
+				event.triggerCompleted();
+			}
+		} catch (err) {
 			clearInterval(fadeEffect);
 			fadeTarget.style.opacity = 1;
-			fadeTarget.style.marginRight = "0px";			
-			fadeTarget.style.marginLeft = "0px";			
+			fadeTarget.style.marginRight = "0px";
+			fadeTarget.style.marginLeft = "0px";
 			event.triggerCompleted();
 		}
 	}, 5);
 	return event;
-}
+};
 
-Component.getDefaultFieldWidth = function (fields){
+Component.getDefaultFieldWidth = function (fields) {
 	let numOfFields = Object.keys(fields).length;
 	let pixels = 0;
 	let percentages = 0;
 	for (var key in fields) {
 		if (fields.hasOwnProperty(key)) {
 			var fieldSettings = fields[key];
-			if (fieldSettings.width){
+			if (fieldSettings.width) {
 				numOfFields--;
-				if (fieldSettings.width.indexOf("%")>-1){
+				if (fieldSettings.width.indexOf("%") > -1) {
 					percentages += parseFloat(fieldSettings.width.replace("%", ""));
-				}else if (fieldSettings.width.indexOf("px")>-1){
+				} else if (fieldSettings.width.indexOf("px") > -1) {
 					pixels += parseFloat(fieldSettings.width.replace("px", ""));
 				}
 			}
 		}
 	}
-	return 'calc(((100% - '+percentages+'%) - '+pixels+'px) / '+numOfFields+')';
+	return (
+		"calc(((100% - " +
+		percentages +
+		"%) - " +
+		pixels +
+		"px) / " +
+		numOfFields +
+		")"
+	);
 };
 
-Component.prototype.getChild = function(name, containerKey){
+Component.prototype.getChild = function (name, containerKey) {
 	// If containerKey is specified
-	if (containerKey){
-		if (this.children[containerKey]){
-			for(var cc in this.children[containerKey]){
-				if (this.children[containerKey][cc]){
-					if (this.children[containerKey][cc].name == name){
+	if (containerKey) {
+		if (this.children[containerKey]) {
+			for (var cc in this.children[containerKey]) {
+				if (this.children[containerKey][cc]) {
+					if (this.children[containerKey][cc].name == name) {
 						return this.children[containerKey][cc];
 					}
 				}
-			}		
-	
+			}
 		}
-	}else{
-	// Children that are added to the container's children
-		for(var c in this.children){
-			if (this.children[c]){
-				for(var cc in this.children[c]){
-					if (this.children[c][cc]){
-						if (this.children[c][cc].name == name){
+	} else {
+		// Children that are added to the container's children
+		for (var c in this.children) {
+			if (this.children[c]) {
+				for (var cc in this.children[c]) {
+					if (this.children[c][cc]) {
+						if (this.children[c][cc].name == name) {
 							return this.children[c][cc];
 						}
 					}
-				}				
+				}
 			}
 		}
 	}
 };
 
-Component.prototype.showLoader = async function (){
-	this.addClass('loader-fade');
-	await new Promise(resolve => setTimeout(()=>{
-		this.addClass('loader');
-		resolve();
-	}, 100));
-	
+Component.prototype.showLoader = async function () {
+	this.addClass("loader-fade");
+	await new Promise((resolve) =>
+		setTimeout(() => {
+			this.addClass("loader");
+			resolve();
+		}, 100)
+	);
 };
 
-Component.prototype.hideLoader = function (){
-	this.removeClass('loader');
-	setTimeout(()=>{
-		this.removeClass('loader-fade');
+Component.prototype.hideLoader = function () {
+	this.removeClass("loader");
+	setTimeout(() => {
+		this.removeClass("loader-fade");
 		// In case The loader was not removed
 		//setTimeout(()=>{this.removeClass('loader');
 	}, 1000);
 };
 
-Component.prototype.getChildById = function(id){
+Component.prototype.getChildById = function (id) {
 	// Children that are added directly to the container
-	for(var c in this.children.container){
-
-		if (this.children.tab[c]){
-			if (this.children.tab[c].id == id){
+	for (var c in this.children.container) {
+		if (this.children.tab[c]) {
+			if (this.children.tab[c].id == id) {
 				return this.children.tab[c];
 			}
 		}
 	}
 	// Children that are added to the container's children
-	for(var c in this.children){
-
-		if (this.children[c]){
-			for(var cc in this.children[c]){
-				if (this.children[c][cc]){
-					if (this.children[c][cc].id == id){
+	for (var c in this.children) {
+		if (this.children[c]) {
+			for (var cc in this.children[c]) {
+				if (this.children[c][cc]) {
+					if (this.children[c][cc].id == id) {
 						return this.children[c][cc];
-					}			
+					}
 				}
 			}
 		}
 	}
 };
+
 /** 
  *	Dashboard Class
  *	
@@ -2112,37 +2161,47 @@ FieldHeader.prototype.constructor = FieldHeader;
  *
 ******************* */
 
-function FieldHeaderContainer(settings){
+function FieldHeaderContainer(settings) {
 	Component.call(this, settings);
 	var fields = Component.getFieldSettings(this.fields, this.language);
 	var defaultWidth = Component.getDefaultFieldWidth(fields);
 	for (let key in fields) {
 		if (fields.hasOwnProperty(key)) {
 			var fieldSettings = fields[key];
-			var field = new FieldHeader({config: fieldSettings, templateManager: settings.templateManager, language: this.language});
+			// Delete all the events inherited from the Fields (they are useless for Sorting Items).
+			delete fieldSettings.visibility;
+			delete fieldSettings.onClick;
+			delete fieldSettings.icon;
+			delete fieldSettings.onLoop;
+			delete fieldSettings.url;
+			delete fieldSettings.onGetValue;
+			var field = new FieldHeader({
+				config: fieldSettings,
+				templateManager: settings.templateManager,
+				language: this.language,
+			});
 			//console.log("fieldHeader", field);
 			this.append(field);
 
-			if (fieldSettings.width){
+			if (fieldSettings.width) {
 				field.object.style.width = fieldSettings.width;
-			}else{
+			} else {
 				field.object.style.width = defaultWidth;
 			}
-
 		}
 	}
-	if (!this.image){
+	if (!this.image) {
 		this.objects.imageSpacer.hide();
 	}
 }
 FieldHeaderContainer.prototype = Object.create(Component.prototype);
-FieldHeaderContainer.prototype.constructor = FieldHeaderContainer;		
-
+FieldHeaderContainer.prototype.constructor = FieldHeaderContainer;
 
 FieldHeaderContainer.defaultTemplate = {
 	imageSpacer: ".image-spacer",
-	actionsHeader: ".actions-header"
+	actionsHeader: ".actions-header",
 };
+
 /**************************************************************************************************
  * 	Class FileLoader(rootNode)
  * ---------------------------------
@@ -3412,7 +3471,7 @@ Recordset.prototype.setActionsListViewWidth = function (){
 }
 
 /**** Sorting Class
- *		
+ *
  *	Sorting Class
  * -----------------------------
  *	@param {Object} 					settings 														The Settings Object
@@ -3420,41 +3479,41 @@ Recordset.prototype.setActionsListViewWidth = function (){
  *  @param {string}						settings.config												Required: The config object of the dashboard
  *  @param {string}						settings.data													Optional: The data to run the dashboard
  *  @param {Templatemanager}	settings.templateManager							Optional: The Template manager Object That Manages the Template, if not passed, one will be created automatically
- *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}	
- * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node) 
+ *  @param {Object} 					settings.selectors										Optional: An Object literal of Selectors	ex: {wrapper:".wrapper", item: ".action-element", itemText: ".text", container: ".container"}
+ * 	@param {boolean}					settings.useExistingElement = false		Optional: false: make a copy of the existing node. true: using the existing node as a live template and make changes there directly (ie don't make a copy of the node)
  * 	@param {string}						settings.templateURL									Optional: the url for the html template
  * 	@param {string}						settings.appendTo											Optional: the HTML node you will append this component to
  *
-******************* */
+ ******************* */
 
 function Sorting(settings) {
 	Component.call(this, {
 		config: {
-			...settings.config, 
-			onClick: function(){
+			...settings.config,
+			onClick: function () {
 				this.toggleMenu();
-			}
-		}, 
-		data: dataManager.getData(), 
-		templateManager: settings.templateManager, 
+			},
+		},
+		data: dataManager.getData(),
+		templateManager: settings.templateManager,
 		useExistingElement: settings.useExistingElement,
-		language: settings.language
+		language: settings.language,
 	});
 	this.dataManager = settings.dataManager;
-	this.tab = settings.tab
-	this.dashboard = this.tab.dashboard
+	this.tab = settings.tab;
+	this.dashboard = this.tab.dashboard;
 	this.createItems();
 	this.highlightSelected();
 	this.closeMenu();
-	var sorting = this; 
-	
-	document.addEventListener('mouseup', function closeSortingMenu(e) {
+	var sorting = this;
+
+	document.addEventListener("mouseup", function closeSortingMenu(e) {
 		// Close the Sorting Menu when the user clicks outside the menu
 		if (!sorting?.object?.contains(e.target)) {
 			sorting.closeMenu();
 		}
 	});
-/* 
+	/* 
 	this.onRemove = function (e){
 		document.removeEventListener('mouseup', function closeSortingMenu(e) {
 			//var theTarget = e.target.closest(actionsMenu.selectors.item);
@@ -3468,40 +3527,56 @@ function Sorting(settings) {
 Sorting.prototype = Object.create(Component.prototype);
 Sorting.prototype.constructor = Sorting;
 
-Sorting.prototype.toggleMenu = function(){
-	this.template.objects.itemDropDown.toggleClass('open');
+Sorting.prototype.toggleMenu = function () {
+	this.template.objects.itemDropDown.toggleClass("open");
 };
-Sorting.prototype.closeMenu = function(){
-	this.removeClass('open', 'itemDropDown');
+Sorting.prototype.closeMenu = function () {
+	this.removeClass("open", "itemDropDown");
 };
 
-Sorting.prototype.createItems = function (){
-	for (var f in this.fields){
+Sorting.prototype.createItems = function () {
+	for (var f in this.fields) {
+		let config = { ...this.fields[f], tab: this.tab, fieldKey: f };
+		// Delete all the events inherited from the Fields (they are useless for Sorting Items).
+		delete config.visibility;
+		delete config.onClick;
+		delete config.icon;
+		delete config.onLoop;
+		delete config.url;
+		delete config.onGetValue;
+
 		// Create Menu Items for sorting based on the fields
-		var item = new SortingItem({sorting: this, config: {...this.fields[f], tab: this.tab, fieldKey: f}, templateManager: this.templateManager, useExistingElement: false, language: this.language});
-		this.append(item)
+		var item = new SortingItem({
+			sorting: this,
+			config: config,
+			templateManager: this.templateManager,
+			useExistingElement: false,
+			language: this.language,
+		});
+		this.append(item);
 	}
 };
 
-Sorting.prototype.highlightSelected = function (){
+Sorting.prototype.highlightSelected = function () {
 	var sortingConfig = this.dataManager.sorting;
-	if (sortingConfig && sortingConfig.sortBy){
-		this.setText(sortingConfig.sortFieldText,'itemSortingButton');
-	}else{
-		originalText = this.getTemplate(null, null, false).objects.itemSortingButton.innerHTML;
-		this.setText(originalText,'itemSortingButton');
+	if (sortingConfig && sortingConfig.sortBy) {
+		this.setText(sortingConfig.sortFieldText, "itemSortingButton");
+	} else {
+		originalText = this.getTemplate(null, null, false).objects.itemSortingButton
+			.innerHTML;
+		this.setText(originalText, "itemSortingButton");
 	}
-	if (this.dataManager.sorting.sortDirection == DataManager.SORTING.ASC){
-		this.addClass('flip', 'itemSortingDirection')
-	}else{
-		this.removeClass('flip', 'itemSortingDirection')
+	if (this.dataManager.sorting.sortDirection == DataManager.SORTING.ASC) {
+		this.addClass("flip", "itemSortingDirection");
+	} else {
+		this.removeClass("flip", "itemSortingDirection");
 	}
 };
 
 Sorting.defaultTemplate = {
 	itemSortingButton: ".buttonText",
 	itemDropDown: ".dropdown",
-	itemSortingDirection: '.caret'
+	itemSortingDirection: ".caret",
 };
 
 /**** SortingItem Class

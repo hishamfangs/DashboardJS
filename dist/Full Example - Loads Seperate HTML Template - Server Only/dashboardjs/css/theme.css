@@ -227,14 +227,21 @@
   outline: none;
   font-size: 12px;
   display: inline-block;
-  height: 17px;
+  height: 31px;
   border-top-right-radius: 0px;
   border-bottom-right-radius: 0px;
-  box-sizing: content-box;
-  vertical-align: middle;
+  line-height: 17px;
 }
 .dashboard-component .sorting-component .buttonText {
   font-size: 12px;
+  vertical-align: text-top;
+  font-weight: 500;
+}
+.dashboard-component .sorting-component .caret {
+  vertical-align: text-top;
+}
+.dashboard-component .sorting-component .dropdown {
+  vertical-align: top;
 }
 .dashboard-component .sorting-component .dropdown-menu {
   background: #b7b9c1;
@@ -266,13 +273,15 @@
 }
 .dashboard-component .sorting-component button {
   height: 31px;
+  line-height: 17px;
   border-top-left-radius: 0px;
   border-bottom-left-radius: 0px;
   cursor: pointer;
 }
 .dashboard-component .viewswitcher-text {
-  font-size: 0.8em;
+  font-size: 0.9em;
   color: #ababab;
+  vertical-align: middle;
 }
 .dashboard-component .filtering-wrapper {
   display: inline-flex;
@@ -335,6 +344,14 @@
 .dashboard-component.cards .fieldheadercontainer-component {
   margin-top: 40px;
 }
+.dashboard-component.list .fieldheadercontainer-component {
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+.dashboard-component.list .record-component:last-child {
+  border-bottom-left-radius: 8px;
+  border-bottom-right-radius: 8px;
+}
 .dashboard-component .record-wrapper {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
@@ -347,9 +364,12 @@
   transition: 0.3s box-shadow;
   border-bottom: 3px solid rgba(137, 137, 137, 0.3803921569);
 }
+.dashboard-component.cards .record-component {
+  border-radius: 16px;
+}
 .dashboard-component.cards .record-component:hover {
   border-bottom: 3px solid #2f68fd;
-  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0px 0px 16px rgba(0, 0, 0, 0.15);
 }
 .dashboard-component .record-icon {
   position: absolute;
@@ -374,6 +394,8 @@
   margin-top: -20px;
   margin-right: -20px;
   margin-bottom: 20px;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
 }
 .dashboard-component .field-title {
   display: block;
@@ -419,6 +441,12 @@
   border-right: 1px solid #ececec;
   border-top: 1px solid #ececec;
 }
+.dashboard-component.cards .action-component:first-child {
+  border-bottom-left-radius: 16px;
+}
+.dashboard-component.cards .action-component:last-child {
+  border-bottom-right-radius: 16px;
+}
 .dashboard-component.cards .action-component:hover {
   box-shadow: inset 0px -2px 0px rgba(0, 0, 0, 0.5);
 }
@@ -456,7 +484,7 @@
   left: 100%;
   background: #b7b9c1;
   border-radius: 10px;
-  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.5);
   z-index: 3;
   color: white;
   padding: 5px 0px;
@@ -473,6 +501,10 @@
 }
 .dashboard-component .actions-menu .action-component:first-child {
   border-top: 1px solid #c8c8c8;
+  border-radius: 0px;
+}
+.dashboard-component .actions-menu .action-component:last-child {
+  border-radius: 0px;
 }
 .dashboard-component .actions-menu .action-component .action-link {
   padding: 10px 15px;
