@@ -15,6 +15,7 @@ Ver 1.1 Release Notes:
 - Fixed bug where Some sorting items & Field Headers generated errors because they inherited the events from the fields.
 - Fixed Unique ID Generator functions so the name of the component is attached to it
 
+Note: Starting March 2024, Microsoft Defender updated their virus signatures, and as a result it started flagging the Trojan:Script/Wacatac.H!ml as false positives as on many plugins, programs, apps, Java applications, and even Steam games & update packages accross the internet, and DashboardJS is no different. If you find that DashboardJS is being block by Windows Defender, rest assured this is a false positive and you can feel safe downloading it. I have submitted a report to Microsoft, in the meantime, please disable or add a "allow rule" in Microsoft Defender for DashboardJS.  
 
 Simplest Example:
 ----------
