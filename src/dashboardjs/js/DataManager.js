@@ -35,23 +35,24 @@ function DataManager(config, data) {	// data is optional
 }
 
 DataManager.SORTING = {
-	ASC : "asc",
-	DESC : "desc"
+	ASC: "asc",
+	DESC: "desc"
 }
-DataManager.prototype.init = function (config){
+DataManager.prototype.init = function (config) {
 	this.setDefaults();
-	this.setConfig(config);	
+	this.setConfig(config);
 };
 
-DataManager.prototype.setDefaults = function (){
+DataManager.prototype.setDefaults = function () {
 	// Set config defaults
 	this.page = 1;
 	this.pages = 1;
-	this.selectedItem = -1;	
+	this.selectedItem = -1;
 	this.itemsPerPage = 12;
 	this.fetch = {
-		options:{}
+		options: {}
 	};
+	this.fetchFunction = () => alert('function not set');
 	this.sorting = {
 		sortBy: '',
 		sortDirection: DataManager.SORTING.ASC,
@@ -70,68 +71,75 @@ DataManager.prototype.setDefaults = function (){
 	this.tabName = "";
 };
 
-DataManager.prototype.setConfig = function (config){
+DataManager.prototype.setConfig = function (config) {
 	// Overwrite default config with passed in configs
-	if (config){
+	if (config) {
 		this.config = config;
-		if (config.page){
+		if (config.page) {
 			this.page = config.page;
 		}
-		if (config.itemsPerPage){
+		if (config.itemsPerPage) {
 			this.itemsPerPage = config.itemsPerPage;
 		}
-		if (config.fetch){
-			this.fetch = {...this.fetch, ...config.fetch};
+		if (config.fetch) {
+			this.fetch = { ...this.fetch, ...config.fetch };
 		}
-		if (config.sorting){
+		if (config.sorting) {
 			this.setSorting(config.sorting);
 		}
-		if (config.tabName){
+		if (config.tabName) {
 			this.tabName = config.tabName;
-		}		
-		if (config.search){
-			if (config.search.options){
-				for (var c in config.search.options){
-					if (config.search.options.hasOwnProperty(c)){
+		}
+		if (config.search) {
+			if (config.search.options) {
+				for (var c in config.search.options) {
+					if (config.search.options.hasOwnProperty(c)) {
 						var thisOption = config.search.options[c];
 						this.search.options[c] = this.search.options;
 					}
 				}
 			}
-			if (config.search.parameters){
-				this.search.parameters = config.search.parameters;				
+			if (config.search.parameters) {
+				this.search.parameters = config.search.parameters;
 			}
+		}
+		if (config.fetchFunction) {
+			this.fetchFunction = config.fetchFunction;
 		}
 	}
 };
 
-DataManager.prototype.load = async function(countOnly){
-	if (this.fetch?.url){
-		let {options, url} = this.generateFetchParameters(countOnly);
-		this.loading = await fetch(url, options);
+DataManager.prototype.load = async function (countOnly) {
+	if (this.fetch?.url) {
+		let { options, url } = this.generateFetchParameters(countOnly);
+		if (this.fetchFunction) {
+			this.loading = await this.fetchFunction(url, options);
+		} else {
+			this.loading = await fetch(url, options);
+		}
 		var res = await this.loading.json();
 		console.log(res);
 		this.setData(res.data, res.count);
 	}
 
-	if (countOnly){
+	if (countOnly) {
 		return this.count;
-	}else{
+	} else {
 		return this.getData();
 	}
 };
 
-DataManager.prototype.generateFetchParameters = function (countOnly){
-	let fetchOptions = {...this.fetch?.options};
+DataManager.prototype.generateFetchParameters = function (countOnly) {
+	let fetchOptions = { ...this.fetch?.options };
 	let url = this.fetch.url;
 
 	// Set Method
-	if (!fetchOptions.method){
+	if (!fetchOptions.method) {
 		this.fetch.options.method = fetchOptions.method = 'GET';
 	}
 	// Generate Parameters & Set Defaults
 	defaultParameters = {
-		page : 'page',
+		page: 'page',
 		itemsPerPage: 'itemsPerPage',
 		count: 'count',
 		getCount: 'getCount',
@@ -139,30 +147,30 @@ DataManager.prototype.generateFetchParameters = function (countOnly){
 		sortBy: 'sortBy',
 		tabName: 'tabName'
 	};
-	dashboardParameters = {...defaultParameters}; 
-	if (this.fetch.dashboardParameters){
-		dashboardParameters = {...dashboardParameters, ...this.fetch.dashboardParameters}
+	dashboardParameters = { ...defaultParameters };
+	if (this.fetch.dashboardParameters) {
+		dashboardParameters = { ...dashboardParameters, ...this.fetch.dashboardParameters }
 	}
 
 	const data = new URLSearchParams();
 	data.append(dashboardParameters.page, this.page);
 	data.append(dashboardParameters.itemsPerPage, this.itemsPerPage);
-	data.append(dashboardParameters.getCount, countOnly||false);
+	data.append(dashboardParameters.getCount, countOnly || false);
 	data.append(dashboardParameters.filterBy, JSON.stringify(this.filtering.keywords));
 	data.append(dashboardParameters.sortBy, JSON.stringify(this.sorting));
 	data.append(dashboardParameters.tabName, this.tabName);
-	
-	if (fetchOptions.method=='POST'){
+
+	if (fetchOptions.method == 'POST') {
 		fetchOptions.body = data;
-	}else{
+	} else {
 		url += '?' + data;
 	}
 
-	return {options: fetchOptions, url: url};
+	return { options: fetchOptions, url: url };
 };
 
-DataManager.prototype.setData = function (data, count){
-	if (!data){
+DataManager.prototype.setData = function (data, count) {
+	if (!data) {
 		data = [];
 	}
 	this.data = {
@@ -172,77 +180,77 @@ DataManager.prototype.setData = function (data, count){
 		sorted: clone(data),
 		paged: clone(data)
 	};
-	if (this.fetch?.url){
+	if (this.fetch?.url) {
 		this.count = count
-	}else{
+	} else {
 		this.count = this.data.sorted.length
 	}
 	this.processData();
 	//this.refresh();
 };
 
-DataManager.prototype.processData = function (){
-	if (this.data && !this.fetch?.url){
-		if (this.data.sorted){
+DataManager.prototype.processData = function () {
+	if (this.data && !this.fetch?.url) {
+		if (this.data.sorted) {
 			var data = this.data.sorted;
 			var count = data.length;
 			var itemsPerPage = this.itemsPerPage;
 			this.count = count;
-			if (count){
-				var pages = Math.ceil(count/itemsPerPage);
+			if (count) {
+				var pages = Math.ceil(count / itemsPerPage);
 				this.pages = pages;
-			}else{
+			} else {
 				this.page = 1;
 				this.pages = 1;
 			}
 		}
-	}else{
+	} else {
 		//var data = this.data.sorted;
 		var count = this.count;
 		var itemsPerPage = this.itemsPerPage;
-		if (count){
-			this.pages = Math.ceil(count/itemsPerPage);
-		}else{
+		if (count) {
+			this.pages = Math.ceil(count / itemsPerPage);
+		} else {
 			this.pages = 1;
 		}
 	}
 };
-DataManager.prototype.toggleSorting = function (){
-	this.sorting.sortDirection = this.sorting.sortDirection==DataManager.SORTING.ASC?DataManager.SORTING.DESC:DataManager.SORTING.ASC
+DataManager.prototype.toggleSorting = function () {
+	this.sorting.sortDirection = this.sorting.sortDirection == DataManager.SORTING.ASC ? DataManager.SORTING.DESC : DataManager.SORTING.ASC
 };
 
-DataManager.prototype.refresh = async function (){
-	if (this.fetch?.url){
+DataManager.prototype.refresh = async function () {
+	if (this.fetch?.url) {
 		await this.load();
-	}else{
+	} else {
 		this.processSearch();
 		this.processFiltering();
 		this.processSorting();
 		this.processData();
-		this.processPaging();	
+		this.processPaging();
 	}
 	return this.getData();
 };
 
-DataManager.prototype.reset = function (){
+DataManager.prototype.reset = function () {
 	this.setDefaults();
 	this.refresh();
 };
 
-DataManager.prototype.doSearch = function (searchParameters){
+DataManager.prototype.doSearch = function (searchParameters) {
 	this.setSearch(searchParameters);
 	this.refresh();
 };
 
-DataManager.prototype.setSearch = function (searchParameters){
+DataManager.prototype.setSearch = function (searchParameters) {
 	this.search.parameters = searchParameters;
 };
 
-DataManager.prototype.processSearch = function (){
-	if (this.data){
-		if (this.data.raw){
-			if (this.search){
-				if (this.search.parameters){
+DataManager.prototype.processSearch = function () {
+	if (this.data) {
+		if (this.data.raw) {
+			if (this.search) {
+				if (this.search.parameters) {
 					this.processSearchParameters();
 				}
 			}
@@ -250,47 +258,47 @@ DataManager.prototype.processSearch = function (){
 	}
 };
 
-DataManager.prototype.processSearchParameters = function(){
+DataManager.prototype.processSearchParameters = function () {
 	var dataset = this.data.searched = clone(this.data.raw);
 	var enableSpecialCharacters = this.search.options.enableSpecialCharacters;
 	var wholeWordSearch = this.search.options.wholeWordSearch;
-			
-	for (var i=0;i<dataset.length;i++){
+
+	for (var i = 0; i < dataset.length; i++) {
 		var found = true;
 		var thisRecord = dataset[i];
-		if (thisRecord){
-		
-			for (var k in this.search.parameters){
-				if (this.search.parameters.hasOwnProperty(k)){
+		if (thisRecord) {
+
+			for (var k in this.search.parameters) {
+				if (this.search.parameters.hasOwnProperty(k)) {
 					var thisParameter = this.search.parameters[k];
 					var thisWholeWordSearch = wholeWordSearch;
 					var searchField = thisParameter.field;
 					var searchValue = thisParameter.value;
 					searchValue = String(searchValue).toLowerCase().trim();
-					if (searchValue){
+					if (searchValue) {
 						var searchOptions = thisParameter.options;
 						var currentRecordFieldValue = String(thisRecord[searchField]).toLowerCase().trim();
-						if (searchOptions){
-							if (searchOptions.wholeWordSearch){
+						if (searchOptions) {
+							if (searchOptions.wholeWordSearch) {
 								thisWholeWordSearch = searchOptions.wholeWordSearch;
 							}
 						}
-						if (thisWholeWordSearch){
-							if (currentRecordFieldValue != searchValue){
+						if (thisWholeWordSearch) {
+							if (currentRecordFieldValue != searchValue) {
 								found = false;
 							}
-						}else{
-							if (currentRecordFieldValue.indexOf(searchValue)==-1){
+						} else {
+							if (currentRecordFieldValue.indexOf(searchValue) == -1) {
 								found = false;
 							}
 						}
 					}
-				}			
-			}		
+				}
+			}
 		}
 		// If Not found, remove from Filtered Dataset
 		//console.log("found: " + found);
-		if (!found){
+		if (!found) {
 			//console.log(dataset);
 			//console.log("Deleting iteration "+i+": " + dataset[i].RECORD_ID);
 			dataset.splice(i, 1);
@@ -299,23 +307,23 @@ DataManager.prototype.processSearchParameters = function(){
 			//console.log("now i is: " + i);
 			//console.log(dataset);
 		}
-	}	
+	}
 };
 
-DataManager.prototype.filter = function (filtering){
+DataManager.prototype.filter = function (filtering) {
 	this.setFiltering(filtering);
 	this.refresh();
 };
 
-DataManager.prototype.setFiltering = function (filtering){
+DataManager.prototype.setFiltering = function (filtering) {
 	this.filtering = filtering;
 };
 
-DataManager.prototype.processFiltering = function (){
-	if (this.data){
-		if (this.data.searched){
-			if (this.filtering){
-				if (this.filtering.keywords){
+DataManager.prototype.processFiltering = function () {
+	if (this.data) {
+		if (this.data.searched) {
+			if (this.filtering) {
+				if (this.filtering.keywords) {
 					this.processKeywordFilters();
 				}
 			}
@@ -323,14 +331,14 @@ DataManager.prototype.processFiltering = function (){
 	}
 };
 
-DataManager.prototype.processKeywordFilters = function(){
+DataManager.prototype.processKeywordFilters = function () {
 	var dataset = this.data.filtered = clone(this.data.searched);
-	for (k in this.filtering.keywords){
+	for (k in this.filtering.keywords) {
 		var thisKeyword = this.filtering.keywords[k];
-		for (var i=0;i<dataset.length;i++){
+		for (var i = 0; i < dataset.length; i++) {
 			var found = false;
 			var thisRecord = dataset[i];
-			if (thisRecord){
+			if (thisRecord) {
 				for (var key in thisRecord) {
 					if (thisRecord.hasOwnProperty(key)) {
 						//console.log(key + " -> " + thisRecord[key]);
@@ -339,7 +347,7 @@ DataManager.prototype.processKeywordFilters = function(){
 						thisKeyword = String(thisKeyword).trim().toLowerCase();
 						// If Keyword is found in the current field, set found to true
 						//isKeywords
-						if (field.indexOf(thisKeyword)>-1){
+						if (field.indexOf(thisKeyword) > -1) {
 							found = true;
 							//console.log("Found " + thisKeyword + " in " + key + ", exiting loop, going to next record. Found Record is: ");
 							//console.log(thisRecord);
@@ -350,7 +358,7 @@ DataManager.prototype.processKeywordFilters = function(){
 			}
 			// If Not found, remove from Filtered Dataset
 			//console.log("found: " + found);
-			if (!found){
+			if (!found) {
 				//console.log(dataset);
 				//console.log("Deleting iteration "+i+": " + dataset[i].RECORD_ID);
 				dataset.splice(i, 1);
@@ -359,37 +367,37 @@ DataManager.prototype.processKeywordFilters = function(){
 				//console.log("now i is: " + i);
 				//console.log(dataset);
 			}
-		}				
+		}
 	}
 };
 
-DataManager.prototype.addKeyword = function (keyword){
+DataManager.prototype.addKeyword = function (keyword) {
 	this.addFilterKeyword(keyword);
 	this.refresh();
 };
-DataManager.prototype.addFilterKeyword = function (keyword){
+DataManager.prototype.addFilterKeyword = function (keyword) {
 	keyword = String(keyword).trim().toLowerCase();
-	if (!this.filtering.keywords){
+	if (!this.filtering.keywords) {
 		this.filtering.keywords = [];
 	}
-	
+
 	// Reset Filtered Dataset
-	if (this.filtering.keywords.indexOf(keyword)>-1){
+	if (this.filtering.keywords.indexOf(keyword) > -1) {
 		// don't add duplicate keyword
-	}else{
+	} else {
 		this.filtering.keywords.push(keyword);
 	}
 };
-DataManager.prototype.removeKeyword = function (keyword){
+DataManager.prototype.removeKeyword = function (keyword) {
 	this.removeFilterKeyword(keyword);
 	this.refresh();
 };
-DataManager.prototype.removeFilterKeyword = function (keyword){
+DataManager.prototype.removeFilterKeyword = function (keyword) {
 	console.log("Removing Filter: " + keyword);
-	if (this.filtering.keywords.indexOf(keyword)>-1){
-		for (k in this.filtering.keywords){
+	if (this.filtering.keywords.indexOf(keyword) > -1) {
+		for (k in this.filtering.keywords) {
 			thisKeyword = this.filtering.keywords[k];
-			if (thisKeyword == keyword){
+			if (thisKeyword == keyword) {
 				console.log("Found it, Removing Keyword " + keyword);
 				this.filtering.keywords.splice(k, 1);
 				break;
@@ -398,94 +406,94 @@ DataManager.prototype.removeFilterKeyword = function (keyword){
 	}
 };
 
-DataManager.prototype.sort = function (sorting){
+DataManager.prototype.sort = function (sorting) {
 	this.setSorting(sorting);
 	this.refresh();
 };
 
-DataManager.prototype.setSorting = function (sorting){
-	if (sorting.sortBy){
+DataManager.prototype.setSorting = function (sorting) {
+	if (sorting.sortBy) {
 		this.sorting.sortBy = sorting.sortBy;
 	}
-	if (sorting.sortDirection){
+	if (sorting.sortDirection) {
 		this.sorting.sortDirection = sorting.sortDirection;
 	}
-	if (sorting.sortFieldText){
+	if (sorting.sortFieldText) {
 		this.sorting.sortFieldText = sorting.sortFieldText;
 	}
 };
 
-DataManager.prototype.processSorting = function (){
-	if (this.data){
-		if (this.sorting.sortBy){
+DataManager.prototype.processSorting = function () {
+	if (this.data) {
+		if (this.sorting.sortBy) {
 			var dataset = clone(this.data.filtered);
 			var sortBy = this.sorting.sortBy;
 			var sortDirection = String(this.sorting.sortDirection).toLowerCase();
-			if (sortDirection == "asc"){
-				dataset.sort(function(a, b){return a[sortBy]<b[sortBy]?-1:1;});
-			}else{
-				dataset.sort(function(a, b){return a[sortBy]<b[sortBy]?1:-1;});
+			if (sortDirection == "asc") {
+				dataset.sort(function (a, b) { return a[sortBy] < b[sortBy] ? -1 : 1; });
+			} else {
+				dataset.sort(function (a, b) { return a[sortBy] < b[sortBy] ? 1 : -1; });
 			}
 			this.data.sorted = dataset;
-		}else{
+		} else {
 			this.data.sorted = clone(this.data.filtered);
 		}
 	}
 };
 
-DataManager.prototype.getData = function(){
+DataManager.prototype.getData = function () {
 	return this.data.paged;
 };
-DataManager.prototype.getFieldsFromData = function(){
+DataManager.prototype.getFieldsFromData = function () {
 	let fields = {};
-	if (this?.data?.paged?.length){
-		for (let d in this.data.paged[0]){
+	if (this?.data?.paged?.length) {
+		for (let d in this.data.paged[0]) {
 			fields[d] = {};
 		}
 	}
 	return fields;
 };
-DataManager.prototype.updateProcessedDataset = function(){
+DataManager.prototype.updateProcessedDataset = function () {
 	this.processedData = this.data.paged;
 };
 
-DataManager.prototype.goToPage = async function (page){
+DataManager.prototype.goToPage = async function (page) {
 	this.setPaging(page);
 	this.processPaging();
 };
 
-DataManager.prototype.setPaging = function (page){
-	if (isNaN(page)){
+DataManager.prototype.setPaging = function (page) {
+	if (isNaN(page)) {
 		page = this.page;
-		if (isNaN(page) || page == 0){
+		if (isNaN(page) || page == 0) {
 			page = 1;
 		}
 	}
-	if (page > this.pages){
+	if (page > this.pages) {
 		page = this.pages;
 	}
 	this.page = page;
 };
 
-DataManager.prototype.processPaging = function (){
+DataManager.prototype.processPaging = function () {
 
 	// Local Data
-	if (this.data && !this.fetch?.url){
+	if (this.data && !this.fetch?.url) {
 		var data = this.data.sorted;
 		var count = data.length;
 		var itemsPerPage = this.itemsPerPage;
 		var page = this.page;
 		var pages = this.pages;
-		var endItem = page*itemsPerPage;
-		var startItem = endItem-itemsPerPage;
+		var endItem = page * itemsPerPage;
+		var startItem = endItem - itemsPerPage;
 		var pagedData = [];
 
-		for (j = startItem; j < endItem && j < count; j++){
+		for (j = startItem; j < endItem && j < count; j++) {
 			pagedData.push(data[j]);
 		}
 		this.data.paged = pagedData;
 		this.updateProcessedDataset();	//sets the this.processedData to the paged dataset
-	}else if (this.fetch?.url){
+	} else if (this.fetch?.url) {
 		// Fetch Data API
 		//this.load();
 	}

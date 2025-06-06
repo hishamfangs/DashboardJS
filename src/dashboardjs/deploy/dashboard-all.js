@@ -1576,23 +1576,24 @@ function DataManager(config, data) {	// data is optional
 }
 
 DataManager.SORTING = {
-	ASC : "asc",
-	DESC : "desc"
+	ASC: "asc",
+	DESC: "desc"
 }
-DataManager.prototype.init = function (config){
+DataManager.prototype.init = function (config) {
 	this.setDefaults();
-	this.setConfig(config);	
+	this.setConfig(config);
 };
 
-DataManager.prototype.setDefaults = function (){
+DataManager.prototype.setDefaults = function () {
 	// Set config defaults
 	this.page = 1;
 	this.pages = 1;
-	this.selectedItem = -1;	
+	this.selectedItem = -1;
 	this.itemsPerPage = 12;
 	this.fetch = {
-		options:{}
+		options: {}
 	};
+	this.fetchFunction = () => alert('function not set');
 	this.sorting = {
 		sortBy: '',
 		sortDirection: DataManager.SORTING.ASC,
@@ -1611,68 +1612,75 @@ DataManager.prototype.setDefaults = function (){
 	this.tabName = "";
 };
 
-DataManager.prototype.setConfig = function (config){
+DataManager.prototype.setConfig = function (config) {
 	// Overwrite default config with passed in configs
-	if (config){
+	if (config) {
 		this.config = config;
-		if (config.page){
+		if (config.page) {
 			this.page = config.page;
 		}
-		if (config.itemsPerPage){
+		if (config.itemsPerPage) {
 			this.itemsPerPage = config.itemsPerPage;
 		}
-		if (config.fetch){
-			this.fetch = {...this.fetch, ...config.fetch};
+		if (config.fetch) {
+			this.fetch = { ...this.fetch, ...config.fetch };
 		}
-		if (config.sorting){
+		if (config.sorting) {
 			this.setSorting(config.sorting);
 		}
-		if (config.tabName){
+		if (config.tabName) {
 			this.tabName = config.tabName;
-		}		
-		if (config.search){
-			if (config.search.options){
-				for (var c in config.search.options){
-					if (config.search.options.hasOwnProperty(c)){
+		}
+		if (config.search) {
+			if (config.search.options) {
+				for (var c in config.search.options) {
+					if (config.search.options.hasOwnProperty(c)) {
 						var thisOption = config.search.options[c];
 						this.search.options[c] = this.search.options;
 					}
 				}
 			}
-			if (config.search.parameters){
-				this.search.parameters = config.search.parameters;				
+			if (config.search.parameters) {
+				this.search.parameters = config.search.parameters;
 			}
+		}
+		if (config.fetchFunction) {
+			this.fetchFunction = config.fetchFunction;
 		}
 	}
 };
 
-DataManager.prototype.load = async function(countOnly){
-	if (this.fetch?.url){
-		let {options, url} = this.generateFetchParameters(countOnly);
-		this.loading = await fetch(url, options);
+DataManager.prototype.load = async function (countOnly) {
+	if (this.fetch?.url) {
+		let { options, url } = this.generateFetchParameters(countOnly);
+		if (this.fetchFunction) {
+			this.loading = await this.fetchFunction(url, options);
+		} else {
+			this.loading = await fetch(url, options);
+		}
 		var res = await this.loading.json();
 		console.log(res);
 		this.setData(res.data, res.count);
 	}
 
-	if (countOnly){
+	if (countOnly) {
 		return this.count;
-	}else{
+	} else {
 		return this.getData();
 	}
 };
 
-DataManager.prototype.generateFetchParameters = function (countOnly){
-	let fetchOptions = {...this.fetch?.options};
+DataManager.prototype.generateFetchParameters = function (countOnly) {
+	let fetchOptions = { ...this.fetch?.options };
 	let url = this.fetch.url;
 
 	// Set Method
-	if (!fetchOptions.method){
+	if (!fetchOptions.method) {
 		this.fetch.options.method = fetchOptions.method = 'GET';
 	}
 	// Generate Parameters & Set Defaults
 	defaultParameters = {
-		page : 'page',
+		page: 'page',
 		itemsPerPage: 'itemsPerPage',
 		count: 'count',
 		getCount: 'getCount',
@@ -1680,30 +1688,30 @@ DataManager.prototype.generateFetchParameters = function (countOnly){
 		sortBy: 'sortBy',
 		tabName: 'tabName'
 	};
-	dashboardParameters = {...defaultParameters}; 
-	if (this.fetch.dashboardParameters){
-		dashboardParameters = {...dashboardParameters, ...this.fetch.dashboardParameters}
+	dashboardParameters = { ...defaultParameters };
+	if (this.fetch.dashboardParameters) {
+		dashboardParameters = { ...dashboardParameters, ...this.fetch.dashboardParameters }
 	}
 
 	const data = new URLSearchParams();
 	data.append(dashboardParameters.page, this.page);
 	data.append(dashboardParameters.itemsPerPage, this.itemsPerPage);
-	data.append(dashboardParameters.getCount, countOnly||false);
+	data.append(dashboardParameters.getCount, countOnly || false);
 	data.append(dashboardParameters.filterBy, JSON.stringify(this.filtering.keywords));
 	data.append(dashboardParameters.sortBy, JSON.stringify(this.sorting));
 	data.append(dashboardParameters.tabName, this.tabName);
-	
-	if (fetchOptions.method=='POST'){
+
+	if (fetchOptions.method == 'POST') {
 		fetchOptions.body = data;
-	}else{
+	} else {
 		url += '?' + data;
 	}
 
-	return {options: fetchOptions, url: url};
+	return { options: fetchOptions, url: url };
 };
 
-DataManager.prototype.setData = function (data, count){
-	if (!data){
+DataManager.prototype.setData = function (data, count) {
+	if (!data) {
 		data = [];
 	}
 	this.data = {
@@ -1713,77 +1721,77 @@ DataManager.prototype.setData = function (data, count){
 		sorted: clone(data),
 		paged: clone(data)
 	};
-	if (this.fetch?.url){
+	if (this.fetch?.url) {
 		this.count = count
-	}else{
+	} else {
 		this.count = this.data.sorted.length
 	}
 	this.processData();
 	//this.refresh();
 };
 
-DataManager.prototype.processData = function (){
-	if (this.data && !this.fetch?.url){
-		if (this.data.sorted){
+DataManager.prototype.processData = function () {
+	if (this.data && !this.fetch?.url) {
+		if (this.data.sorted) {
 			var data = this.data.sorted;
 			var count = data.length;
 			var itemsPerPage = this.itemsPerPage;
 			this.count = count;
-			if (count){
-				var pages = Math.ceil(count/itemsPerPage);
+			if (count) {
+				var pages = Math.ceil(count / itemsPerPage);
 				this.pages = pages;
-			}else{
+			} else {
 				this.page = 1;
 				this.pages = 1;
 			}
 		}
-	}else{
+	} else {
 		//var data = this.data.sorted;
 		var count = this.count;
 		var itemsPerPage = this.itemsPerPage;
-		if (count){
-			this.pages = Math.ceil(count/itemsPerPage);
-		}else{
+		if (count) {
+			this.pages = Math.ceil(count / itemsPerPage);
+		} else {
 			this.pages = 1;
 		}
 	}
 };
-DataManager.prototype.toggleSorting = function (){
-	this.sorting.sortDirection = this.sorting.sortDirection==DataManager.SORTING.ASC?DataManager.SORTING.DESC:DataManager.SORTING.ASC
+DataManager.prototype.toggleSorting = function () {
+	this.sorting.sortDirection = this.sorting.sortDirection == DataManager.SORTING.ASC ? DataManager.SORTING.DESC : DataManager.SORTING.ASC
 };
 
-DataManager.prototype.refresh = async function (){
-	if (this.fetch?.url){
+DataManager.prototype.refresh = async function () {
+	if (this.fetch?.url) {
 		await this.load();
-	}else{
+	} else {
 		this.processSearch();
 		this.processFiltering();
 		this.processSorting();
 		this.processData();
-		this.processPaging();	
+		this.processPaging();
 	}
 	return this.getData();
 };
 
-DataManager.prototype.reset = function (){
+DataManager.prototype.reset = function () {
 	this.setDefaults();
 	this.refresh();
 };
 
-DataManager.prototype.doSearch = function (searchParameters){
+DataManager.prototype.doSearch = function (searchParameters) {
 	this.setSearch(searchParameters);
 	this.refresh();
 };
 
-DataManager.prototype.setSearch = function (searchParameters){
+DataManager.prototype.setSearch = function (searchParameters) {
 	this.search.parameters = searchParameters;
 };
 
-DataManager.prototype.processSearch = function (){
-	if (this.data){
-		if (this.data.raw){
-			if (this.search){
-				if (this.search.parameters){
+DataManager.prototype.processSearch = function () {
+	if (this.data) {
+		if (this.data.raw) {
+			if (this.search) {
+				if (this.search.parameters) {
 					this.processSearchParameters();
 				}
 			}
@@ -1791,47 +1799,47 @@ DataManager.prototype.processSearch = function (){
 	}
 };
 
-DataManager.prototype.processSearchParameters = function(){
+DataManager.prototype.processSearchParameters = function () {
 	var dataset = this.data.searched = clone(this.data.raw);
 	var enableSpecialCharacters = this.search.options.enableSpecialCharacters;
 	var wholeWordSearch = this.search.options.wholeWordSearch;
-			
-	for (var i=0;i<dataset.length;i++){
+
+	for (var i = 0; i < dataset.length; i++) {
 		var found = true;
 		var thisRecord = dataset[i];
-		if (thisRecord){
-		
-			for (var k in this.search.parameters){
-				if (this.search.parameters.hasOwnProperty(k)){
+		if (thisRecord) {
+
+			for (var k in this.search.parameters) {
+				if (this.search.parameters.hasOwnProperty(k)) {
 					var thisParameter = this.search.parameters[k];
 					var thisWholeWordSearch = wholeWordSearch;
 					var searchField = thisParameter.field;
 					var searchValue = thisParameter.value;
 					searchValue = String(searchValue).toLowerCase().trim();
-					if (searchValue){
+					if (searchValue) {
 						var searchOptions = thisParameter.options;
 						var currentRecordFieldValue = String(thisRecord[searchField]).toLowerCase().trim();
-						if (searchOptions){
-							if (searchOptions.wholeWordSearch){
+						if (searchOptions) {
+							if (searchOptions.wholeWordSearch) {
 								thisWholeWordSearch = searchOptions.wholeWordSearch;
 							}
 						}
-						if (thisWholeWordSearch){
-							if (currentRecordFieldValue != searchValue){
+						if (thisWholeWordSearch) {
+							if (currentRecordFieldValue != searchValue) {
 								found = false;
 							}
-						}else{
-							if (currentRecordFieldValue.indexOf(searchValue)==-1){
+						} else {
+							if (currentRecordFieldValue.indexOf(searchValue) == -1) {
 								found = false;
 							}
 						}
 					}
-				}			
-			}		
+				}
+			}
 		}
 		// If Not found, remove from Filtered Dataset
 		//console.log("found: " + found);
-		if (!found){
+		if (!found) {
 			//console.log(dataset);
 			//console.log("Deleting iteration "+i+": " + dataset[i].RECORD_ID);
 			dataset.splice(i, 1);
@@ -1840,23 +1848,23 @@ DataManager.prototype.processSearchParameters = function(){
 			//console.log("now i is: " + i);
 			//console.log(dataset);
 		}
-	}	
+	}
 };
 
-DataManager.prototype.filter = function (filtering){
+DataManager.prototype.filter = function (filtering) {
 	this.setFiltering(filtering);
 	this.refresh();
 };
 
-DataManager.prototype.setFiltering = function (filtering){
+DataManager.prototype.setFiltering = function (filtering) {
 	this.filtering = filtering;
 };
 
-DataManager.prototype.processFiltering = function (){
-	if (this.data){
-		if (this.data.searched){
-			if (this.filtering){
-				if (this.filtering.keywords){
+DataManager.prototype.processFiltering = function () {
+	if (this.data) {
+		if (this.data.searched) {
+			if (this.filtering) {
+				if (this.filtering.keywords) {
 					this.processKeywordFilters();
 				}
 			}
@@ -1864,14 +1872,14 @@ DataManager.prototype.processFiltering = function (){
 	}
 };
 
-DataManager.prototype.processKeywordFilters = function(){
+DataManager.prototype.processKeywordFilters = function () {
 	var dataset = this.data.filtered = clone(this.data.searched);
-	for (k in this.filtering.keywords){
+	for (k in this.filtering.keywords) {
 		var thisKeyword = this.filtering.keywords[k];
-		for (var i=0;i<dataset.length;i++){
+		for (var i = 0; i < dataset.length; i++) {
 			var found = false;
 			var thisRecord = dataset[i];
-			if (thisRecord){
+			if (thisRecord) {
 				for (var key in thisRecord) {
 					if (thisRecord.hasOwnProperty(key)) {
 						//console.log(key + " -> " + thisRecord[key]);
@@ -1880,7 +1888,7 @@ DataManager.prototype.processKeywordFilters = function(){
 						thisKeyword = String(thisKeyword).trim().toLowerCase();
 						// If Keyword is found in the current field, set found to true
 						//isKeywords
-						if (field.indexOf(thisKeyword)>-1){
+						if (field.indexOf(thisKeyword) > -1) {
 							found = true;
 							//console.log("Found " + thisKeyword + " in " + key + ", exiting loop, going to next record. Found Record is: ");
 							//console.log(thisRecord);
@@ -1891,7 +1899,7 @@ DataManager.prototype.processKeywordFilters = function(){
 			}
 			// If Not found, remove from Filtered Dataset
 			//console.log("found: " + found);
-			if (!found){
+			if (!found) {
 				//console.log(dataset);
 				//console.log("Deleting iteration "+i+": " + dataset[i].RECORD_ID);
 				dataset.splice(i, 1);
@@ -1900,37 +1908,37 @@ DataManager.prototype.processKeywordFilters = function(){
 				//console.log("now i is: " + i);
 				//console.log(dataset);
 			}
-		}				
+		}
 	}
 };
 
-DataManager.prototype.addKeyword = function (keyword){
+DataManager.prototype.addKeyword = function (keyword) {
 	this.addFilterKeyword(keyword);
 	this.refresh();
 };
-DataManager.prototype.addFilterKeyword = function (keyword){
+DataManager.prototype.addFilterKeyword = function (keyword) {
 	keyword = String(keyword).trim().toLowerCase();
-	if (!this.filtering.keywords){
+	if (!this.filtering.keywords) {
 		this.filtering.keywords = [];
 	}
-	
+
 	// Reset Filtered Dataset
-	if (this.filtering.keywords.indexOf(keyword)>-1){
+	if (this.filtering.keywords.indexOf(keyword) > -1) {
 		// don't add duplicate keyword
-	}else{
+	} else {
 		this.filtering.keywords.push(keyword);
 	}
 };
-DataManager.prototype.removeKeyword = function (keyword){
+DataManager.prototype.removeKeyword = function (keyword) {
 	this.removeFilterKeyword(keyword);
 	this.refresh();
 };
-DataManager.prototype.removeFilterKeyword = function (keyword){
+DataManager.prototype.removeFilterKeyword = function (keyword) {
 	console.log("Removing Filter: " + keyword);
-	if (this.filtering.keywords.indexOf(keyword)>-1){
-		for (k in this.filtering.keywords){
+	if (this.filtering.keywords.indexOf(keyword) > -1) {
+		for (k in this.filtering.keywords) {
 			thisKeyword = this.filtering.keywords[k];
-			if (thisKeyword == keyword){
+			if (thisKeyword == keyword) {
 				console.log("Found it, Removing Keyword " + keyword);
 				this.filtering.keywords.splice(k, 1);
 				break;
@@ -1939,94 +1947,94 @@ DataManager.prototype.removeFilterKeyword = function (keyword){
 	}
 };
 
-DataManager.prototype.sort = function (sorting){
+DataManager.prototype.sort = function (sorting) {
 	this.setSorting(sorting);
 	this.refresh();
 };
 
-DataManager.prototype.setSorting = function (sorting){
-	if (sorting.sortBy){
+DataManager.prototype.setSorting = function (sorting) {
+	if (sorting.sortBy) {
 		this.sorting.sortBy = sorting.sortBy;
 	}
-	if (sorting.sortDirection){
+	if (sorting.sortDirection) {
 		this.sorting.sortDirection = sorting.sortDirection;
 	}
-	if (sorting.sortFieldText){
+	if (sorting.sortFieldText) {
 		this.sorting.sortFieldText = sorting.sortFieldText;
 	}
 };
 
-DataManager.prototype.processSorting = function (){
-	if (this.data){
-		if (this.sorting.sortBy){
+DataManager.prototype.processSorting = function () {
+	if (this.data) {
+		if (this.sorting.sortBy) {
 			var dataset = clone(this.data.filtered);
 			var sortBy = this.sorting.sortBy;
 			var sortDirection = String(this.sorting.sortDirection).toLowerCase();
-			if (sortDirection == "asc"){
-				dataset.sort(function(a, b){return a[sortBy]<b[sortBy]?-1:1;});
-			}else{
-				dataset.sort(function(a, b){return a[sortBy]<b[sortBy]?1:-1;});
+			if (sortDirection == "asc") {
+				dataset.sort(function (a, b) { return a[sortBy] < b[sortBy] ? -1 : 1; });
+			} else {
+				dataset.sort(function (a, b) { return a[sortBy] < b[sortBy] ? 1 : -1; });
 			}
 			this.data.sorted = dataset;
-		}else{
+		} else {
 			this.data.sorted = clone(this.data.filtered);
 		}
 	}
 };
 
-DataManager.prototype.getData = function(){
+DataManager.prototype.getData = function () {
 	return this.data.paged;
 };
-DataManager.prototype.getFieldsFromData = function(){
+DataManager.prototype.getFieldsFromData = function () {
 	let fields = {};
-	if (this?.data?.paged?.length){
-		for (let d in this.data.paged[0]){
+	if (this?.data?.paged?.length) {
+		for (let d in this.data.paged[0]) {
 			fields[d] = {};
 		}
 	}
 	return fields;
 };
-DataManager.prototype.updateProcessedDataset = function(){
+DataManager.prototype.updateProcessedDataset = function () {
 	this.processedData = this.data.paged;
 };
 
-DataManager.prototype.goToPage = async function (page){
+DataManager.prototype.goToPage = async function (page) {
 	this.setPaging(page);
 	this.processPaging();
 };
 
-DataManager.prototype.setPaging = function (page){
-	if (isNaN(page)){
+DataManager.prototype.setPaging = function (page) {
+	if (isNaN(page)) {
 		page = this.page;
-		if (isNaN(page) || page == 0){
+		if (isNaN(page) || page == 0) {
 			page = 1;
 		}
 	}
-	if (page > this.pages){
+	if (page > this.pages) {
 		page = this.pages;
 	}
 	this.page = page;
 };
 
-DataManager.prototype.processPaging = function (){
+DataManager.prototype.processPaging = function () {
 
 	// Local Data
-	if (this.data && !this.fetch?.url){
+	if (this.data && !this.fetch?.url) {
 		var data = this.data.sorted;
 		var count = data.length;
 		var itemsPerPage = this.itemsPerPage;
 		var page = this.page;
 		var pages = this.pages;
-		var endItem = page*itemsPerPage;
-		var startItem = endItem-itemsPerPage;
+		var endItem = page * itemsPerPage;
+		var startItem = endItem - itemsPerPage;
 		var pagedData = [];
 
-		for (j = startItem; j < endItem && j < count; j++){
+		for (j = startItem; j < endItem && j < count; j++) {
 			pagedData.push(data[j]);
 		}
 		this.data.paged = pagedData;
 		this.updateProcessedDataset();	//sets the this.processedData to the paged dataset
-	}else if (this.fetch?.url){
+	} else if (this.fetch?.url) {
 		// Fetch Data API
 		//this.load();
 	}
@@ -2381,573 +2389,6 @@ FilteringKeyword.defaultTemplate = {
 	itemClose: ".close"
 };
 
-var timer;
-HTMLCollection.prototype.forEach = Array.prototype.forEach;
-
-function startTimer() {
-	timer = new Date();
-	console.log("Timer Started");
-}
-
-function endTimer() {
-	timerEnd = new Date();
-	var dif = timerEnd.getTime() - timer.getTime();
-	console.log("Timer: " + dif / 1000);
-}
-
-function clone(obj) {
-	var copy;
-
-	// Handle the 3 simple types, and null or undefined
-	if (null == obj || "object" != typeof obj) return obj;
-
-	// Handle Date
-	if (obj instanceof Date) {
-		copy = new Date();
-		copy.setTime(obj.getTime());
-		return copy;
-	}
-
-	// Handle Array
-	if (obj instanceof Array) {
-		copy = [];
-		for (var i = 0, len = obj.length; i < len; i++) {
-			copy[i] = clone(obj[i]);
-		}
-		return copy;
-	}
-
-	// Handle Object
-	if (obj instanceof Object) {
-		copy = {};
-		for (var attr in obj) {
-			if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
-		}
-		return copy;
-	}
-
-	throw new Error("Unable to copy obj! Its type isn't supported.");
-}
-function getArabicNumbers(str) {
-	var map =
-		[
-			"&\#1632;", "&\#1633;", "&\#1634;", "&\#1635;", "&\#1636;",
-			"&\#1637;", "&\#1638;", "&\#1639;", "&\#1640;", "&\#1641;"
-		];
-
-	var newStr = "";
-
-	str = String(str);
-
-	for (i = 0; i < str.length; i++) {
-		newStr += map[parseInt(str.charAt(i))];
-	}
-
-	return newStr;
-}
-
-function ifEmptyReplaceWithSpace(value) {
-	if (value == "") {
-		value = " &nbsp; ";
-	}
-	return value;
-}
-
-function processOnClick(event) {
-	theDashboard = event.currentTarget.params.dashboard;
-	theCurrentRecord = event.currentTarget.params.record;
-	theCurrentItem = event.currentTarget.params.item;
-	theFunction = event.currentTarget.params.theFunction;
-	// First, stop event propagation
-	//event.originalEvent.stopPropagation();
-	//event.stopPropagation();
-	//event.cancelBubble = true;
-	//event.stopImmediatePropagation();
-
-	//test = event.isPropagationStopped();
-	//test2 = event.originalEvent.isPropagationStopped();
-
-	//console.log("Clicked on", theCurrentRecord);
-	theFunction.call(theCurrentItem, theDashboard, theCurrentRecord);
-	//event.preventDefault();
-	//event.originalEvent.preventDefault();
-	//test3 = event.isDefaultPrevented();
-	//test4 = event.originalEvent.isDefaultPrevented();
-}
-
-function splitDate(date, language) {
-	if (language == "ar-AE") {
-		var monthNames = ["", "يناير", "فبراير", "مارس", "إبريل", "مايو", "يونيو",
-			"يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
-		];
-	} else {
-		var monthNames = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-		];
-	}
-	var theDate = String(date).split("-");
-	if (theDate) {
-		if (theDate.length > 0) {
-			var month = parseInt(theDate[1]);
-			if (month < 1) {
-				month = 1;
-			}
-			theDate[1] = monthNames[month];
-			if (language == "ar-AE") {
-				theDate[0] = getArabicNumbers(theDate[0]);
-				theDate[2] = getArabicNumbers(theDate[2]);
-			}
-			return theDate;
-		} else {
-			return false;
-		}
-	} else {
-		return false;
-	}
-}
-
-/************* Jquery Replacement Functions *******************/
-NodeList.prototype.wrap = function (wrapper) {
-	// creating a temporary element to contain the HTML string ('wrapper'):
-	var temp = document.createElement('div'),
-		// a reference to the parent of the first Node:
-		parent = this[0].parentNode,
-		// a reference to where the newly-created nodes should be inserted:
-		insertWhere = this[0].previousSibling,
-		// caching a variable:
-		target;
-
-	// setting the innerHTML of the temporary element to what was passed-in:
-	temp.innerHTML = wrapper;
-
-	// getting a reference to the outermost element in the HTML string passed-in:
-	target = temp.firstChild;
-
-	// a naive search for the deepest node of the passed-in string:        
-	while (target.firstChild) {
-		target = target.firstChild;
-	}
-
-	// iterating over each Node:
-	[].forEach.call(this, function (a) {
-		// appending each of those Nodes to the deepest node of the passed-in string:
-		target.appendChild(a);
-	});
-
-	// inserting the created-nodes either before the previousSibling of the first
-	// Node (if there is one), or before the firstChild of the parent:
-	parent.insertBefore(temp.firstChild, (insertWhere ? insertWhere.nextSibling : parent.firstChild));
-
-}
-Node.prototype.wrap = function (wrapper) {
-	// creating a temporary element to contain the HTML string ('wrapper'):
-	var temp = document.createElement('div'),
-		// a reference to the parent of the first Node:
-		parent = this.parentNode,
-		// a reference to where the newly-created nodes should be inserted:
-		insertWhere = this.previousSibling,
-		// caching a variable:
-		target;
-
-	// setting the innerHTML of the temporary element to what was passed-in:
-	temp.innerHTML = wrapper;
-
-	// getting a reference to the outermost element in the HTML string passed-in:
-	target = temp.firstChild;
-
-	// a naive search for the deepest node of the passed-in string:        
-	while (target.firstChild) {
-		target = target.firstChild;
-	}
-
-	// appending each of those Nodes to the deepest node of the passed-in string:
-	target.appendChild(this);
-
-	// inserting the created-nodes either before the previousSibling of the first
-	// Node (if there is one), or before the firstChild of the parent:
-	if (parent){
-		parent.insertBefore(temp.firstChild, (insertWhere ? insertWhere.nextSibling : parent.firstChild));
-	}
-  return target;
-}
-
-NodeList.prototype.unwrap = function () {
-	this.forEach(function (el, index) {
-		// get the element's parent node
-		var parent = el.parentNode;
-
-		// move all children out of the element
-		while (el.firstChild) parent.insertBefore(el.firstChild, el);
-
-		// remove the empty element
-		parent.removeChild(el);
-	});
-}
-
-Node.prototype.unwrap = function () {
-
-		// get the element's parent node
-		var parent = this.parentNode;
-
-		// move all children out of the element
-		while (this.firstChild) parent.insertBefore(this.firstChild, this);
-
-		// remove the empty element
-		parent.removeChild(this);
-
-}
-
-NodeList.prototype.appendChild = function (child) {
-	this.forEach(function (el, index) {
-		el.appendChild(child);
-	});
-}
-
-
-Node.prototype.prependChild = function (child) {
-	this.insertBefore(child, this.firstChild);
-}
-
-
-NodeList.prototype.remove = function () {
-	this.forEach(function (el, index) {
-		el.parentNode.removeChild(el);
-	});
-}
-
-
-Node.prototype.remove = function (child) {
-	this.parentNode.removeChild(this);
-}
-
-
-NodeList.prototype.hide = function () {
-	this.forEach(function (el, index) {
-		el.style.display = 'none';
-	});
-}
-
-Node.prototype.hide = function () {
-	this.style.display = 'none';
-}
-
-NodeList.prototype.show = function () {
-	this.forEach(function (el, index) {
-		el.style.display = 'block';
-	});
-}
-
-Node.prototype.show = function () {
-	this.style.display = 'block';
-}
-
-
-var createNodeListFromArray = (function () {
-	// make an empty node list to inherit from
-	var nodelist = document.createDocumentFragment().childNodes;
-	// return a function to create object formed as desired
-	return function (nodeArray) {
-		var nodeLength = nodeArray.length;
-		var nodeListObj = {
-			'length': { value: nodeLength },
-			'item': {
-				"value": function (i) {
-					return this[+i || 0];
-				},
-				enumerable: true
-			}
-		};
-		for (var n in nodeArray) {
-			var node = nodeArray[n];
-			nodeListObj[n] = { value: node, enumerable: true };
-		}
-		return Object.create(nodelist, nodeListObj); // return an object pretending to be a NodeList
-	};
-}());
-
-NodeList.prototype.querySelectorAll = function (selector) {
-	var nodeArray = [];
-	[].forEach.call(this, function (el) {
-		var nodeList = el.querySelectorAll(selector);
-		[].forEach.call(nodeList, function (el2) {
-			nodeArray.push(el2);
-		});
-	});
-	return createNodeListFromArray(nodeArray);
-}
-
-NodeList.prototype.addClickHandler = function (clickHandler, params) {
-	[].forEach.call(this, function (el) {
-		el.addEventListener('click', clickHandler, false);
-		el.params = params;
-	});
-};
-
-Node.prototype.addClickHandler = function (clickHandler, params) {
-		this.addEventListener('click', clickHandler, false);
-		this.params = params;
-};
-
-Node.prototype.toggleClass = function (className) {
-	if (this.classList.contains(className)) {
-		this.classList.remove(className);
-	}else{
-		this.classList.add(className);
-	}
-};
-
-NodeList.prototype.toggleClass = function (className) {
-	[].forEach.call(this, function (el) {
-		el.toggleClass(className);
-	});
-};
-
-/******** General Helper Functions *****/
-if (!Array.prototype.includes) {
-	Object.defineProperty(Array.prototype, 'includes', {
-		enumerable: false,
-		value: function (searchElement /*, fromIndex*/) {
-			'use strict';
-			var O = Object(this);
-			var len = parseInt(O.length) || 0;
-			if (len === 0) {
-				return false;
-			}
-			var n = parseInt(arguments[1]) || 0;
-			var k;
-			if (n >= 0) {
-				k = n;
-			} else {
-				k = len + n;
-				if (k < 0) { k = 0; }
-			}
-			var currentElement;
-			while (k < len) {
-				currentElement = O[k];
-				if (searchElement === currentElement ||
-					(searchElement !== searchElement && currentElement !== currentElement)) {
-					return true;
-				}
-				k++;
-			}
-			return false;
-		}
-	});
-}
-
-if (!String.prototype.replaceAll) {
-	Object.defineProperty(String.prototype, 'replaceAll', {
-		enumerable: false,
-		value: function (find, replace) {
-			var theString = String(this);
-			if (theString) {
-				return theString.replace(new RegExp(find.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1"), 'g'), replace);
-			} else {
-				return theString;
-			}
-		}
-	});
-}
-
-var timer;
-function startTimer() {
-	timer = new Date();
-	console.log("Timer Started");
-}
-
-function endTimer() {
-	timerEnd = new Date();
-	var dif = timerEnd.getTime() - timer.getTime();
-	console.log("Timer: " + dif / 1000);
-}
-
-function clone(obj) {
-	var copy;
-	// Handle the 3 simple types, and null or undefined
-	if (null == obj || "object" != typeof obj || obj.templateManager instanceof TemplateManager || obj instanceof Dashboard){
-		return obj;
-	}else if (obj instanceof HTMLDivElement){
-		return obj; //obj.cloneNode(true)
-	} 
-
-	// Handle Date
-	if (obj instanceof Date) {
-		copy = new Date();
-		copy.setTime(obj.getTime());
-		return copy;
-	}
-
-	// Handle Array
-	if (obj instanceof Array) {
-		copy = [];
-		for (var i = 0, len = obj.length; i < len; i++) {
-			copy[i] = clone(obj[i]);
-		}
-		return copy;
-	}
-
-	// Handle Object
-	if (obj instanceof HTMLElement){
-		return obj.cloneNode(true);
-	}else if (obj instanceof Object) {
-		copy = {};
-		for (var attr in obj) {
-			if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
-		}
-		return copy;
-	}
-
-	throw new Error("Unable to copy obj! Its type isn't supported.");
-}
-
-
-function stopEventPropagation(e) {
-	//e.stopImmediatePropagation();
-	e.preventDefault();
-	e.stopPropagation();
-}
-
-// Check if 2 objects are equal (only checks first level)
-function shallowCompare (o1, o2){
-	for(var p in o1){
-			if(o1.hasOwnProperty(p)){
-					if(o1[p] !== o2[p]){
-							return false;
-					}
-			}
-	}
-	for(var p in o2){
-			if(o2.hasOwnProperty(p)){
-					if(o1[p] !== o2[p]){
-							return false;
-					}
-			}
-	}
-	return true;
-};
-
-
-function deepCompare () {
-  var i, l, leftChain, rightChain;
-
-  function compare2Objects (x, y) {
-    var p;
-
-    // remember that NaN === NaN returns false
-    // and isNaN(undefined) returns true
-    if (isNaN(x) && isNaN(y) && typeof x === 'number' && typeof y === 'number') {
-         return true;
-    }
-
-    // Compare primitives and functions.     
-    // Check if both arguments link to the same object.
-    // Especially useful on the step where we compare prototypes
-    if (x === y) {
-        return true;
-    }
-
-    // Works in case when functions are created in constructor.
-    // Comparing dates is a common scenario. Another built-ins?
-    // We can even handle functions passed across iframes
-    if ((typeof x === 'function' && typeof y === 'function') ||
-       (x instanceof Date && y instanceof Date) ||
-       (x instanceof RegExp && y instanceof RegExp) ||
-       (x instanceof String && y instanceof String) ||
-       (x instanceof Number && y instanceof Number)) {
-        return x.toString() === y.toString();
-    }
-
-    // At last checking prototypes as good as we can
-    if (!(x instanceof Object && y instanceof Object)) {
-        return false;
-    }
-
-    if (x.isPrototypeOf(y) || y.isPrototypeOf(x)) {
-        return false;
-    }
-
-    if (x.constructor !== y.constructor) {
-        return false;
-    }
-
-    if (x.prototype !== y.prototype) {
-        return false;
-    }
-
-    // Check for infinitive linking loops
-    if (leftChain.indexOf(x) > -1 || rightChain.indexOf(y) > -1) {
-         return false;
-    }
-
-    // Quick checking of one object being a subset of another.
-    // todo: cache the structure of arguments[0] for performance
-    for (p in y) {
-        if (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) {
-            return false;
-        }
-        else if (typeof y[p] !== typeof x[p]) {
-            return false;
-        }
-    }
-
-    for (p in x) {
-        if (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) {
-            return false;
-        }
-        else if (typeof y[p] !== typeof x[p]) {
-            return false;
-        }
-
-        switch (typeof (x[p])) {
-            case 'object':
-            case 'function':
-
-                leftChain.push(x);
-                rightChain.push(y);
-
-                if (!compare2Objects (x[p], y[p])) {
-                    return false;
-                }
-
-                leftChain.pop();
-                rightChain.pop();
-                break;
-
-            default:
-                if (x[p] !== y[p]) {
-                    return false;
-                }
-                break;
-        }
-    }
-
-    return true;
-  }
-
-  if (arguments.length < 1) {
-    return true; //Die silently? Don't know how to handle such case, please help...
-    // throw "Need two or more arguments to compare";
-  }
-
-  for (i = 1, l = arguments.length; i < l; i++) {
-
-      leftChain = []; //Todo: this can be cached
-      rightChain = [];
-
-      if (!compare2Objects(arguments[0], arguments[i])) {
-          return false;
-      }
-  }
-
-  return true;
-}
-
-function str(msg) {
-	if (msg) {
-		return String(msg).trim();
-	}
-	return "";
-}
 
 /**** PageButton Class
 |*		
@@ -3642,24 +3083,24 @@ SortingItem.prototype.create = function (active){
 function Tab(settings) {
 	this.active = false;
 	// Make a copy as to not modify original config
-	var tabConfig = {...settings.config};
-	if (!tabConfig.onClick){
-		tabConfig.onClick = function (){
+	var tabConfig = { ...settings.config };
+	if (!tabConfig.onClick) {
+		tabConfig.onClick = function () {
 			this.setActive(true);
-			settings.tabs.goToTab(tabConfig.name);	
+			settings.tabs.goToTab(tabConfig.name);
 		};
 	}
 
-	Component.call(this, {config: tabConfig, data: settings.dataManager.getData(), templateManager: settings.templateManager, useExistingElement: settings.useExistingElement, language: settings.language});
+	Component.call(this, { config: tabConfig, data: settings.dataManager.getData(), templateManager: settings.templateManager, useExistingElement: settings.useExistingElement, language: settings.language });
 
 	this.dataManager = settings.dataManager;
 	this.tabs = settings.tabs;
 	this.dashboard = this.tabs.dashboard;
 	//this.dashboard = settings.config.dashboard;
 	// Save Original Config without the OnClick added, so we can pass it down to the Recordset.
-	this.originalConfig = {...settings.config};
+	this.originalConfig = { ...settings.config };
 	this.refreshCount();
-	if (this.icon){
+	if (this.icon) {
 		this.objects.itemIcon.classList.remove("default-icon");
 	}
 };
@@ -3667,7 +3108,7 @@ function Tab(settings) {
 Tab.prototype = Object.create(Component.prototype);
 Tab.prototype.constructor = Tab;
 
-Tab.prototype.refreshCount = async function (){
+Tab.prototype.refreshCount = async function () {
 	// Create Staggered Loader (so the loading animation don't sync)
 	//var staggeredSeed = getRandomInt(100,900);
 	//setTimeout(()=> this.showLoader(), staggeredSeed);
@@ -3681,28 +3122,28 @@ Tab.prototype.refreshCount = async function (){
 
 };
 function getRandomInt(min, max) {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+	min = Math.ceil(min);
+	max = Math.floor(max);
+	return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
 }
-Tab.prototype.setActive = function (active){
-	if (active){
+Tab.prototype.setActive = function (active) {
+	if (active) {
 		this.active = true;
 		this.addClass("active");
-	}else{
+	} else {
 		this.active = false;
 		this.removeClass("active");
 	}
 };
 
-Tab.prototype.goToPage = async function(page){
+Tab.prototype.goToPage = async function (page) {
 	await this.dataManager.goToPage(page);
 	await this.refresh();
 	//tl.from("#" + recordset.uid + " " + Record.defaultTemplate.item, {duration: 0.3, opacity: 0, x: (oldPage<page?1600:-1600), stagger: 0.05});
 };
 
-Tab.prototype.refresh = async function(){
-	
+Tab.prototype.refresh = async function () {
+
 	this.setBreadCrumbs();
 	this.setRecordset();
 	this.setPagination();
@@ -3711,79 +3152,79 @@ Tab.prototype.refresh = async function(){
 	this.setSorting();
 };
 
-Tab.prototype.setBreadCrumbs = function (){
+Tab.prototype.setBreadCrumbs = function () {
 	let description = this.getDescription();
-	this.dashboard.setText('<span class="bc-tab-title">'+(this.translatedName?this.translatedName:this.name)+': </span>' +  description, 'tabBreadCrumbs');
+	this.dashboard.setText('<span class="bc-tab-title">' + (this.translatedName ? this.translatedName : this.name) + ' </span>' + description, 'tabBreadCrumbs');
 };
-Tab.prototype.getDescription = function (){
+Tab.prototype.getDescription = function () {
 	let description = '';
-	if (typeof this.description == 'string'){
+	if (typeof this.description == 'string') {
 		description = this.description;
-	}else if (typeof this.description == 'object'){
-		if (this.language){
+	} else if (typeof this.description == 'object') {
+		if (this.language) {
 			description = this.description[this.language];
 		}
-		if (!description){
+		if (!description) {
 			description = this.description['en-US'];
 		}
 	}
 	return description;
 };
 
-Tab.prototype.setRecordset = function (){
+Tab.prototype.setRecordset = function () {
 	var recordset = this.dashboard.getChild(this.name);
-	if (recordset){
+	if (recordset) {
 		recordset.refresh();
-	}else{
-		recordset = new Recordset({config: this.originalConfig, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
-		this.dashboard.append(recordset, "recordset");			
+	} else {
+		recordset = new Recordset({ config: this.originalConfig, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language });
+		this.dashboard.append(recordset, "recordset");
 	}
 };
 
-Tab.prototype.setPagination = function (){
-	var pagination = new Paging({tab: this, config: {name: this.name}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language, useExistingElement:true});
+Tab.prototype.setPagination = function () {
+	var pagination = new Paging({ tab: this, config: { name: this.name }, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language, useExistingElement: true });
 	this.pagination = pagination;
 };
 
-Tab.prototype.setFiltering = function (){
+Tab.prototype.setFiltering = function () {
 	var filtering = this.dashboard.getChild('Search')
-	if (filtering){
+	if (filtering) {
 		filtering.remove();
 	}
-	var filtering = new Filtering({tab: this,  config: {name: 'Search'}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
+	var filtering = new Filtering({ tab: this, config: { name: 'Search' }, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language });
 	this.dashboard.append(filtering, 'filtering');
 };
 
-Tab.prototype.setSorting = async function (){
+Tab.prototype.setSorting = async function () {
 	var sorting = this.dashboard.getChild('Sort By')
-	if (sorting){
+	if (sorting) {
 		sorting.remove();
 	}
-	if (!this?.recordSettings?.fields || JSON.stringify(this?.recordSettings?.fields)=='{}'){
+	if (!this?.recordSettings?.fields || JSON.stringify(this?.recordSettings?.fields) == '{}') {
 		await this.dataManager.loading;
-		this.fields = this.dataManager.getFieldsFromData();	
+		this.fields = this.dataManager.getFieldsFromData();
 		this.fields = Component.getFieldSettings(this.fields, this.language);
-	}else{
+	} else {
 		this.fields = Component.getFieldSettings(this.recordSettings.fields, this.language);
 	}
 	// Set the Sor
-	var sorting = new Sorting({tab: this, config: {fields: this.fields, name: 'Sort By'}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
+	var sorting = new Sorting({ tab: this, config: { fields: this.fields, name: 'Sort By' }, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language });
 	this.dashboard.append(sorting, 'sorting');
 };
 
-Tab.prototype.setView = function (){
+Tab.prototype.setView = function () {
 	var viewSwitcher = this.dashboard.getChild('View')
-	if (viewSwitcher){
+	if (viewSwitcher) {
 		viewSwitcher.remove();
 	}
-	var viewSwitcher = new ViewSwitcher({tab: this, config: {name: 'View', viewMode: this.viewMode}, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language});
+	var viewSwitcher = new ViewSwitcher({ tab: this, config: { name: 'View', viewMode: this.viewMode }, dataManager: this.dataManager, templateManager: this.templateManager, language: this.language });
 	this.dashboard.append(viewSwitcher, 'viewSwitcher');
 };
 
 Tab.prototype.deactivate = function () {
 	var activeRecordset = this.dashboard.getChild(this.name)
 	this.setActive(false);
-	if (activeRecordset){
+	if (activeRecordset) {
 		activeRecordset.remove();
 	}
 };
@@ -3816,37 +3257,39 @@ function Tabs(settings) {
 Tabs.prototype = Object.create(Component.prototype);
 Tabs.prototype.constructor = Tabs;
 
-Tabs.prototype.loadTabs = async function(){
+Tabs.prototype.loadTabs = async function () {
 	this.processTabs();
 
-	for (var t in this.tabs){
-		var tabConfig = this.tabs[t]; 
+	for (var t in this.tabs) {
+		var tabConfig = this.tabs[t];
 		tabConfig.dashboard = this.dashboard;
 
 		// Check if ajax Fetch is configured either on the tab level or on the global config level
 		var fetch = tabConfig.fetch || this.config.fetch;
 
-		// Load DataManager with configuration
-		dataManager = new DataManager({fetch: fetch, tabName:tabConfig.name, itemsPerPage: tabConfig.itemsPerPage}, this.data?.[tabConfig.name]);
+		var fetchFunction = tabConfig.fetchFunction || this.config.fetchFunction;
 
-		var tab = new Tab({tabs: this, config: tabConfig, dataManager: dataManager, templateManager: this.templateManager, language: this.language});
+		// Load DataManager with configuration
+		dataManager = new DataManager({ fetch: fetch, fetchFunction: fetchFunction, tabName: tabConfig.name, itemsPerPage: tabConfig.itemsPerPage }, this.data?.[tabConfig.name]);
+
+		var tab = new Tab({ tabs: this, config: tabConfig, dataManager: dataManager, templateManager: this.templateManager, language: this.language });
 		this.tabs[t].dataManager = dataManager;
 		this.tabs[t].tab = tab;
 		this.append(tab);
 		//var tl = gsap.timeline();
 		//tl.from("#" + recordset.uid + " " + Record.defaultTemplate.item, {duration: 0.3, opacity: 0, x: 1600, stagger: 0.05});
 	}
-	if (!this.config.initialActiveTab){
-		let keys = Object.keys(this.tabs); 
-		this.config.initialActiveTab = keys.length?keys[0]:null;
+	if (!this.config.initialActiveTab) {
+		let keys = Object.keys(this.tabs);
+		this.config.initialActiveTab = keys.length ? keys[0] : null;
 	}
 	this.goToTab(this.config.initialActiveTab);
 }
 
-Tabs.prototype.goToTab = function(tabName){
-	if (tabName){
+Tabs.prototype.goToTab = function (tabName) {
+	if (tabName) {
 		//disable old active tab
-		if (this.activeTab && this.activeTab.name != tabName){
+		if (this.activeTab && this.activeTab.name != tabName) {
 			this.activeTab.deactivate();
 			this.activeTab = null;
 		}
@@ -3855,19 +3298,19 @@ Tabs.prototype.goToTab = function(tabName){
 		this.activeTab = this.getChild(tabName);
 		this.activeTab.setActive(true);
 		this.activeTab.refresh();
-	}	
+	}
 };
 
-Tabs.prototype.processTabs = function (){
-	for (var t in this.tabs){
-		var tabConfig = this.tabs[t]; 
+Tabs.prototype.processTabs = function () {
+	for (var t in this.tabs) {
+		var tabConfig = this.tabs[t];
 
 		// Set The Name
-		if (!tabConfig.name){
+		if (!tabConfig.name) {
 			tabConfig.name = t;
 		}
 
-		
+
 		// Set Translated Name
 		var translatedName = tabConfig.name;
 		if (tabConfig?.translation?.[this.language]) {
@@ -3875,14 +3318,14 @@ Tabs.prototype.processTabs = function (){
 		};
 		this.translatedName = translatedName;
 		// Check if the data supplied is an array with no tabnames, then use the same data set for all tabs
-		if (this.data){
+		if (this.data) {
 			// Copy the dataset to a originalData
-			if (Array.isArray(this.data) && !this.originalData){
+			if (Array.isArray(this.data) && !this.originalData) {
 				this.originalData = clone(this.data);
 				this.data = {};
 			}
-			if (this.originalData){
-				if (!this.data){
+			if (this.originalData) {
+				if (!this.data) {
 					this.data = {};
 				}
 				this.data[t] = this.originalData;
@@ -4633,6 +4076,573 @@ ViewSwitcherButton.prototype.unhighlight = function (){
 	this.removeClass("active");
 };
 
+var timer;
+HTMLCollection.prototype.forEach = Array.prototype.forEach;
+
+function startTimer() {
+	timer = new Date();
+	console.log("Timer Started");
+}
+
+function endTimer() {
+	timerEnd = new Date();
+	var dif = timerEnd.getTime() - timer.getTime();
+	console.log("Timer: " + dif / 1000);
+}
+
+function clone(obj) {
+	var copy;
+
+	// Handle the 3 simple types, and null or undefined
+	if (null == obj || "object" != typeof obj) return obj;
+
+	// Handle Date
+	if (obj instanceof Date) {
+		copy = new Date();
+		copy.setTime(obj.getTime());
+		return copy;
+	}
+
+	// Handle Array
+	if (obj instanceof Array) {
+		copy = [];
+		for (var i = 0, len = obj.length; i < len; i++) {
+			copy[i] = clone(obj[i]);
+		}
+		return copy;
+	}
+
+	// Handle Object
+	if (obj instanceof Object) {
+		copy = {};
+		for (var attr in obj) {
+			if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+		}
+		return copy;
+	}
+
+	throw new Error("Unable to copy obj! Its type isn't supported.");
+}
+function getArabicNumbers(str) {
+	var map =
+		[
+			"&\#1632;", "&\#1633;", "&\#1634;", "&\#1635;", "&\#1636;",
+			"&\#1637;", "&\#1638;", "&\#1639;", "&\#1640;", "&\#1641;"
+		];
+
+	var newStr = "";
+
+	str = String(str);
+
+	for (i = 0; i < str.length; i++) {
+		newStr += map[parseInt(str.charAt(i))];
+	}
+
+	return newStr;
+}
+
+function ifEmptyReplaceWithSpace(value) {
+	if (value == "") {
+		value = " &nbsp; ";
+	}
+	return value;
+}
+
+function processOnClick(event) {
+	theDashboard = event.currentTarget.params.dashboard;
+	theCurrentRecord = event.currentTarget.params.record;
+	theCurrentItem = event.currentTarget.params.item;
+	theFunction = event.currentTarget.params.theFunction;
+	// First, stop event propagation
+	//event.originalEvent.stopPropagation();
+	//event.stopPropagation();
+	//event.cancelBubble = true;
+	//event.stopImmediatePropagation();
+
+	//test = event.isPropagationStopped();
+	//test2 = event.originalEvent.isPropagationStopped();
+
+	//console.log("Clicked on", theCurrentRecord);
+	theFunction.call(theCurrentItem, theDashboard, theCurrentRecord);
+	//event.preventDefault();
+	//event.originalEvent.preventDefault();
+	//test3 = event.isDefaultPrevented();
+	//test4 = event.originalEvent.isDefaultPrevented();
+}
+
+function splitDate(date, language) {
+	if (language == "ar-AE") {
+		var monthNames = ["", "يناير", "فبراير", "مارس", "إبريل", "مايو", "يونيو",
+			"يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر"
+		];
+	} else {
+		var monthNames = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+			"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
+		];
+	}
+	var theDate = String(date).split("-");
+	if (theDate) {
+		if (theDate.length > 0) {
+			var month = parseInt(theDate[1]);
+			if (month < 1) {
+				month = 1;
+			}
+			theDate[1] = monthNames[month];
+			if (language == "ar-AE") {
+				theDate[0] = getArabicNumbers(theDate[0]);
+				theDate[2] = getArabicNumbers(theDate[2]);
+			}
+			return theDate;
+		} else {
+			return false;
+		}
+	} else {
+		return false;
+	}
+}
+
+/************* Jquery Replacement Functions *******************/
+NodeList.prototype.wrap = function (wrapper) {
+	// creating a temporary element to contain the HTML string ('wrapper'):
+	var temp = document.createElement('div'),
+		// a reference to the parent of the first Node:
+		parent = this[0].parentNode,
+		// a reference to where the newly-created nodes should be inserted:
+		insertWhere = this[0].previousSibling,
+		// caching a variable:
+		target;
+
+	// setting the innerHTML of the temporary element to what was passed-in:
+	temp.innerHTML = wrapper;
+
+	// getting a reference to the outermost element in the HTML string passed-in:
+	target = temp.firstChild;
+
+	// a naive search for the deepest node of the passed-in string:        
+	while (target.firstChild) {
+		target = target.firstChild;
+	}
+
+	// iterating over each Node:
+	[].forEach.call(this, function (a) {
+		// appending each of those Nodes to the deepest node of the passed-in string:
+		target.appendChild(a);
+	});
+
+	// inserting the created-nodes either before the previousSibling of the first
+	// Node (if there is one), or before the firstChild of the parent:
+	parent.insertBefore(temp.firstChild, (insertWhere ? insertWhere.nextSibling : parent.firstChild));
+
+}
+Node.prototype.wrap = function (wrapper) {
+	// creating a temporary element to contain the HTML string ('wrapper'):
+	var temp = document.createElement('div'),
+		// a reference to the parent of the first Node:
+		parent = this.parentNode,
+		// a reference to where the newly-created nodes should be inserted:
+		insertWhere = this.previousSibling,
+		// caching a variable:
+		target;
+
+	// setting the innerHTML of the temporary element to what was passed-in:
+	temp.innerHTML = wrapper;
+
+	// getting a reference to the outermost element in the HTML string passed-in:
+	target = temp.firstChild;
+
+	// a naive search for the deepest node of the passed-in string:        
+	while (target.firstChild) {
+		target = target.firstChild;
+	}
+
+	// appending each of those Nodes to the deepest node of the passed-in string:
+	target.appendChild(this);
+
+	// inserting the created-nodes either before the previousSibling of the first
+	// Node (if there is one), or before the firstChild of the parent:
+	if (parent){
+		parent.insertBefore(temp.firstChild, (insertWhere ? insertWhere.nextSibling : parent.firstChild));
+	}
+  return target;
+}
+
+NodeList.prototype.unwrap = function () {
+	this.forEach(function (el, index) {
+		// get the element's parent node
+		var parent = el.parentNode;
+
+		// move all children out of the element
+		while (el.firstChild) parent.insertBefore(el.firstChild, el);
+
+		// remove the empty element
+		parent.removeChild(el);
+	});
+}
+
+Node.prototype.unwrap = function () {
+
+		// get the element's parent node
+		var parent = this.parentNode;
+
+		// move all children out of the element
+		while (this.firstChild) parent.insertBefore(this.firstChild, this);
+
+		// remove the empty element
+		parent.removeChild(this);
+
+}
+
+NodeList.prototype.appendChild = function (child) {
+	this.forEach(function (el, index) {
+		el.appendChild(child);
+	});
+}
+
+
+Node.prototype.prependChild = function (child) {
+	this.insertBefore(child, this.firstChild);
+}
+
+
+NodeList.prototype.remove = function () {
+	this.forEach(function (el, index) {
+		el.parentNode.removeChild(el);
+	});
+}
+
+
+Node.prototype.remove = function (child) {
+	this.parentNode.removeChild(this);
+}
+
+
+NodeList.prototype.hide = function () {
+	this.forEach(function (el, index) {
+		el.style.display = 'none';
+	});
+}
+
+Node.prototype.hide = function () {
+	this.style.display = 'none';
+}
+
+NodeList.prototype.show = function () {
+	this.forEach(function (el, index) {
+		el.style.display = 'block';
+	});
+}
+
+Node.prototype.show = function () {
+	this.style.display = 'block';
+}
+
+
+var createNodeListFromArray = (function () {
+	// make an empty node list to inherit from
+	var nodelist = document.createDocumentFragment().childNodes;
+	// return a function to create object formed as desired
+	return function (nodeArray) {
+		var nodeLength = nodeArray.length;
+		var nodeListObj = {
+			'length': { value: nodeLength },
+			'item': {
+				"value": function (i) {
+					return this[+i || 0];
+				},
+				enumerable: true
+			}
+		};
+		for (var n in nodeArray) {
+			var node = nodeArray[n];
+			nodeListObj[n] = { value: node, enumerable: true };
+		}
+		return Object.create(nodelist, nodeListObj); // return an object pretending to be a NodeList
+	};
+}());
+
+NodeList.prototype.querySelectorAll = function (selector) {
+	var nodeArray = [];
+	[].forEach.call(this, function (el) {
+		var nodeList = el.querySelectorAll(selector);
+		[].forEach.call(nodeList, function (el2) {
+			nodeArray.push(el2);
+		});
+	});
+	return createNodeListFromArray(nodeArray);
+}
+
+NodeList.prototype.addClickHandler = function (clickHandler, params) {
+	[].forEach.call(this, function (el) {
+		el.addEventListener('click', clickHandler, false);
+		el.params = params;
+	});
+};
+
+Node.prototype.addClickHandler = function (clickHandler, params) {
+		this.addEventListener('click', clickHandler, false);
+		this.params = params;
+};
+
+Node.prototype.toggleClass = function (className) {
+	if (this.classList.contains(className)) {
+		this.classList.remove(className);
+	}else{
+		this.classList.add(className);
+	}
+};
+
+NodeList.prototype.toggleClass = function (className) {
+	[].forEach.call(this, function (el) {
+		el.toggleClass(className);
+	});
+};
+
+/******** General Helper Functions *****/
+if (!Array.prototype.includes) {
+	Object.defineProperty(Array.prototype, 'includes', {
+		enumerable: false,
+		value: function (searchElement /*, fromIndex*/) {
+			'use strict';
+			var O = Object(this);
+			var len = parseInt(O.length) || 0;
+			if (len === 0) {
+				return false;
+			}
+			var n = parseInt(arguments[1]) || 0;
+			var k;
+			if (n >= 0) {
+				k = n;
+			} else {
+				k = len + n;
+				if (k < 0) { k = 0; }
+			}
+			var currentElement;
+			while (k < len) {
+				currentElement = O[k];
+				if (searchElement === currentElement ||
+					(searchElement !== searchElement && currentElement !== currentElement)) {
+					return true;
+				}
+				k++;
+			}
+			return false;
+		}
+	});
+}
+
+if (!String.prototype.replaceAll) {
+	Object.defineProperty(String.prototype, 'replaceAll', {
+		enumerable: false,
+		value: function (find, replace) {
+			var theString = String(this);
+			if (theString) {
+				return theString.replace(new RegExp(find.replace(/([.*+?^=!:${}()|\[\]\/\\])/g, "\\$1"), 'g'), replace);
+			} else {
+				return theString;
+			}
+		}
+	});
+}
+
+var timer;
+function startTimer() {
+	timer = new Date();
+	console.log("Timer Started");
+}
+
+function endTimer() {
+	timerEnd = new Date();
+	var dif = timerEnd.getTime() - timer.getTime();
+	console.log("Timer: " + dif / 1000);
+}
+
+function clone(obj) {
+	var copy;
+	// Handle the 3 simple types, and null or undefined
+	if (null == obj || "object" != typeof obj || obj.templateManager instanceof TemplateManager || obj instanceof Dashboard){
+		return obj;
+	}else if (obj instanceof HTMLDivElement){
+		return obj; //obj.cloneNode(true)
+	} 
+
+	// Handle Date
+	if (obj instanceof Date) {
+		copy = new Date();
+		copy.setTime(obj.getTime());
+		return copy;
+	}
+
+	// Handle Array
+	if (obj instanceof Array) {
+		copy = [];
+		for (var i = 0, len = obj.length; i < len; i++) {
+			copy[i] = clone(obj[i]);
+		}
+		return copy;
+	}
+
+	// Handle Object
+	if (obj instanceof HTMLElement){
+		return obj.cloneNode(true);
+	}else if (obj instanceof Object) {
+		copy = {};
+		for (var attr in obj) {
+			if (obj.hasOwnProperty(attr)) copy[attr] = clone(obj[attr]);
+		}
+		return copy;
+	}
+
+	throw new Error("Unable to copy obj! Its type isn't supported.");
+}
+
+
+function stopEventPropagation(e) {
+	//e.stopImmediatePropagation();
+	e.preventDefault();
+	e.stopPropagation();
+}
+
+// Check if 2 objects are equal (only checks first level)
+function shallowCompare (o1, o2){
+	for(var p in o1){
+			if(o1.hasOwnProperty(p)){
+					if(o1[p] !== o2[p]){
+							return false;
+					}
+			}
+	}
+	for(var p in o2){
+			if(o2.hasOwnProperty(p)){
+					if(o1[p] !== o2[p]){
+							return false;
+					}
+			}
+	}
+	return true;
+};
+
+
+function deepCompare () {
+  var i, l, leftChain, rightChain;
+
+  function compare2Objects (x, y) {
+    var p;
+
+    // remember that NaN === NaN returns false
+    // and isNaN(undefined) returns true
+    if (isNaN(x) && isNaN(y) && typeof x === 'number' && typeof y === 'number') {
+         return true;
+    }
+
+    // Compare primitives and functions.     
+    // Check if both arguments link to the same object.
+    // Especially useful on the step where we compare prototypes
+    if (x === y) {
+        return true;
+    }
+
+    // Works in case when functions are created in constructor.
+    // Comparing dates is a common scenario. Another built-ins?
+    // We can even handle functions passed across iframes
+    if ((typeof x === 'function' && typeof y === 'function') ||
+       (x instanceof Date && y instanceof Date) ||
+       (x instanceof RegExp && y instanceof RegExp) ||
+       (x instanceof String && y instanceof String) ||
+       (x instanceof Number && y instanceof Number)) {
+        return x.toString() === y.toString();
+    }
+
+    // At last checking prototypes as good as we can
+    if (!(x instanceof Object && y instanceof Object)) {
+        return false;
+    }
+
+    if (x.isPrototypeOf(y) || y.isPrototypeOf(x)) {
+        return false;
+    }
+
+    if (x.constructor !== y.constructor) {
+        return false;
+    }
+
+    if (x.prototype !== y.prototype) {
+        return false;
+    }
+
+    // Check for infinitive linking loops
+    if (leftChain.indexOf(x) > -1 || rightChain.indexOf(y) > -1) {
+         return false;
+    }
+
+    // Quick checking of one object being a subset of another.
+    // todo: cache the structure of arguments[0] for performance
+    for (p in y) {
+        if (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) {
+            return false;
+        }
+        else if (typeof y[p] !== typeof x[p]) {
+            return false;
+        }
+    }
+
+    for (p in x) {
+        if (y.hasOwnProperty(p) !== x.hasOwnProperty(p)) {
+            return false;
+        }
+        else if (typeof y[p] !== typeof x[p]) {
+            return false;
+        }
+
+        switch (typeof (x[p])) {
+            case 'object':
+            case 'function':
+
+                leftChain.push(x);
+                rightChain.push(y);
+
+                if (!compare2Objects (x[p], y[p])) {
+                    return false;
+                }
+
+                leftChain.pop();
+                rightChain.pop();
+                break;
+
+            default:
+                if (x[p] !== y[p]) {
+                    return false;
+                }
+                break;
+        }
+    }
+
+    return true;
+  }
+
+  if (arguments.length < 1) {
+    return true; //Die silently? Don't know how to handle such case, please help...
+    // throw "Need two or more arguments to compare";
+  }
+
+  for (i = 1, l = arguments.length; i < l; i++) {
+
+      leftChain = []; //Todo: this can be cached
+      rightChain = [];
+
+      if (!compare2Objects(arguments[0], arguments[i])) {
+          return false;
+      }
+  }
+
+  return true;
+}
+
+function str(msg) {
+	if (msg) {
+		return String(msg).trim();
+	}
+	return "";
+}
 				return {
 					Action: Action,
 					ActionsContainer: ActionsContainer,

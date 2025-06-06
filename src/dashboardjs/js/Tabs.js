@@ -22,37 +22,39 @@ function Tabs(settings) {
 Tabs.prototype = Object.create(Component.prototype);
 Tabs.prototype.constructor = Tabs;
 
-Tabs.prototype.loadTabs = async function(){
+Tabs.prototype.loadTabs = async function () {
 	this.processTabs();
 
-	for (var t in this.tabs){
-		var tabConfig = this.tabs[t]; 
+	for (var t in this.tabs) {
+		var tabConfig = this.tabs[t];
 		tabConfig.dashboard = this.dashboard;
 
 		// Check if ajax Fetch is configured either on the tab level or on the global config level
 		var fetch = tabConfig.fetch || this.config.fetch;
 
-		// Load DataManager with configuration
-		dataManager = new DataManager({fetch: fetch, tabName:tabConfig.name, itemsPerPage: tabConfig.itemsPerPage}, this.data?.[tabConfig.name]);
+		var fetchFunction = tabConfig.fetchFunction || this.config.fetchFunction;
 
-		var tab = new Tab({tabs: this, config: tabConfig, dataManager: dataManager, templateManager: this.templateManager, language: this.language});
+		// Load DataManager with configuration
+		dataManager = new DataManager({ fetch: fetch, fetchFunction: fetchFunction, tabName: tabConfig.name, itemsPerPage: tabConfig.itemsPerPage }, this.data?.[tabConfig.name]);
+
+		var tab = new Tab({ tabs: this, config: tabConfig, dataManager: dataManager, templateManager: this.templateManager, language: this.language });
 		this.tabs[t].dataManager = dataManager;
 		this.tabs[t].tab = tab;
 		this.append(tab);
 		//var tl = gsap.timeline();
 		//tl.from("#" + recordset.uid + " " + Record.defaultTemplate.item, {duration: 0.3, opacity: 0, x: 1600, stagger: 0.05});
 	}
-	if (!this.config.initialActiveTab){
-		let keys = Object.keys(this.tabs); 
-		this.config.initialActiveTab = keys.length?keys[0]:null;
+	if (!this.config.initialActiveTab) {
+		let keys = Object.keys(this.tabs);
+		this.config.initialActiveTab = keys.length ? keys[0] : null;
 	}
 	this.goToTab(this.config.initialActiveTab);
 }
 
-Tabs.prototype.goToTab = function(tabName){
-	if (tabName){
+Tabs.prototype.goToTab = function (tabName) {
+	if (tabName) {
 		//disable old active tab
-		if (this.activeTab && this.activeTab.name != tabName){
+		if (this.activeTab && this.activeTab.name != tabName) {
 			this.activeTab.deactivate();
 			this.activeTab = null;
 		}
@@ -61,19 +63,19 @@ Tabs.prototype.goToTab = function(tabName){
 		this.activeTab = this.getChild(tabName);
 		this.activeTab.setActive(true);
 		this.activeTab.refresh();
-	}	
+	}
 };
 
-Tabs.prototype.processTabs = function (){
-	for (var t in this.tabs){
-		var tabConfig = this.tabs[t]; 
+Tabs.prototype.processTabs = function () {
+	for (var t in this.tabs) {
+		var tabConfig = this.tabs[t];
 
 		// Set The Name
-		if (!tabConfig.name){
+		if (!tabConfig.name) {
 			tabConfig.name = t;
 		}
 
-		
+
 		// Set Translated Name
 		var translatedName = tabConfig.name;
 		if (tabConfig?.translation?.[this.language]) {
@@ -81,14 +83,14 @@ Tabs.prototype.processTabs = function (){
 		};
 		this.translatedName = translatedName;
 		// Check if the data supplied is an array with no tabnames, then use the same data set for all tabs
-		if (this.data){
+		if (this.data) {
 			// Copy the dataset to a originalData
-			if (Array.isArray(this.data) && !this.originalData){
+			if (Array.isArray(this.data) && !this.originalData) {
 				this.originalData = clone(this.data);
 				this.data = {};
 			}
-			if (this.originalData){
-				if (!this.data){
+			if (this.originalData) {
+				if (!this.data) {
 					this.data = {};
 				}
 				this.data[t] = this.originalData;
