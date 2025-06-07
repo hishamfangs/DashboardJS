@@ -25,7 +25,8 @@
 		console.log("count: ", dm.count);
 
 |******************* */
-function DataManager(config, data) {	// data is optional
+function DataManager(config, data) {
+	// data is optional
 	// The DataManager Element retrieves data & processes it
 
 	this.init(config);
@@ -36,8 +37,8 @@ function DataManager(config, data) {	// data is optional
 
 DataManager.SORTING = {
 	ASC: "asc",
-	DESC: "desc"
-}
+	DESC: "desc",
+};
 DataManager.prototype.init = function (config) {
 	this.setDefaults();
 	this.setConfig(config);
@@ -50,23 +51,23 @@ DataManager.prototype.setDefaults = function () {
 	this.selectedItem = -1;
 	this.itemsPerPage = 12;
 	this.fetch = {
-		options: {}
+		options: {},
 	};
-	this.fetchFunction = () => alert('function not set');
+	this.fetchFunction = (params) => alert("function not set");
 	this.sorting = {
-		sortBy: '',
+		sortBy: "",
 		sortDirection: DataManager.SORTING.ASC,
-		sortFieldText: ''
+		sortFieldText: "",
 	};
 	this.filtering = {
-		keywords: []
+		keywords: [],
 	};
 	this.search = {
 		parameters: [],
 		options: {
 			enableSpecialCharacters: false,
-			wholeWordSearch: false
-		}
+			wholeWordSearch: false,
+		},
 	};
 	this.tabName = "";
 };
@@ -112,12 +113,14 @@ DataManager.prototype.setConfig = function (config) {
 DataManager.prototype.load = async function (countOnly) {
 	if (this.fetch?.url) {
 		let { options, url } = this.generateFetchParameters(countOnly);
+		let params = this.generateFetchFunctionParameters(countOnly);
 		if (this.fetchFunction) {
-			this.loading = await this.fetchFunction(url, options);
+			this.loading = await this.fetchFunction(params);
+			var res = this.loading;
 		} else {
 			this.loading = await fetch(url, options);
+			var res = await this.loading.json();
 		}
-		var res = await this.loading.json();
 		console.log(res);
 		this.setData(res.data, res.count);
 	}
@@ -129,41 +132,84 @@ DataManager.prototype.load = async function (countOnly) {
 	}
 };
 
+DataManager.prototype.generateFetchFunctionParameters = function (countOnly) {
+	let fetchOptions = { ...this.fetch?.options };
+	let url = this.fetch?.url;
+
+	// Set Method
+	if (!fetchOptions.method) {
+		this.fetch.options.method = fetchOptions.method = "GET";
+	}
+	// Generate Parameters & Set Defaults
+	defaultParameters = {
+		page: "page",
+		itemsPerPage: "itemsPerPage",
+		count: "count",
+		getCount: "getCount",
+		filterBy: "filterBy",
+		sortBy: "sortBy",
+		tabName: "tabName",
+	};
+	dashboardParameters = { ...defaultParameters };
+	if (this.fetch.dashboardParameters) {
+		dashboardParameters = {
+			...dashboardParameters,
+			...this.fetch.dashboardParameters,
+		};
+	}
+
+	const data = {};
+	data.page = this.page;
+	data.itemsPerPage = this.itemsPerPage;
+	data.getCount = countOnly || false;
+	data.filterBy = JSON.stringify(this.filtering.keywords);
+	data.sortBy = this.sortBy;
+	data.tabName = this.tabName;
+
+	return data;
+};
+
 DataManager.prototype.generateFetchParameters = function (countOnly) {
 	let fetchOptions = { ...this.fetch?.options };
 	let url = this.fetch.url;
 
 	// Set Method
 	if (!fetchOptions.method) {
-		this.fetch.options.method = fetchOptions.method = 'GET';
+		this.fetch.options.method = fetchOptions.method = "GET";
 	}
 	// Generate Parameters & Set Defaults
 	defaultParameters = {
-		page: 'page',
-		itemsPerPage: 'itemsPerPage',
-		count: 'count',
-		getCount: 'getCount',
-		filterBy: 'filterBy',
-		sortBy: 'sortBy',
-		tabName: 'tabName'
+		page: "page",
+		itemsPerPage: "itemsPerPage",
+		count: "count",
+		getCount: "getCount",
+		filterBy: "filterBy",
+		sortBy: "sortBy",
+		tabName: "tabName",
 	};
 	dashboardParameters = { ...defaultParameters };
 	if (this.fetch.dashboardParameters) {
-		dashboardParameters = { ...dashboardParameters, ...this.fetch.dashboardParameters }
+		dashboardParameters = {
+			...dashboardParameters,
+			...this.fetch.dashboardParameters,
+		};
 	}
 
 	const data = new URLSearchParams();
 	data.append(dashboardParameters.page, this.page);
 	data.append(dashboardParameters.itemsPerPage, this.itemsPerPage);
 	data.append(dashboardParameters.getCount, countOnly || false);
-	data.append(dashboardParameters.filterBy, JSON.stringify(this.filtering.keywords));
+	data.append(
+		dashboardParameters.filterBy,
+		JSON.stringify(this.filtering.keywords)
+	);
 	data.append(dashboardParameters.sortBy, JSON.stringify(this.sorting));
 	data.append(dashboardParameters.tabName, this.tabName);
 
-	if (fetchOptions.method == 'POST') {
+	if (fetchOptions.method == "POST") {
 		fetchOptions.body = data;
 	} else {
-		url += '?' + data;
+		url += "?" + data;
 	}
 
 	return { options: fetchOptions, url: url };
@@ -178,12 +224,12 @@ DataManager.prototype.setData = function (data, count) {
 		searched: clone(data),
 		filtered: clone(data),
 		sorted: clone(data),
-		paged: clone(data)
+		paged: clone(data),
 	};
 	if (this.fetch?.url) {
-		this.count = count
+		this.count = count;
 	} else {
-		this.count = this.data.sorted.length
+		this.count = this.data.sorted.length;
 	}
 	this.processData();
 	//this.refresh();
@@ -216,7 +262,10 @@ DataManager.prototype.processData = function () {
 	}
 };
 DataManager.prototype.toggleSorting = function () {
-	this.sorting.sortDirection = this.sorting.sortDirection == DataManager.SORTING.ASC ? DataManager.SORTING.DESC : DataManager.SORTING.ASC
+	this.sorting.sortDirection =
+		this.sorting.sortDirection == DataManager.SORTING.ASC
+			? DataManager.SORTING.DESC
+			: DataManager.SORTING.ASC;
 };
 
 DataManager.prototype.refresh = async function () {
@@ -259,7 +308,7 @@ DataManager.prototype.processSearch = function () {
 };
 
 DataManager.prototype.processSearchParameters = function () {
-	var dataset = this.data.searched = clone(this.data.raw);
+	var dataset = (this.data.searched = clone(this.data.raw));
 	var enableSpecialCharacters = this.search.options.enableSpecialCharacters;
 	var wholeWordSearch = this.search.options.wholeWordSearch;
 
@@ -267,7 +316,6 @@ DataManager.prototype.processSearchParameters = function () {
 		var found = true;
 		var thisRecord = dataset[i];
 		if (thisRecord) {
-
 			for (var k in this.search.parameters) {
 				if (this.search.parameters.hasOwnProperty(k)) {
 					var thisParameter = this.search.parameters[k];
@@ -277,7 +325,9 @@ DataManager.prototype.processSearchParameters = function () {
 					searchValue = String(searchValue).toLowerCase().trim();
 					if (searchValue) {
 						var searchOptions = thisParameter.options;
-						var currentRecordFieldValue = String(thisRecord[searchField]).toLowerCase().trim();
+						var currentRecordFieldValue = String(thisRecord[searchField])
+							.toLowerCase()
+							.trim();
 						if (searchOptions) {
 							if (searchOptions.wholeWordSearch) {
 								thisWholeWordSearch = searchOptions.wholeWordSearch;
@@ -332,7 +382,7 @@ DataManager.prototype.processFiltering = function () {
 };
 
 DataManager.prototype.processKeywordFilters = function () {
-	var dataset = this.data.filtered = clone(this.data.searched);
+	var dataset = (this.data.filtered = clone(this.data.searched));
 	for (k in this.filtering.keywords) {
 		var thisKeyword = this.filtering.keywords[k];
 		for (var i = 0; i < dataset.length; i++) {
@@ -430,9 +480,13 @@ DataManager.prototype.processSorting = function () {
 			var sortBy = this.sorting.sortBy;
 			var sortDirection = String(this.sorting.sortDirection).toLowerCase();
 			if (sortDirection == "asc") {
-				dataset.sort(function (a, b) { return a[sortBy] < b[sortBy] ? -1 : 1; });
+				dataset.sort(function (a, b) {
+					return a[sortBy] < b[sortBy] ? -1 : 1;
+				});
 			} else {
-				dataset.sort(function (a, b) { return a[sortBy] < b[sortBy] ? 1 : -1; });
+				dataset.sort(function (a, b) {
+					return a[sortBy] < b[sortBy] ? 1 : -1;
+				});
 			}
 			this.data.sorted = dataset;
 		} else {
@@ -476,7 +530,6 @@ DataManager.prototype.setPaging = function (page) {
 };
 
 DataManager.prototype.processPaging = function () {
-
 	// Local Data
 	if (this.data && !this.fetch?.url) {
 		var data = this.data.sorted;
@@ -492,12 +545,9 @@ DataManager.prototype.processPaging = function () {
 			pagedData.push(data[j]);
 		}
 		this.data.paged = pagedData;
-		this.updateProcessedDataset();	//sets the this.processedData to the paged dataset
+		this.updateProcessedDataset(); //sets the this.processedData to the paged dataset
 	} else if (this.fetch?.url) {
 		// Fetch Data API
 		//this.load();
 	}
 };
-
-
-
