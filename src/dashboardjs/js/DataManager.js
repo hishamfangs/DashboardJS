@@ -53,7 +53,7 @@ DataManager.prototype.setDefaults = function () {
 	this.fetch = {
 		options: {},
 	};
-	this.fetchFunction = (params) => alert("function not set");
+	this.fetchFunction = null;
 	this.sorting = {
 		sortBy: "",
 		sortDirection: DataManager.SORTING.ASC,
@@ -70,6 +70,8 @@ DataManager.prototype.setDefaults = function () {
 		},
 	};
 	this.tabName = "";
+	this.activeRefresh = null;	// Promise of whichever refresh/goToPage is currently in flight, or null
+	this.refreshAgain = null;	// A queued task to run the moment the active one finishes
 };
 
 DataManager.prototype.setConfig = function (config) {
@@ -114,15 +116,20 @@ DataManager.prototype.load = async function (countOnly) {
 	if (this.fetch?.url) {
 		let { options, url } = this.generateFetchParameters(countOnly);
 		let params = this.generateFetchFunctionParameters(countOnly);
-		if (this.fetchFunction) {
-			this.loading = await this.fetchFunction(params);
-			var res = this.loading;
-		} else {
-			this.loading = await fetch(url, options);
-			var res = await this.loading.json();
+		try {
+			var res;
+			if (this.fetchFunction) {
+				this.loading = await this.fetchFunction(params);
+				res = this.loading;
+			} else {
+				this.loading = await fetch(url, options);
+				res = await this.loading.json();
+			}
+			console.log(res);
+			this.setData(res.data, res.count);
+		} catch (err) {
+			console.warn('DataManager failed to load data.', err);
 		}
-		console.log(res);
-		this.setData(res.data, res.count);
 	}
 
 	if (countOnly) {
@@ -159,12 +166,12 @@ DataManager.prototype.generateFetchFunctionParameters = function (countOnly) {
 	}
 
 	const data = {};
-	data.page = this.page;
-	data.itemsPerPage = this.itemsPerPage;
-	data.getCount = countOnly || false;
-	data.filterBy = JSON.stringify(this.filtering.keywords);
-	data.sortBy = this.sortBy;
-	data.tabName = this.tabName;
+	data[dashboardParameters.page] = this.page;
+	data[dashboardParameters.itemsPerPage] = this.itemsPerPage;
+	data[dashboardParameters.getCount] = countOnly || false;
+	data[dashboardParameters.filterBy] = JSON.stringify(this.filtering.keywords);
+	data[dashboardParameters.sortBy] = JSON.stringify(this.sorting);
+	data[dashboardParameters.tabName] = this.tabName;
 
 	return data;
 };
@@ -268,7 +275,32 @@ DataManager.prototype.toggleSorting = function () {
 			: DataManager.SORTING.ASC;
 };
 
-DataManager.prototype.refresh = async function () {
+// Ensures only one of refresh()/goToPage() runs at a time on this DataManager.
+// A call that arrives while one is already running doesn't start a second one -
+// it just queues a single trailing re-run (using whatever state is current when
+// the active one finishes), so bursts of calls collapse into at most one follow-up
+// instead of firing an overlapping request per call.
+DataManager.prototype.runExclusive = function (task) {
+	if (this.activeRefresh) {
+		this.refreshAgain = task;
+		return this.activeRefresh;
+	}
+	this.activeRefresh = task().finally(() => {
+		this.activeRefresh = null;
+		if (this.refreshAgain) {
+			var next = this.refreshAgain;
+			this.refreshAgain = null;
+			this.runExclusive(next);
+		}
+	});
+	return this.activeRefresh;
+};
+
+DataManager.prototype.refresh = function () {
+	return this.runExclusive(this.doRefresh.bind(this));
+};
+
+DataManager.prototype.doRefresh = async function () {
 	if (this.fetch?.url) {
 		await this.load();
 	} else {
@@ -276,19 +308,19 @@ DataManager.prototype.refresh = async function () {
 		this.processFiltering();
 		this.processSorting();
 		this.processData();
-		this.processPaging();
+		await this.processPaging();
 	}
 	return this.getData();
 };
 
 DataManager.prototype.reset = function () {
 	this.setDefaults();
-	this.refresh();
+	return this.refresh();
 };
 
 DataManager.prototype.doSearch = function (searchParameters) {
 	this.setSearch(searchParameters);
-	this.refresh();
+	return this.refresh();
 };
 
 DataManager.prototype.setSearch = function (searchParameters) {
@@ -362,7 +394,7 @@ DataManager.prototype.processSearchParameters = function () {
 
 DataManager.prototype.filter = function (filtering) {
 	this.setFiltering(filtering);
-	this.refresh();
+	return this.refresh();
 };
 
 DataManager.prototype.setFiltering = function (filtering) {
@@ -423,7 +455,7 @@ DataManager.prototype.processKeywordFilters = function () {
 
 DataManager.prototype.addKeyword = function (keyword) {
 	this.addFilterKeyword(keyword);
-	this.refresh();
+	return this.refresh();
 };
 DataManager.prototype.addFilterKeyword = function (keyword) {
 	keyword = String(keyword).trim().toLowerCase();
@@ -440,7 +472,7 @@ DataManager.prototype.addFilterKeyword = function (keyword) {
 };
 DataManager.prototype.removeKeyword = function (keyword) {
 	this.removeFilterKeyword(keyword);
-	this.refresh();
+	return this.refresh();
 };
 DataManager.prototype.removeFilterKeyword = function (keyword) {
 	console.log("Removing Filter: " + keyword);
@@ -458,7 +490,7 @@ DataManager.prototype.removeFilterKeyword = function (keyword) {
 
 DataManager.prototype.sort = function (sorting) {
 	this.setSorting(sorting);
-	this.refresh();
+	return this.refresh();
 };
 
 DataManager.prototype.setSorting = function (sorting) {
@@ -511,9 +543,14 @@ DataManager.prototype.updateProcessedDataset = function () {
 	this.processedData = this.data.paged;
 };
 
-DataManager.prototype.goToPage = async function (page) {
+DataManager.prototype.goToPage = function (page) {
 	this.setPaging(page);
-	this.processPaging();
+	return this.runExclusive(this.doGoToPage.bind(this));
+};
+
+DataManager.prototype.doGoToPage = async function () {
+	await this.processPaging();
+	return this.getData();
 };
 
 DataManager.prototype.setPaging = function (page) {
@@ -523,13 +560,17 @@ DataManager.prototype.setPaging = function (page) {
 			page = 1;
 		}
 	}
+	if (page < 1) {
+		page = 1;
+	}
 	if (page > this.pages) {
 		page = this.pages;
 	}
 	this.page = page;
 };
 
-DataManager.prototype.processPaging = function () {
+DataManager.prototype.processPaging = async function () {
+
 	// Local Data
 	if (this.data && !this.fetch?.url) {
 		var data = this.data.sorted;
@@ -548,6 +589,6 @@ DataManager.prototype.processPaging = function () {
 		this.updateProcessedDataset(); //sets the this.processedData to the paged dataset
 	} else if (this.fetch?.url) {
 		// Fetch Data API
-		//this.load();
+		await this.load();
 	}
 };
