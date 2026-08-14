@@ -310,4 +310,57 @@ describe('DataManager', () => {
       expect(dm.getData()).toEqual([{ tag: 'B' }]);
     });
   });
+
+  describe('malformed fetch results', () => {
+    // Regression: reading .data/.count straight off the response meant a
+    // fetchFunction returning the wrong shape produced an empty tab with a
+    // count of 0 - indistinguishable from a query that legitimately matched
+    // nothing, and the underlying TypeError was swallowed by load()'s catch.
+    function remote(fetchFunction) {
+      return new DataManager({ fetch: { url: 'http://fake.test/api' }, fetchFunction });
+    }
+
+    it('accepts a bare array and counts it', async () => {
+      const dm = remote(async () => [{ Name: 'A' }, { Name: 'B' }]);
+      await dm.refresh();
+      expect(dm.getData()).toEqual([{ Name: 'A' }, { Name: 'B' }]);
+      expect(dm.count).toBe(2);
+    });
+
+    it('falls back to the row count when count is missing', async () => {
+      const dm = remote(async () => ({ data: [{ Name: 'A' }, { Name: 'B' }, { Name: 'C' }] }));
+      await dm.refresh();
+      expect(dm.count).toBe(3);
+    });
+
+    it('coerces a numeric-string count (SQL drivers often stringify)', async () => {
+      const dm = remote(async () => ({ data: [{ Name: 'A' }], count: '4217' }));
+      await dm.refresh();
+      expect(dm.count).toBe(4217);
+    });
+
+    it('survives undefined without throwing, and reports why', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const dm = remote(async () => undefined);
+      await dm.refresh();
+      expect(dm.getData()).toEqual([]);
+      expect(dm.count).toBe(0);
+      expect(warn).toHaveBeenCalled();
+      expect(String(warn.mock.calls[0][0])).toMatch(/undefined/i);
+    });
+
+    it('warns when the object has no data array', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const dm = remote(async () => ({ rows: [{ Name: 'A' }], total: 1 }));
+      await dm.refresh();
+      expect(dm.getData()).toEqual([]);
+      expect(warn).toHaveBeenCalled();
+    });
+
+    it('still honours a real server-side total larger than the page', async () => {
+      const dm = remote(async () => ({ data: [{ Name: 'A' }], count: 500 }));
+      await dm.refresh();
+      expect(dm.count).toBe(500);
+    });
+  });
 });

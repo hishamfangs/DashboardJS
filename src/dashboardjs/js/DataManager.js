@@ -112,6 +112,38 @@ DataManager.prototype.setConfig = function (config) {
 	}
 };
 
+/**
+ * Coerce whatever a fetch produced into { data, count }.
+ *
+ * The documented shape is { data: [...], count: n }, but a fetchFunction returning
+ * a bare array, or nothing at all, is an easy mistake to make and the failure was
+ * badly disguised: reading .data off undefined threw, the throw was swallowed by
+ * the caller's catch, and the dashboard rendered an empty tab with a count of 0 -
+ * looking for all the world like the query legitimately matched nothing.
+ *
+ * A bare array is accepted and counted. Anything unusable is reported by name.
+ */
+DataManager.normaliseResponse = function (res) {
+	if (Array.isArray(res)) {
+		return { data: res, count: res.length };
+	}
+	if (res && typeof res === 'object') {
+		var data = Array.isArray(res.data) ? res.data : [];
+		// Fall back to the row count when the server omits (or mistypes) count,
+		// so the tab badge shows something truthful instead of blank.
+		var count = typeof res.count === 'number' ? res.count : Number(res.count);
+		if (isNaN(count)) {
+			count = data.length;
+		}
+		if (!Array.isArray(res.data)) {
+			console.warn('DataManager: fetch result has no "data" array. Expected { data: [...], count: n }, received:', res);
+		}
+		return { data: data, count: count };
+	}
+	console.warn('DataManager: fetch returned ' + (res === undefined ? 'undefined' : String(res)) + '. Expected { data: [...], count: n }.');
+	return { data: [], count: 0 };
+};
+
 DataManager.prototype.load = async function (countOnly) {
 	if (this.fetch?.url) {
 		let { options, url } = this.generateFetchParameters(countOnly);
@@ -125,8 +157,8 @@ DataManager.prototype.load = async function (countOnly) {
 				this.loading = await fetch(url, options);
 				res = await this.loading.json();
 			}
-			console.log(res);
-			this.setData(res.data, res.count);
+			var normalised = DataManager.normaliseResponse(res);
+			this.setData(normalised.data, normalised.count);
 		} catch (err) {
 			console.warn('DataManager failed to load data.', err);
 		}
@@ -234,7 +266,11 @@ DataManager.prototype.setData = function (data, count) {
 		paged: clone(data),
 	};
 	if (this.fetch?.url) {
-		this.count = count;
+		// Server-side paging: the total comes from the response, since the rows
+		// held locally are only the current page. Guard the value anyway - an
+		// undefined count silently emptied the tab badge.
+		var total = typeof count === 'number' ? count : Number(count);
+		this.count = isNaN(total) ? this.data.sorted.length : total;
 	} else {
 		this.count = this.data.sorted.length;
 	}
