@@ -100,14 +100,31 @@ Paging.prototype.refresh = function (){
 	// Create Go To Next Block Button
 	var nextBlock = new PageButton({
 		config: {
-			pageNumber: '', 
+			pageNumber: '',
 			name: '>',
 			onClick: function(){
-				paginationObject.visibleBlock = visibleBlock+1>totalBlocks?totalBlocks:visibleBlock+1;
+				// Moving to the next row of pages also loads a page - previously this
+				// only re-rendered the buttons, leaving the records on whatever page
+				// was already loaded.
+				var targetPage;
+				if (visibleBlock+1>totalBlocks){
+					// No further row to move to, so fall back to the last page.
+					targetPage = dataManager.pages;
+				} else {
+					// First page of the row we are moving to.
+					targetPage = (visibleBlock * visiblePages) + 1;
+					if (targetPage>dataManager.pages){
+						targetPage = dataManager.pages;
+					}
+				}
+				// Derive the visible row from the page just loaded, so the highlighted
+				// page is always one of the buttons on screen.
+				paginationObject.visibleBlock = null;
+				paginationObject.tab.goToPage(targetPage);
 				paginationObject.refresh();
 			},
 			id: this.tab+'_page_'+p+'_prev'
-		}, 
+		},
 		templateManager: this.templateManager
 	});
 	this.append(nextBlock);
