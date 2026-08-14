@@ -124,7 +124,7 @@ DataManager.prototype.setConfig = function (config) {
  *
  * A bare array is accepted and counted. Anything unusable is reported by name.
  */
-DataManager.normaliseResponse = function (res) {
+DataManager.normaliseResponse = function (res, countOnly) {
 	if (Array.isArray(res)) {
 		return { data: res, count: res.length };
 	}
@@ -136,7 +136,9 @@ DataManager.normaliseResponse = function (res) {
 		if (isNaN(count)) {
 			count = data.length;
 		}
-		if (!Array.isArray(res.data)) {
+		// A count-only request legitimately comes back with no rows, so only
+		// complain about a missing data array when rows were actually asked for.
+		if (!countOnly && !Array.isArray(res.data)) {
 			console.warn('DataManager: fetch result has no "data" array. Expected { data: [...], count: n }, received:', res);
 		}
 		return { data: data, count: count };
@@ -163,8 +165,15 @@ DataManager.prototype.load = async function (countOnly) {
 				self.loading = await fetch(url, options);
 				return await self.loading.json();
 			});
-			var normalised = DataManager.normaliseResponse(res);
-			this.setData(normalised.data, normalised.count);
+			var normalised = DataManager.normaliseResponse(res, countOnly);
+			if (countOnly) {
+				// Only the total was asked for, so only the total is applied - a
+				// server honouring getCount has no rows to send, and pushing that
+				// empty list through setData() would blank a populated tab.
+				this.setCount(normalised.count);
+			} else {
+				this.setData(normalised.data, normalised.count);
+			}
 		} catch (err) {
 			console.warn('DataManager failed to load data.', err);
 		}
@@ -258,6 +267,24 @@ DataManager.prototype.generateFetchParameters = function (countOnly) {
 	}
 
 	return { options: fetchOptions, url: url };
+};
+
+/**
+ * Record the total WITHOUT disturbing the loaded rows.
+ *
+ * Used by a count-only load, which asks the server for a total rather than a page
+ * of data. Routing that through setData() would replace the rows on screen with
+ * the empty list such a response carries, blanking a populated tab.
+ *
+ * Pagination derives from the total, so processData() is still run to keep the
+ * page count in step.
+ */
+DataManager.prototype.setCount = function (count) {
+	var total = typeof count === 'number' ? count : Number(count);
+	if (!isNaN(total)) {
+		this.count = total;
+	}
+	this.processData();
 };
 
 DataManager.prototype.setData = function (data, count) {

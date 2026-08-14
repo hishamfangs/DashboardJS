@@ -432,6 +432,45 @@ describe('DataManager', () => {
       expect(maxConcurrent).toBe(1);
     });
 
+    it('a count-only load updates the total without blanking loaded rows', async () => {
+      const warn = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      let countOnlyCalls = 0;
+      const fetchFunction = vi.fn(async (params) => {
+        // A server honouring getCount returns the total and no rows.
+        if (params.getCount) {
+          countOnlyCalls++;
+          return { count: 900 };
+        }
+        return { data: [{ Name: 'visible row' }], count: 900 };
+      });
+      const dm = new DataManager({ fetch: { url: 'http://fake.test/api' }, fetchFunction });
+
+      await dm.load(false);
+      expect(dm.getData()).toEqual([{ Name: 'visible row' }]);
+
+      // Refreshing just the badge must not wipe what is on screen.
+      await dm.load(true);
+      expect(dm.getData()).toEqual([{ Name: 'visible row' }]);
+      expect(dm.count).toBe(900);
+      expect(countOnlyCalls).toBe(1);
+      // A rowless count-only reply is expected, not a malformed one.
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('a count-only load keeps pagination in step with the new total', async () => {
+      const fetchFunction = vi.fn(async (params) =>
+        params.getCount ? { count: 25 } : { data: [{ Name: 'A' }], count: 5 }
+      );
+      const dm = new DataManager({ fetch: { url: 'http://fake.test/api' }, fetchFunction, itemsPerPage: 10 });
+
+      await dm.load(false);
+      expect(dm.pages).toBe(1);
+
+      await dm.load(true);
+      expect(dm.count).toBe(25);
+      expect(dm.pages).toBe(3); // ceil(25 / 10)
+    });
+
     it('a rejected fetch does not stall the queue behind it', async () => {
       vi.spyOn(console, 'warn').mockImplementation(() => {});
       let call = 0;
