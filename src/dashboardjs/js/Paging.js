@@ -68,14 +68,30 @@ Paging.prototype.refresh = function (){
 	// Create Go To Previous Block Button
 	var prevBlock = new PageButton({
 		config: {
-			pageNumber: '', 
+			pageNumber: '',
 			name: '<',
 			onClick: function(){
-				paginationObject.visibleBlock = visibleBlock-1<=0?1:visibleBlock-1;
+				// Mirrors '>': moving to the previous row of pages also loads a page,
+				// rather than only re-rendering the buttons.
+				var targetPage;
+				if (visibleBlock-1<=0){
+					// No earlier row to move to, so fall back to the first page.
+					targetPage = 1;
+				} else {
+					// First page of the row we are moving to.
+					targetPage = ((visibleBlock-2) * visiblePages) + 1;
+					if (targetPage<1){
+						targetPage = 1;
+					}
+				}
+				// Derive the visible row from the page just loaded, so the highlighted
+				// page is always one of the buttons on screen.
+				paginationObject.visibleBlock = null;
+				paginationObject.tab.goToPage(targetPage);
 				paginationObject.refresh();
 			},
 			id: this.tab+'_page_'+p+'_prev'
-		}, 
+		},
 		templateManager: this.templateManager});
 	this.append(prevBlock);
 
