@@ -72,6 +72,7 @@ DataManager.prototype.setDefaults = function () {
 	this.tabName = "";
 	this.activeRefresh = null;	// Promise of whichever refresh/goToPage is currently in flight, or null
 	this.refreshAgain = null;	// A queued task to run the moment the active one finishes
+	this.fetchQueue = null;		// Tail of the fetch chain, so only one fetch runs at a time
 };
 
 DataManager.prototype.setConfig = function (config) {
@@ -146,17 +147,22 @@ DataManager.normaliseResponse = function (res) {
 
 DataManager.prototype.load = async function (countOnly) {
 	if (this.fetch?.url) {
+		var self = this;
+		// Built HERE, not inside the queued task: a request must carry the state it
+		// was ISSUED with. Generating them at execution time let a later call's
+		// sorting/paging leak into an earlier queued request.
 		let { options, url } = this.generateFetchParameters(countOnly);
 		let params = this.generateFetchFunctionParameters(countOnly);
 		try {
-			var res;
-			if (this.fetchFunction) {
-				this.loading = await this.fetchFunction(params);
-				res = this.loading;
-			} else {
-				this.loading = await fetch(url, options);
-				res = await this.loading.json();
-			}
+			// Queued, so only one fetch is ever in flight - see runFetchExclusive.
+			var res = await this.runFetchExclusive(async function () {
+				if (self.fetchFunction) {
+					self.loading = await self.fetchFunction(params);
+					return self.loading;
+				}
+				self.loading = await fetch(url, options);
+				return await self.loading.json();
+			});
 			var normalised = DataManager.normaliseResponse(res);
 			this.setData(normalised.data, normalised.count);
 		} catch (err) {
@@ -330,6 +336,39 @@ DataManager.prototype.runExclusive = function (task) {
 		}
 	});
 	return this.activeRefresh;
+};
+
+// Run `task` only once every fetch already in flight has settled, so this
+// DataManager never has two fetches running at the same time.
+//
+// This is a guarantee the LIBRARY makes rather than something every consumer has
+// to think about. fetchFunction is user-supplied, and the obvious naive shape -
+// stash a resolver, post a message, await one shared promise - breaks silently
+// when two fetches overlap: the second call overwrites the first's resolver, so
+// the first await never settles and whatever it was loading hangs forever.
+// Consumers cannot easily discover that, because nothing throws; a tab just
+// stays empty. Serialising here makes that implementation correct by default.
+//
+// Deliberately a SEPARATE lock from runExclusive(): doRefresh() already holds
+// that one while it awaits load(), so reusing it would deadlock. The order is
+// always runExclusive -> fetch lock and never the reverse, so no cycle exists.
+DataManager.prototype.runFetchExclusive = function (task) {
+	var run = function () {
+		return task();
+	};
+	// When nothing is in flight, start IMMEDIATELY rather than deferring through
+	// Promise.resolve().then(...). Queueing an idle fetch would delay it by a
+	// microtask for no reason, which is enough to reorder callers that expect a
+	// load to have applied by the time they resume.
+	// .then(run, run) - a rejected fetch must not poison the queue for the next.
+	var chained = this.fetchQueue ? this.fetchQueue.then(run, run) : run();
+	// Keep the stored tail non-rejecting so it neither stalls the queue nor
+	// surfaces as an unhandled rejection; callers still see `chained` reject.
+	this.fetchQueue = Promise.resolve(chained).then(
+		function () {},
+		function () {}
+	);
+	return chained;
 };
 
 DataManager.prototype.refresh = function () {

@@ -307,7 +307,14 @@ describe('DataManager', () => {
       expect(fetchFunction).toHaveBeenCalledTimes(2);
       // The final state must correspond to the LAST call made (tag B),
       // never the earlier one (tag A), regardless of resolution timing.
-      expect(dm.getData()).toEqual([{ tag: 'B' }]);
+      //
+      // waitFor, not a bare assertion: refresh() resolves when the ACTIVE call
+      // finishes, not when the coalesced trailing call it starts does, so the
+      // trailing setData always lands a little later. Asserting immediately
+      // happened to pass on microtask count alone, which fetch serialisation
+      // (runFetchExclusive) shifted. The guarantee under test - B wins, never A -
+      // is unchanged and is what this now waits for.
+      await vi.waitFor(() => expect(dm.getData()).toEqual([{ tag: 'B' }]));
     });
   });
 
@@ -361,6 +368,87 @@ describe('DataManager', () => {
       const dm = remote(async () => ({ data: [{ Name: 'A' }], count: 500 }));
       await dm.refresh();
       expect(dm.count).toBe(500);
+    });
+  });
+
+  describe('fetch serialisation', () => {
+    // A fetchFunction is user-supplied, and the natural naive implementation
+    // keeps ONE resolver for the in-flight request. If the library lets two
+    // fetches overlap, the second overwrites the first's resolver and the first
+    // await never settles - the caller hangs with no error. The library
+    // therefore guarantees at most one fetch at a time so this shape is safe.
+    function naiveConsumer(replies) {
+      // Deliberately buggy-if-overlapped: a single shared resolver slot.
+      let resolveOne = null;
+      let served = 0;
+      const fetchFunction = () => {
+        const p = new Promise((resolve) => {
+          resolveOne = resolve;
+        });
+        // Reply asynchronously, as a real host/postMessage round-trip would.
+        setTimeout(() => resolveOne(replies[served++]), 0);
+        return p;
+      };
+      return fetchFunction;
+    }
+
+    it('a naive single-resolver fetchFunction still completes when calls overlap', async () => {
+      const fetchFunction = vi.fn(
+        naiveConsumer([
+          { data: [{ tag: 'count' }], count: 42 },
+          { data: [{ tag: 'rows' }], count: 42 },
+        ])
+      );
+      const dm = new DataManager({ fetch: { url: 'http://fake.test/api' }, fetchFunction });
+
+      // Exactly what Tab does: refreshCount() -> load(true) alongside the
+      // recordset's load(). Neither may hang.
+      const both = Promise.all([dm.load(true), dm.load(false)]);
+      const settled = await Promise.race([
+        both.then(() => 'settled'),
+        new Promise((r) => setTimeout(() => r('HUNG'), 200)),
+      ]);
+
+      expect(settled).toBe('settled');
+      expect(fetchFunction).toHaveBeenCalledTimes(2);
+      expect(dm.count).toBe(42);
+    });
+
+    it('runs fetches one at a time, never concurrently', async () => {
+      let inFlight = 0;
+      let maxConcurrent = 0;
+      const fetchFunction = vi.fn(async () => {
+        inFlight++;
+        maxConcurrent = Math.max(maxConcurrent, inFlight);
+        await new Promise((r) => setTimeout(r, 10));
+        inFlight--;
+        return { data: [], count: 0 };
+      });
+      const dm = new DataManager({ fetch: { url: 'http://fake.test/api' }, fetchFunction });
+
+      await Promise.all([dm.load(true), dm.load(false), dm.load(false)]);
+
+      expect(fetchFunction).toHaveBeenCalledTimes(3);
+      expect(maxConcurrent).toBe(1);
+    });
+
+    it('a rejected fetch does not stall the queue behind it', async () => {
+      vi.spyOn(console, 'warn').mockImplementation(() => {});
+      let call = 0;
+      const fetchFunction = vi.fn(async () => {
+        call++;
+        if (call === 1) {
+          throw new Error('boom');
+        }
+        return { data: [{ Name: 'after' }], count: 1 };
+      });
+      const dm = new DataManager({ fetch: { url: 'http://fake.test/api' }, fetchFunction });
+
+      await Promise.all([dm.load(false), dm.load(false)]);
+
+      expect(fetchFunction).toHaveBeenCalledTimes(2);
+      // The second call still ran and its data landed.
+      expect(dm.getData()).toEqual([{ Name: 'after' }]);
     });
   });
 });
