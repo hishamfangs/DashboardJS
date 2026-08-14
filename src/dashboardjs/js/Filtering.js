@@ -63,6 +63,11 @@ Filtering.prototype.refresh = async function (){
 
 	await this.dashboard.getChild(this.tab.name).refresh();
 	await this.dataManager.loading;
+	// Adding or removing a keyword changes the total, so the badge has to be
+	// rewritten - it was only ever set when the tab was first built, and so kept
+	// showing the unfiltered total. The refresh above already fetched the new
+	// count, so render it rather than calling refreshCount() and re-fetching.
+	this.tab.renderCount();
 	this.tab.pagination.refresh();
 	//this.tab.tabs.refresh();
 };

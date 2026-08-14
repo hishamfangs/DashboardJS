@@ -44,15 +44,27 @@ function Tab(settings) {
 Tab.prototype = Object.create(Component.prototype);
 Tab.prototype.constructor = Tab;
 
+/**
+ * Write the total the DataManager already holds into the badge.
+ *
+ * Kept separate from refreshCount() so a caller that has just loaded data - and so
+ * already has an up to date count - can update the badge without paying for a second
+ * round trip. Filtering needs exactly that: the count changes with every keyword, but
+ * the filtered load has already brought the new total back with it.
+ */
+Tab.prototype.renderCount = function () {
+	if (this.objects.itemBadge) {
+		this.setText(this.dataManager.count, "itemBadge");
+	}
+};
+
 Tab.prototype.refreshCount = async function () {
 	// Create Staggered Loader (so the loading animation don't sync)
 	//var staggeredSeed = getRandomInt(100,900);
 	//setTimeout(()=> this.showLoader(), staggeredSeed);
 	await this.showLoader();
 	await this.dataManager.load(true);
-	if (this.objects.itemBadge) {
-		this.setText(this.dataManager.count, "itemBadge");
-	}
+	this.renderCount();
 	this.hideLoader();
 	this.pagination?.refresh();
 
