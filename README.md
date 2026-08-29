@@ -1,4 +1,4 @@
-# DashboardJS (version 1.1)
+# DashboardJS (version 1.2)
 ![dashboard-full](https://github.com/hishamfangs/DashboardJS/assets/48479688/8100695e-95aa-4078-a742-8c914b7ebbd1)
 
 [DashboardJS](https://www.dashboardjs.net) is a free, modular, responsive, open source dashboard component to display records in a sleek and modern way, built entirely in vanilla Js, with zero dependancies. 
@@ -8,14 +8,73 @@ DashboardJS is fully themeable, all you need is knowledge of HTML & CSS.
 
 DashboardJS works either Synchronously (full data loaded and fed into the Dashboard component before initiation), or Asnychronously (Dashboard loads page by page through Fetch API).
 
-Ver 1.1 Release Notes:
------------------------
-- Fixed Badge CSS, & set the default state to be box-sizing: border-box;
-- Design is more uniformly Rounded Edges.
-- Fixed bug where Some sorting items & Field Headers generated errors because they inherited the events from the fields.
-- Fixed Unique ID Generator functions so the name of the component is attached to it
-
 Note: Starting March 2024, Microsoft Defender updated their virus signatures, and as a result it started flagging the Trojan:Script/Wacatac.H!ml as false positives as on many plugins, programs, apps, Java applications, and even Steam games & update packages accross the internet, and DashboardJS is no different. If you find that DashboardJS is being block by Windows Defender, rest assured this is a false positive and you can feel safe downloading it. I have submitted a report to Microsoft, in the meantime, please disable or add a "allow rule" in Microsoft Defender for DashboardJS.  
+
+Callback Reference
+------------------
+Every config key is either a **noun** or a **verb**.
+
+**Nouns** — `value`, `icon`, `url`, `visibility`, `class`, `style`, `width` — may be a
+plain value *or* a function that returns one.
+
+**Verbs** — `onClick`, `onRender`, `onMount`, `onBeforeRemove` — are side effects.
+
+Both are called the same way: each receives a single **context object**. Destructure
+the keys you need.
+
+```javascript
+Status: {
+  value:      ({ value, record }) => record.Gender === 'Female' ? value.toUpperCase() : value,
+  visibility: ({ record })        => record.Status ? 'show' : 'hide',
+  onClick:    ({ value, record }) => console.log(value, record)
+}
+```
+
+### The context object
+
+| Key | What it is |
+| --- | --- |
+| `value` | The field's own value. Fields only. |
+| `record` | The whole row, as a plain data object. |
+| `component` | The Field / Action / Record itself. |
+| `el` | The rendered DOM node. |
+| `dashboard` | The Dashboard instance. |
+| `event` | The DOM event. `onClick` only. |
+
+`value` and `record` are deliberately separate names — `data` used to mean the value on
+a Field but the whole row on an Action, and that overload caused most of the confusion
+this contract replaces.
+
+### Return values
+
+| Hook | Returns |
+| --- | --- |
+| `value` | The value to display. `undefined` means "no opinion" — the default is used. Any other value is used verbatim, **including `''`**, which blanks the field. |
+| `visibility` | `'show'`, `'enable'`, `'disable'` or `'hide'`. `false` and `0` also mean hide. |
+| `url` | The href. A falsy return renders no `<a>` at all, which is how you make a link conditional. |
+| `icon` | A CSS or FontAwesome class name. |
+| `onBeforeRemove` | Return `false` to cancel the removal, or a promise to defer it. Anything else proceeds. |
+
+```javascript
+actions: {
+  "Delete": {
+    // Nothing is removed unless this resolves to something other than false.
+    onBeforeRemove: ({ record }) => confirm('Remove ' + record.Name + '?')
+  }
+}
+```
+
+### Renamed in 1.2
+
+The old names still work and will keep working until 2.0, but each logs a
+deprecation warning naming its replacement.
+
+| Old | New |
+| --- | --- |
+| `onGetValue` | `value` |
+| `onLoop` | `onRender` |
+| `onAdd` | `onMount` |
+| `onRemove` | `onBeforeRemove` (return `false` to cancel instead of completing an event) |
 
 Simplest Example:
 ----------
@@ -73,31 +132,21 @@ var dashboard = new FutureLabs.Dashboard({
           actions: {
             "More details...": {
               icon: 'info-icon',
-              onClick: function(){
-                alert('Clicked More Info ...');
-              }
-            },  	
+              onClick: ({ record }) => showDetails(record)
+            },
             "Pay": {
               icon: "pay-icon",
-              visibility: function (actionObj) {
-                // returns a string representing the visibility
-                return "disable";
-              },
-              onClick: function(){
-                alert('Clicked Pay!');
-              }
+              // return 'show', 'enable', 'disable' or 'hide'
+              visibility: ({ record }) => record.Balance > 0 ? 'show' : 'disable',
+              onClick: ({ record }) => startPayment(record.InvoiceId)
             },
             "Edit": {
               icon: 'edit-icon',
-              onClick: function(){
-                alert('Clicked Edit');
-              }
+              onClick: ({ record }) => edit(record)
             },
             "Cancel": {
               icon: 'cancel-icon',
-              onClick: function(){
-                alert('Clicked Cancel');
-              }
+              onClick: ({ record }) => cancel(record)
             }
           }
         }
@@ -134,345 +183,129 @@ List View:
 
 Example with FULL customization options for the Dashboard:
 ----------
+Two tabs, showing most of what the config object can do. Every callback below
+follows the one convention described in [Callback Reference](#callback-reference).
+
 ```javascript
 var dashboard = new FutureLabs.Dashboard({
-  // The Dashboard Language (will use the translation objects in each config property to translate)
-  // 'en-US' is the default langauge when the language property is ommitted
+  // Drives every `translation` object in the config. Defaults to 'en-US'.
   language: 'en-US',
-  config: {  
-    profile:{
+  config: {
+    profile: {
       name: 'John Addams',
-      translation: {
-        'ar-AE':'عبد الله المستكاوي'
-      },
       image: 'assets/jadams.jpg',
-      url: 'www.google.com',
-      urlTarget: '_blank'
+      url: 'https://www.example.com',
+      urlTarget: '_blank',
+      translation: { 'ar-AE': 'عبد الله المستكاوي' }
     },
-    initialActiveTab: "User Profiles",
+    initialActiveTab: 'User Profiles',
+
     tabs: {
       'User Profiles': {
-        // translations for multilingual support
-        // This works for all config objects: tabs, fields, actions, ...etc
-        // Simply add the translations and pair them up to the language code that is passed to the dashboard in the config object
-        translation: {
-          'ar-AE':'ملفات تعريف المستخدم'
-        },
-        // The class name for the tab icon. You can use custom class names (add them to theme.css), or if you include the fontawesome library
-        // you can just use the icon classname from fontawesome (Supports fontawesome)
-        icon: "far fa-user",
-        // A brief description that will appear on top of each tab
-        // Can be just a string when multilanguage support is not needed
-        // Alternatively, can be an object with language keys as below for multilingual support
+        icon: 'far fa-user',                     // supports FontAwesome or your own classes
+        translation: { 'ar-AE': 'ملفات تعريف المستخدم' },
         description: {
           'en-US': 'A list of all approved users',
           'ar-AE': 'قائمة بجميع المستخدمين المعتمدين'
-        },  
-        // Sets the default view mode for this tab: Cards view or List view
-        viewMode: 'Cards',  // 'Cards' or 'List'
-        // CSS GRID property/value pairs to format the records in Cards view.
-        // Below is the default css properties, can be changed to any valid CSS proeprty/value pairs
-        recordsGrid:{        
-          'grid-template-columns': '1fr 1fr 1fr',
-          'gap': '20px',
-          'justify-items': 'stretch'          
         },
-        // Pagination. Define how many records per page.
-        // Defaults to 12!
-        itemsPerPage: 12,
-        recordSettings:{
-          // Renders an image for each record
-          image: {
-            url: 'imageURL',  // this is the key that is used to retrieve the URL from the supplied data  
-            height: '200px',  // Height of the image in Card View
-          },
-          // On Click event for the entire record
-          onClick: function (record) {
-            alert("Record Clicked: record: " + JSON.stringify(record.data));
-          },          
-          fieldsGrid: {
-            'grid-template-columns': '1fr 1fr',
-            'gap': '15px',
-            'justify-items': 'stretch'
-          },
+        viewMode: 'Cards',                       // 'Cards' or 'List'
+        itemsPerPage: 12,                        // defaults to 12
+        recordsGrid: {                           // raw CSS Grid pairs
+          'grid-template-columns': '1fr 1fr 1fr',
+          'gap': '20px'
+        },
+
+        recordSettings: {
+          image: { url: 'imageURL', height: '200px' },   // 'imageURL' is a KEY in your data
+          fieldsGrid: { 'grid-template-columns': '1fr 1fr', 'gap': '15px' },
+          onClick: ({ record }) => openProfile(record.Id),
+
           fields: {
-            // This is a collcation of value/key pair of objects describing the record fields
-            // Each key maps to the key of the supplied data to retrieve the value of each field
-            Date: {   // This key name maps to the data 
-              name: "Date of Birth", // Displayed Name of the field int he dashboard
-              position: "left",   // Position in the Card View
-              dataType: "Date",  // This just formats and renders the date in a graphical way
-              translation: { "ar-AE": "السن" } 
-            },
-            Status: { 
-              name: "Marital Status", 
-              position: "right", 
-              dataType: "String", // Does nothing at the moment
-              // Can use this to modify the data value before displaying it to the dashboard              
-              onGetValue: function (field){  
-                if (field.data == 'Married' && field.record['Gender']=='Female'){
-                  return '<span style="font-weight: bold;color: #72de72">' + field.data + '</span>';
-                }else{
-                  return field.data;
-                }
-              },
-              translation: { "ar-AE": "الحالة الزوجية" } 
+            Date: {
+              name: 'Date of Birth',
+              dataType: 'Date',                  // renders a graphical day/month/year block
+              width: '100px',                    // column width in List view
+              translation: { 'ar-AE': 'تاريخ الميلاد' }
             },
             Name: {
-              name: "Name", 
-              position: "left",  // Position in the Card View
-              // This controls the visibility of the field.
-              // Accepts 3 values: show, hide, disable
-              visibility: function (field){
-                // Checks to see if the name of this person contains the phrase (disabled) in the name, then disable this field
-                // disable greys out the field and removes all actions on the field (including onClick)
-                if (field.data.indexOf('(disabled)')>-1){
-                  return 'disable';
-                }else{
-                  return 'show'
-                }
-              },
-              onClick: function (element, record) {
-                console.log("Field Clicked: element, data:", element, record);
-              },
-              translation: { "ar-AE": "الإسم" }
+              name: 'Name',
+              position: 'left',
+              // A falsy return renders no <a> at all
+              url: ({ record }) => record.ProfileId ? '/profile/' + record.ProfileId : null,
+              // 'disable' greys the field out and drops its click handlers
+              visibility: ({ value }) => value.includes('(disabled)') ? 'disable' : 'show',
+              translation: { 'ar-AE': 'الإسم' }
             },
-            Gender: { 
-              name: "Gender", 
-              position: "right",   // Position in the Card View
-              dataType: "String", 
-              translation: { "ar-AE": "الجنس" } 
+            Status: {
+              name: 'Marital Status',
+              position: 'right',
+              // Returned value is displayed verbatim; HTML is allowed
+              value: ({ value, record }) =>
+                record.Gender === 'Female' && value === 'Married'
+                  ? '<b style="color:#72de72">' + value + '</b>'
+                  : value,
+              translation: { 'ar-AE': 'الحالة الزوجية' }
+            },
+            Gender: {
+              name: 'Gender',
+              position: 'right',
+              icon: ({ value }) => value === 'Female' ? 'fas fa-venus' : 'fas fa-mars',
+              translation: { 'ar-AE': 'الجنس' }
             },
             Description: {
-              position: "left",
-              width: "400px",      // This sets the width of the field in List view
-              style:{
-                'grid-column': 'span 2'
-              },
+              position: 'left',
               class: 'justify',
-              onGetValue: function (item){
-                // If there is no value
-                if (!item.data){
-                  return '<span style="color: gray">N/A</span>'
-                }
-              },
-              translation: { "ar-AE": "الوصف" }
+              style: { 'grid-column': 'span 2' },
+              // '' blanks the field; undefined would fall through to the raw value
+              value: ({ value }) => value || '<span style="color:#c3c3c3">N/A</span>',
+              translation: { 'ar-AE': 'الوصف' }
             }
           },
-          // How should the actions appear? 
-          // 'buttons' (default) displays the actions as buttons
-          // 'menu' shows the action as a drop down menu
-          actionsType: 'menu',
+
+          actionsType: 'menu',                   // 'buttons' (default) or 'menu'
           actions: {
-            "More details...": {
+            'More details...': {
               icon: 'info-icon',
-              translation: {
-                'ar-AE': 'معلومات أخرى'
-              },
-              onClick: function(action){
-                alert('Clicked More Info ... on record ' + JSON.stringify(action.record));
-              }
+              translation: { 'ar-AE': 'معلومات أخرى' },
+              onClick: ({ record }) => showDetails(record)
             },
-            "Pay": {
-              icon: "pay-icon",
-              translation: {
-                'ar-AE': 'دفع'
-              },
-              visibility: function (actionObj) {
-                // returns a string representing the visibility
-                return "disable";
-              },
-              onClick: function(){
-                alert('Clicked Pay!');
-              }
-            },
-            "Edit": {
+            'Edit': {
               icon: 'edit-icon',
-              translation: {
-                'ar-AE': 'تعديل'
-              },
-              onClick: function(){
-                alert('Clicked Edit');
-              }
+              translation: { 'ar-AE': 'تعديل' },
+              onClick: ({ record }) => edit(record)
             },
-            "Cancel": {
+            'Delete': {
               icon: 'cancel-icon',
-              translation: {
-                'ar-AE': 'إلغاء'
-              },
-              onClick: function(){
-                alert('Clicked Cancel');
-              }
+              translation: { 'ar-AE': 'حذف' },
+              // Nothing is removed unless this resolves to something other than false
+              onBeforeRemove: ({ record }) => confirm('Remove ' + record.Name + '?')
             }
           }
         }
       },
-      Invoices: {
-        description: 'This show all invoices',
-        viewMode: 'Cards',
-        recordsGrid:{
-          'grid-template-columns': '1fr 1fr 1fr',
-          'gap': '20px',
-          'justify-items': 'stretch'          
-        },
-        recordSettings:{
-          onClick: function (record) {
-            alert("Record Clicked: record: " + JSON.stringify(record.data));
-          },          
-          fieldsGrid: {
-            'grid-template-columns': '1fr 1fr 1fr',
-            'gap': '15px',
-            'justify-items': 'stretch'
-          },
+
+      'Invoices': {
+        icon: 'fas fa-file-invoice',
+        description: 'Outstanding and settled invoices',
+        viewMode: 'List',
+        itemsPerPage: 20,
+
+        recordSettings: {
           fields: {
-            Name: {
-              style:{
-                'grid-column':'span 2'
-              },
-              translation: { "ar-AE": "الإسم" }, 
-              icon: "fas fa-user-circle",        // You can use Fontawesome icon classes if you include the fontawesome library
-              onClick: function (field) {
-                console.log("Field Clicked! field:", field);
-              }
-            },  
+            Name:    { name: 'Customer', position: 'left', style: { 'grid-column': 'span 2' } },
             Balance: {
-              style:{
-                'grid-column':'span 1'
-              },
-              position:"right",
-              icon: "fas fa-money-bill-wave",    // You can use Fontawesome icon classes if you include the fontawesome library
-              onGetValue: function(field, record){
-                debugger;
-                if (field.data){
-                  return '$' + field.data;
-                }
-              },
-              translation: { "ar-AE": "الحساب" }, 
-            },            
-            Date: { 
-              name: "Date of Birth", 
-              position: "left", 
-              dataType: "Date",  
-              translation: { "ar-AE": "السن" } 
+              name: 'Balance',
+              position: 'right',
+              icon: 'fas fa-money-bill-wave',
+              value: ({ value }) => value ? '$' + Number(value).toFixed(2) : '—'
             },
-            Status: { 
-              name: "Marital Status", 
-              translation: { "ar-AE": "خد كثير" } 
-            },
-            Gender: { 
-              name: "Gender", 
-              position: "right", 
-              dataType: "Text", 
-              translation: { "ar-AE": "السن" } 
-            },
-            Description: {
-              position: "left",
-              style:{
-                'grid-column': 'span 3'
-              },
-              class: 'justify',
-              width: '200px',
-              onGetValue: function (item){
-                // If there is no value
-                if (!item.data){
-                  return '<span style="color: gray">N/A</span>'
-                }
-              }
-            }
+            Date:    { name: 'Issued', dataType: 'Date' }
           },
-          actionsType: 'buttons',  // menu or buttons
           actions: {
-            "More details...": {
-              icon: 'info-icon',
-              translation: {
-                'ar-AE': 'معلومات أخرى'
-              },
-              onClick: function(){
-                alert('Clicked More Info ...');
-              }
-            },    // Default View action Will appear
-            "Pay": {
-              icon: "pay-icon",
-              translation: {
-                'ar-AE': 'دفع'
-              },
-              visibility: function (actionObj) {
-                // returns a string representing the visibility
-                return "disable";
-              },
-              onClick: function(){
-                alert('Clicked Pay!');
-              }
-            },
-            "Edit": {
-              icon: 'edit-icon',
-              translation: {
-                'ar-AE': 'تعديل'
-              },
-              onClick: function(){
-                alert('Clicked Edit');
-              }
-            },
-            "Cancel": {
-              icon: 'cancel-icon',
-              translation: {
-                'ar-AE': 'إلغاء'
-              },
-              onClick: function(){
-                alert('Clicked Cancel');
-              }
-            }
-          }
-        }
-      },
-      'Payment Receipts': {
-        icon: "fas fa-receipt",
-        description: 'Payment Receipts',
-        viewMode: 'list',
-        recordsGrid:{
-          'grid-template-columns': '1fr 1fr 1fr',
-          'gap': '20px',
-          'justify-items': 'stretch'          
-        },
-        recordSettings:{
-          image: {
-            url: 'imageURL',
-            height: '200px',
-          },
-          onClick: function (record) {
-            alert("Record Clicked: record:", record);
-          },          
-          fieldsGrid: {
-            'grid-template-columns': '1fr 1fr',
-            'gap': '15px',
-            'justify-items': 'stretch'
-          },
-          fields: {
-            Date: { 
-              name: "Date of Payment", 
-              position: "left", 
-              dataType: "Date",  
-              translation: { "ar-AE": "السن" } 
-            },
-            Status: { 
-              name: "Marital Status", 
-              position: "right", 
-              dataType: "Number", 
-              translation: { "ar-AE": "خد كثير" } 
-            },
-            Name: {
-              name: "Name", 
-              position: "left", 
-              translation: { "ar-AE": "الإسم" },
-              onClick: function (element, record) {
-                console.log("Field Clicked: element, data:", element, record);
-              }
-            },
-            Payment: { 
-              name: "Payment", 
-              position: "right", 
-              dataType: "Number", 
-              translation: { "ar-AE": "الدفع" } 
+            'Pay': {
+              icon: 'pay-icon',
+              visibility: ({ record }) => record.Balance > 0 ? 'show' : 'disable',
+              onClick: ({ record }) => startPayment(record.InvoiceId)
             }
           }
         }
@@ -482,8 +315,40 @@ var dashboard = new FutureLabs.Dashboard({
   data: data
 });
 ```
+
 ![full-dashboard-preview](https://github.com/hishamfangs/DashboardJS/assets/48479688/d052e066-9a48-47d9-a18f-7d992ab80b6d)
 
 List View:
 
 ![dashboard-listview](https://github.com/hishamfangs/DashboardJS/assets/48479688/a37d089c-b10f-4292-93bf-b4c517e09b62)
+
+Documentation
+----------
+Full reference at [docs.dashboardjs.net](https://docs.dashboardjs.net):
+[Config](https://docs.dashboardjs.net) · Tabs · Record Settings · Fields · Actions · Callbacks
+
+Ver 1.2 Release Notes:
+-----------------------
+Every callback now works the same way — see [Callback Reference](#callback-reference)
+above, or the [full changelog](CHANGELOG.md).
+
+- **One convention for every hook.** Each callback receives a single context object —
+  `{ value, record, component, el, dashboard, event }` — so you destructure what you
+  need and nothing else.
+- **`value`, `icon`, `url`, `visibility`, `class`, `style` and `width` may each be a
+  function** instead of a static value.
+- **Renamed** (old names still work, with a deprecation warning): `onGetValue` → `value`,
+  `onLoop` → `onRender`, `onAdd` → `onMount`, `onRemove` → `onBeforeRemove`.
+- **`onBeforeRemove` replaces the `DashboardEvent` dance** — return `false` to cancel a
+  removal, or a promise to defer it.
+- **Fixed:** `value` was ignored on `dataType: "Date"` fields; a falsy return was
+  ignored so a field could not be blanked; `onRender` fired twice per render pass;
+  a function-valued `url` was briefly written into the href; `record` was missing on
+  records; `dashboard` was `null` on every child component.
+
+Ver 1.1 Release Notes:
+-----------------------
+- Fixed Badge CSS, & set the default state to be box-sizing: border-box;
+- Design is more uniformly Rounded Edges.
+- Fixed bug where Some sorting items & Field Headers generated errors because they inherited the events from the fields.
+- Fixed Unique ID Generator functions so the name of the component is attached to it

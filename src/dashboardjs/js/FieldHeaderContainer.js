@@ -24,12 +24,7 @@ function FieldHeaderContainer(settings) {
 		if (fields.hasOwnProperty(key)) {
 			var fieldSettings = fields[key];
 			// Delete all the events inherited from the Fields (they are useless for Sorting Items).
-			delete fieldSettings.visibility;
-			delete fieldSettings.onClick;
-			delete fieldSettings.icon;
-			delete fieldSettings.onLoop;
-			delete fieldSettings.url;
-			delete fieldSettings.onGetValue;
+			Component.stripHooks(fieldSettings);
 			var field = new FieldHeader({
 				config: fieldSettings,
 				templateManager: settings.templateManager,

@@ -1,6 +1,7 @@
 # Table of contents
 
 * [Getting Started](README.md)
+* [Migrating to 1.2](migrating-to-1.2.md)
 
 ## Configuration Options
 
@@ -11,9 +12,11 @@
   * [Record Settings](configuration-options/record-settings.md)
   * [Fields](configuration-options/fields.md)
   * [Actions](configuration-options/actions.md)
+  * [Callbacks](configuration-options/callbacks.md)
   * [Internationalization & Localization](configuration-options/internationalization-and-localization.md)
 * [templateURL](configuration-options/templateurl.md)
 * [appendTo](configuration-options/appendto.md)
+* [Theming](theming.md)
 
 ## Dashboard Tools
 
@@ -25,7 +28,9 @@
 ## Classes & APIs
 
 * [Dashboard Overview](classes-and-apis/dashboard-overview.md)
+* [Component.js](classes-and-apis/component.js.md)
 * [Dashboard.js](classes-and-apis/dashboard.js.md)
 * [Tabs.js](classes-and-apis/tabs.js.md)
 * [Tab.js](classes-and-apis/tab.js.md)
 * [Recordset.js](classes-and-apis/recordset.js.md)
+* [DataManager.js](classes-and-apis/datamanager.js.md)

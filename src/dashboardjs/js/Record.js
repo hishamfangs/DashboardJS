@@ -16,6 +16,10 @@
 
 function Record(settings) {
   Component.call(this, settings);
+  // ctx.record must mean the same thing on every component. Actions already
+  // did this; records did not, so `this.record` was undefined on a record's
+  // own handlers while being the row everywhere else.
+  this.record = this.data;
   // Process Field Settings
   this.fields = Component.getFieldSettings(this.fields, this.language);
   var defaultWidth = Component.getDefaultFieldWidth(this.fields);
@@ -49,6 +53,7 @@ function Record(settings) {
       var fieldKey = fieldKeys[i];
       thisFieldSettings = this.fields[fieldKey];
       thisFieldSettings.record = this.data;
+      thisFieldSettings.dashboard = this.dashboard;
       var field = new Field({
         config: thisFieldSettings,
         data: this.data[thisFieldSettings.dataField],
@@ -85,6 +90,8 @@ function Record(settings) {
           actionConfig = {};
         }
         actionConfig.name = actionKey;
+        actionConfig.record = this.data;
+        actionConfig.dashboard = this.dashboard;
         // Create an action
         var action = new Action({
           config: actionConfig,

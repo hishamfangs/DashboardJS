@@ -25,45 +25,25 @@ Field.prototype.constructor = Field;
 
 Field.prototype.renderFieldValues = function (){
 
-	// Field Value (Data)
-	var fieldValue = this.data;
-	// Visibility
-	visibility = this.visibility;
-	var processedValue = "";
-	if (this.onGetValue) {
-		processedValue = this.onGetValue;
-		if (typeof processedValue === "function") {
-			processedValue = processedValue(this, this.record);
-		}
-		if (processedValue){
-			fieldValue = processedValue;
-		}
+	// The `value` hook (formerly onGetValue) owns the displayed value outright.
+	//
+	// Two long-standing surprises are fixed here:
+	//   - Returning a falsy value used to be ignored, so a field could not be
+	//     blanked. Now only `undefined` means "no opinion"; "" blanks it.
+	//   - dataType: "Date" used to overwrite whatever the hook returned. Now the
+	//     hook wins, and the date template is the default when it opts out.
+	var computed;
+	if (this.__computed && typeof this.__computed.value === "function") {
+		computed = this.resolve("value", undefined);
 	}
 
-	//var show = this.show;
-
-	// Date Field is Special, so generate Date Template
-	if (this.dataType == "Date") {
-		var dateTemplate = '<span class="record-date"><span class="calendar-icon"></span><span class="date"><span class="day">{Day}</span><span class="monthyear"><span class="month">{Month}</span><span class="year">{Year}</span></span></span></span>';
-		var theDate = this.data;
-		// Date
-		var date = splitDate(theDate, this.language);
-		if (date) {
-			if (date.length >= 3) {
-				dateTemplate = dateTemplate.replaceAll("{Year}", date[0]);
-				dateTemplate = dateTemplate.replaceAll("{Month}", date[1]);
-				dateTemplate = dateTemplate.replaceAll("{Day}", date[2]);
-			} else {
-				dateTemplate = dateTemplate.replaceAll("{Year}", "");
-				dateTemplate = dateTemplate.replaceAll("{Month}", "");
-				dateTemplate = dateTemplate.replaceAll("{Day}", "");
-			}
-		} else {
-			dateTemplate = dateTemplate.replaceAll("{Year}", "");
-			dateTemplate = dateTemplate.replaceAll("{Month}", "");
-			dateTemplate = dateTemplate.replaceAll("{Day}", "");
-		}
-		fieldValue = dateTemplate;
+	var fieldValue;
+	if (computed !== undefined) {
+		fieldValue = computed;
+	} else if (this.dataType == "Date") {
+		fieldValue = this.renderDateValue(this.data);
+	} else {
+		fieldValue = this.data;
 	}
 
 	// Apply Field Value (data)
@@ -71,6 +51,41 @@ Field.prototype.renderFieldValues = function (){
 	this.setText(fieldValue);
 	this.setText(this.translatedName, 'itemTitle');
 }
+
+/**
+ * Builds the graphical day / month / year markup used by dataType: "Date".
+ */
+Field.prototype.renderDateValue = function (theDate) {
+	var dateTemplate = '<span class="record-date"><span class="calendar-icon"></span><span class="date"><span class="day">{Day}</span><span class="monthyear"><span class="month">{Month}</span><span class="year">{Year}</span></span></span></span>';
+	var date = splitDate(theDate, this.language);
+
+	if (date && date.length >= 3) {
+		dateTemplate = dateTemplate.replaceAll("{Year}", date[0]);
+		dateTemplate = dateTemplate.replaceAll("{Month}", date[1]);
+		dateTemplate = dateTemplate.replaceAll("{Day}", date[2]);
+	} else {
+		dateTemplate = dateTemplate.replaceAll("{Year}", "");
+		dateTemplate = dateTemplate.replaceAll("{Month}", "");
+		dateTemplate = dateTemplate.replaceAll("{Day}", "");
+	}
+	return dateTemplate;
+};
+
+/**
+ * ctx.value - the field's own value. Deliberately distinct from ctx.record:
+ * `data` used to mean the value on a Field but the whole row on an Action,
+ * and that single overload caused most of the confusion this contract fixes.
+ */
+Object.defineProperty(Field.prototype, "value", {
+	get: function () {
+		return this.__valueStatic !== undefined ? this.__valueStatic : this.data;
+	},
+	set: function (staticValue) {
+		// A non-function `value` in the config is a constant for this field.
+		this.__valueStatic = staticValue;
+	},
+	configurable: true,
+});
 
 Field.defaultTemplate = {
 	itemLink: "",

@@ -58,8 +58,8 @@ var dashboard = new FutureLabs.Dashboard({
 						height: '200px',	// Height of the image in Card View
 					},
 					// On Click event for the entire record
-					onClick: function (record) {
-						alert("Record Clicked: record: " + JSON.stringify(record.data));
+					onClick: ({ record }) => {
+						alert("Record clicked: " + JSON.stringify(record));
 					},					
 					fieldsGrid: {
 						'grid-template-columns': '1fr 1fr',
@@ -79,12 +79,12 @@ var dashboard = new FutureLabs.Dashboard({
 							name: "Marital Status", 
 							position: "right", 
 							dataType: "String", // Does nothing at the moment
-							// Can use this to modify the data value before displaying it to the dashboard							
-							onGetValue: function (field){	
-								if (field.data == 'Married' && field.record['Gender']=='Female'){
-									return '<span style="font-weight: bold;color: #72de72">' + field.data + '</span>';
+							// Returns the value to display. Falsy is honoured; undefined keeps the default.							
+							value: ({ value, record }) => {	
+								if (value == 'Married' && record['Gender']=='Female'){
+									return '<span style="font-weight: bold;color: #72de72">' + value + '</span>';
 								}else{
-									return field.data;
+									return value;
 								}
 							},
 							translation: { "ar-AE": "الحالة الزوجية" } 
@@ -93,18 +93,18 @@ var dashboard = new FutureLabs.Dashboard({
 							name: "Name", 
 							position: "left",	// Position in the Card View
 							// This controls the visibility of the field.
-							// Accepts 3 values: show, hide, disable
-							visibility: function (field){
+							// 'show' | 'enable' | 'disable' | 'hide'; false and 0 also mean hide
+							visibility: ({ value }) => {
 								// Checks to see if the name of this person contains the phrase (disabled) in the name, then disable this field
 								// disable greys out the field and removes all actions on the field (including onClick)
-								if (field.data.indexOf('(disabled)')>-1){
+								if (value.indexOf('(disabled)')>-1){
 									return 'disable';
 								}else{
 									return 'show'
 								}
 							},
-							onClick: function (element, record) {
-								console.log("Field Clicked: element, data:", element, record);
+							onClick: ({ value, record }) => {
+								console.log("Field clicked:", value, "on record", record);
 							},
 							translation: { "ar-AE": "الإسم" }
 						},
@@ -120,9 +120,9 @@ var dashboard = new FutureLabs.Dashboard({
 								'grid-column': 'span 2'
 							},
 							class: 'justify',
-							onGetValue: function (item){
+							value: ({ value }) => {
 								// If there is no value
-								if (!item.data){
+								if (!value){
 									return '<span style="color: gray">N/A</span>'
 								}
 							},
@@ -139,8 +139,8 @@ var dashboard = new FutureLabs.Dashboard({
 							translation: {
 								'ar-AE': 'معلومات أخرى'
 							},
-							onClick: function(action){
-								alert('Clicked More Info ... on record ' + JSON.stringify(action.record));
+							onClick: ({ record }) => {
+								alert('Clicked More Info ... on record ' + JSON.stringify(record));
 							}
 						},
 						"Pay": {
@@ -148,11 +148,11 @@ var dashboard = new FutureLabs.Dashboard({
 							translation: {
 								'ar-AE': 'دفع'
 							},
-							visibility: function (actionObj) {
-								// returns a string representing the visibility
+							visibility: () => {
+								// return 'show', 'enable', 'disable' or 'hide'
 								return "disable";
 							},
-							onClick: function(){
+							onClick: () => {
 								alert('Clicked Pay!');
 							}
 						},
@@ -161,7 +161,7 @@ var dashboard = new FutureLabs.Dashboard({
 							translation: {
 								'ar-AE': 'تعديل'
 							},
-							onClick: function(){
+							onClick: () => {
 								alert('Clicked Edit');
 							}
 						},
@@ -170,7 +170,7 @@ var dashboard = new FutureLabs.Dashboard({
 							translation: {
 								'ar-AE': 'إلغاء'
 							},
-							onClick: function(){
+							onClick: () => {
 								alert('Clicked Cancel');
 							}
 						}
@@ -186,8 +186,8 @@ var dashboard = new FutureLabs.Dashboard({
 					'justify-items': 'stretch'					
 				},
 				recordSettings:{
-					onClick: function (record) {
-						alert("Record Clicked: record: " + JSON.stringify(record.data));
+					onClick: ({ record }) => {
+						alert("Record clicked: " + JSON.stringify(record));
 					},					
 					fieldsGrid: {
 						'grid-template-columns': '1fr 1fr 1fr',
@@ -201,8 +201,8 @@ var dashboard = new FutureLabs.Dashboard({
 							},
 							translation: { "ar-AE": "الإسم" }, 
 							icon: "fas fa-user-circle",				// You can use Fontawesome icon classes if you include the fontawesome library
-							onClick: function (field) {
-								console.log("Field Clicked! field:", field);
+							onClick: ({ value, record }) => {
+								console.log("Field clicked:", value, "on record", record);
 							}
 						},	
 						Balance: {
@@ -211,10 +211,9 @@ var dashboard = new FutureLabs.Dashboard({
 							},
 							position:"right",
 							icon: "fas fa-money-bill-wave",		// You can use Fontawesome icon classes if you include the fontawesome library
-							onGetValue: function(field, record){
-								debugger;
-								if (field.data){
-									return '$' + field.data;
+							value: ({ value }) => {
+								if (value){
+									return '$' + value;
 								}
 							},
 							translation: { "ar-AE": "الحساب" }, 
@@ -242,9 +241,9 @@ var dashboard = new FutureLabs.Dashboard({
 							},
 							class: 'justify',
 							width: '200px',
-							onGetValue: function (item){
+							value: ({ value }) => {
 								// If there is no value
-								if (!item.data){
+								if (!value){
 									return '<span style="color: gray">N/A</span>'
 								}
 							}
@@ -257,7 +256,7 @@ var dashboard = new FutureLabs.Dashboard({
 							translation: {
 								'ar-AE': 'معلومات أخرى'
 							},
-							onClick: function(){
+							onClick: () => {
 								alert('Clicked More Info ...');
 							}
 						},  	// Default View action Will appear
@@ -266,11 +265,11 @@ var dashboard = new FutureLabs.Dashboard({
 							translation: {
 								'ar-AE': 'دفع'
 							},
-							visibility: function (actionObj) {
-								// returns a string representing the visibility
+							visibility: () => {
+								// return 'show', 'enable', 'disable' or 'hide'
 								return "disable";
 							},
-							onClick: function(){
+							onClick: () => {
 								alert('Clicked Pay!');
 							}
 						},
@@ -279,7 +278,7 @@ var dashboard = new FutureLabs.Dashboard({
 							translation: {
 								'ar-AE': 'تعديل'
 							},
-							onClick: function(){
+							onClick: () => {
 								alert('Clicked Edit');
 							}
 						},
@@ -288,7 +287,7 @@ var dashboard = new FutureLabs.Dashboard({
 							translation: {
 								'ar-AE': 'إلغاء'
 							},
-							onClick: function(){
+							onClick: () => {
 								alert('Clicked Cancel');
 							}
 						}
@@ -309,8 +308,8 @@ var dashboard = new FutureLabs.Dashboard({
 						url: 'imageURL',
 						height: '200px',
 					},
-					onClick: function (record) {
-						alert("Record Clicked: record:", record);
+					onClick: ({ record }) => {
+						alert("Record clicked: " + JSON.stringify(record));
 					},					
 					fieldsGrid: {
 						'grid-template-columns': '1fr 1fr',
@@ -334,8 +333,8 @@ var dashboard = new FutureLabs.Dashboard({
 							name: "Name", 
 							position: "left", 
 							translation: { "ar-AE": "الإسم" },
-							onClick: function (element, record) {
-								console.log("Field Clicked: element, data:", element, record);
+							onClick: ({ value, record }) => {
+								console.log("Field clicked:", value, "on record", record);
 							}
 						},
 						Payment: { 

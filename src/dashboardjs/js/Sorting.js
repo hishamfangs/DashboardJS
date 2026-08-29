@@ -66,12 +66,7 @@ Sorting.prototype.createItems = function () {
 	for (var f in this.fields) {
 		let config = { ...this.fields[f], tab: this.tab, fieldKey: f };
 		// Delete all the events inherited from the Fields (they are useless for Sorting Items).
-		delete config.visibility;
-		delete config.onClick;
-		delete config.icon;
-		delete config.onLoop;
-		delete config.url;
-		delete config.onGetValue;
+		Component.stripHooks(config);
 
 		// Create Menu Items for sorting based on the fields
 		var item = new SortingItem({

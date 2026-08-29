@@ -1,129 +1,102 @@
 # Tabs
 
-#### Full Example
+Each key in `tabs` becomes a tab, and the key is the tab's name. A tab holds one recordset plus the tools around it.
 
-{% code fullWidth="true" %}
 ```javascript
 config: {
-    tabs: {
-        'User Profiles': {    // Configure a tab
-            // translations for multilingual support
-            // This works for all config objects: tabs, fields, actions, ...etc
-            // Simply add the translations and pair them up to the language code that is passed to the dashboard in the config object
-            translation: {
-                'ar-AE':'ملفات تعريف المستخدم'
-            },
-            // The class name for the tab icon. You can use custom class names (add them to theme.css), or if you include the fontawesome library
-            // you can just use the icon classname from fontawesome (Supports fontawesome)
-            icon: "far fa-user",
-            // A brief description that will appear on top of each tab
-            // Can be just a string when multilanguage support is not needed
-            // Alternatively, can be an object with language keys as below for multilingual support
-            description: {
-                'en-US': 'A list of all approved users',
-                'ar-AE': 'قائمة بجميع المستخدمين المعتمدين'
-            },    
-            // Sets the default view mode for this tab: Cards view or List view
-            viewMode: 'Cards',    // 'Cards' or 'List'
-            // CSS GRID property/value pairs to format the records in Cards view.
-            // Below is the default css properties, can be changed to any valid CSS property/value pairs
-            recordsGrid:{                
-                'grid-template-columns': '1fr 1fr 1fr',
-                'gap': '20px',
-                'justify-items': 'stretch'                    
-            },
-            // Pagination. Define how many records per page.
-            // Defaults to 12!
-            itemsPerPage: 12,
-            // This property object configures the settings for the records,
-            // including the fields, actions, the grid ...etc
-            recordSettings:{
-                ...
-            }
-        }
-    }
+  tabs: {
+    'User Profiles': { /* ... */ },
+    'Invoices':      { /* ... */ }
+  }
 }
 ```
-{% endcode %}
 
-#### Properties/Methods
+Your `data` is keyed by the same names. See [Data](data/README.md).
 
-<details>
+## Properties
 
-<summary>viewMode <mark style="background-color:purple;">&#x3C;String></mark></summary>
+| Property | Type | What it does |
+| --- | --- | --- |
+| `icon` | string | Class name for the tab icon. FontAwesome classes work, or your own from `theme.css`. |
+| `description` | string \| object | Blurb shown above the records. Pass an object keyed by language to translate it. |
+| `translation` | object | Language-code map for the tab's own name. |
+| `viewMode` | `'Cards'` \| `'List'` | The tab's default view. See [View Modes](../dashboard-tools/view-modes.md). |
+| `itemsPerPage` | number | Records per page. Defaults to `12`. See [Pagination](../dashboard-tools/pagination.md). |
+| `page` | number | The page to open on. 1-based. |
+| `recordsGrid` | object | CSS Grid pairs laying out the records in Card view. |
+| `sorting` | object | Default sort. See [Sorting](../dashboard-tools/sorting.md). |
+| `fetch` | object | Load this tab's data from a server. See [Fetch API](data/fetch-api.md). |
+| `fetchFunction` | function | Supply your own loader instead of `fetch`. |
+| `recordSettings` | object | Everything about a record in this tab. See [Record Settings](record-settings.md). |
 
-Sets the default view mode for this tab.
+## Which tab opens first
 
-#### Values
+`initialActiveTab` names it; otherwise the first entry wins.
 
-* "Cards"\
-  <mark style="color:blue;">View this tab in Cards Mode</mark>
-* "List"\
-  <mark style="color:blue;">View this tab in List Mode</mark>&#x20;
+```javascript
+config: {
+  initialActiveTab: 'Invoices',
+  tabs: { 'User Profiles': { /* ... */ }, 'Invoices': { /* ... */ } }
+}
+```
 
-</details>
+## Card layout
 
-<details>
+`recordsGrid` takes raw CSS Grid property/value pairs, so the arrangement is entirely yours:
 
-<summary>description <mark style="background-color:purple;">&#x3C;String></mark> or <mark style="background-color:purple;">&#x3C;Object></mark></summary>
+```javascript
+recordsGrid: {
+  'grid-template-columns': '1fr 1fr 1fr',
+  'gap': '20px',
+  'justify-items': 'stretch'
+}
+```
 
-Description text to be displayed on top of the current Tab
+That lays out the records. Field layout *inside* a record is `fieldsGrid` on [Record Settings](record-settings.md).
 
-#### Values
+## Translating a tab
 
-* \<String>\
-  <mark style="color:blue;">Description text to be displayed on top of the current Tab, in all languages</mark>
+`translation` covers the tab name; `description` takes a language map of its own.
 
-<!---->
+```javascript
+'User Profiles': {
+  translation: { 'ar-AE': 'ملفات تعريف المستخدم' },
+  description: {
+    'en-US': 'A list of all approved users',
+    'ar-AE': 'قائمة بجميع المستخدمين المعتمدين'
+  }
+}
+```
 
-*   \<Object>
+See [Internationalization & Localization](internationalization-and-localization.md).
 
-    <mark style="color:blue;">An Object containing key/value pairs, with the description for each language.</mark>\ <mark style="color:blue;">Example:</mark>\
+## A tab per source
 
+Tabs are independent — one can hold data you passed in, another can fetch from an API:
 
-    ```
-    description: {
-      'en-US': 'A list of all approved users',			
-      'ar-AE': 'قائمة بجميع المستخدمين المعتمدين'
-    }
-    ```
+```javascript
+tabs: {
+  'User Profiles': {
+    viewMode: 'Cards',
+    recordSettings: { fields: { Name: { name: 'Name' } } }
+  },
+  'Invoices': {
+    viewMode: 'List',
+    itemsPerPage: 20,
+    fetch: { url: '/api/invoices' },
+    sorting: { sortBy: 'Date', sortDirection: 'desc' },
+    recordSettings: { fields: { Balance: { name: 'Balance', position: 'right' } } }
+  }
+}
+```
 
-</details>
+## Reaching a tab at runtime
 
-<details>
+```javascript
+const tab = dashboard.getChild('Invoices');
+tab.setActive(true);
+tab.setView('Cards');
+tab.refresh();
+```
 
-<summary>icon <mark style="background-color:purple;">&#x3C;String></mark></summary>
-
-Shows an Icon for this Tab to appear above the Tab Name
-
-#### Values
-
-* \<String>\
-  <mark style="color:blue;">Classname of the icon. If you include fontawesome, you can add the classname in this property and the icon will appear formatted appropriatley</mark>
-
-</details>
-
-<details>
-
-<summary>recordsGrid <mark style="background-color:purple;">&#x3C;Object></mark></summary>
-
-An Object Literal of CSS GRID properties to arrange the records.
-
-
-
-#### Values
-
-*   \<Object>
-
-    <mark style="color:blue;">An Object containing key/value pairs of any valid CSS properties inside a CSS GRID container</mark>\ <mark style="color:blue;">Default (if ommitted):</mark>\
-
-
-    ```json
-    recordsGrid:{				
-    	'grid-template-columns': '1fr 1fr 1fr',
-    	'gap': '20px',
-    	'justify-items': 'stretch'					
-    }
-    ```
-
-</details>
+See [Tab.js](../classes-and-apis/tab.js.md).

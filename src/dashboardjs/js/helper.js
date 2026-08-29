@@ -85,7 +85,10 @@ function processOnClick(event) {
 	//test2 = event.originalEvent.isPropagationStopped();
 
 	//console.log("Clicked on", theCurrentRecord);
-	theFunction.call(theCurrentItem, theDashboard, theCurrentRecord);
+	// The context object is the component, so the DOM event has to live on it
+	// for `({ event })` to reach it. It is also still passed positionally.
+	theCurrentItem.event = event;
+	theFunction.call(theCurrentItem, theDashboard, theCurrentRecord, event);
 	//event.preventDefault();
 	//event.originalEvent.preventDefault();
 	//test3 = event.isDefaultPrevented();

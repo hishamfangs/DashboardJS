@@ -32,7 +32,7 @@ Component.prototype.load = async function (settings) {
 	await this.render();
 
 	// Process the Events set on the Component
-	// Ex: visibility, icon, onClick, onLoop, url
+	// Ex: visibility, icon, onClick, onRender, url
 	if (this.object) {
 		// make sure the object is rendered
 		this.processEvents();
@@ -46,6 +46,212 @@ Component.prototype.load = async function (settings) {
 
 	//console.log(this.__proto__.constructor.name, this);
 };
+
+/* ============================================================================
+ * The unified callback contract (v1.2)
+ * ----------------------------------------------------------------------------
+ * Every config key falls into one of two groups:
+ *
+ *   Nouns  - value, icon, url, visibility, class, style, width.
+ *            May be a static value OR a function returning one.
+ *   Verbs  - onClick, onRender, onMount, onBeforeRemove.
+ *            Side effects. Return value is ignored, except onBeforeRemove.
+ *
+ * Both groups are called the same way, with the component itself acting as the
+ * context object. That single decision is what lets three call styles coexist:
+ *
+ *   ({ value, record }) => ...          v2, destructured (arrow-safe)
+ *   function (field, record) { ... }    v1, positional
+ *   function () { this.record }         `this`-based
+ *
+ * Returning undefined from a noun means "no opinion" - the default is used.
+ * Any other return value is used verbatim, including "" and 0.
+ * ==========================================================================*/
+
+// Config keys that may be supplied as a function instead of a static value.
+Component.COMPUTED_PROPS = [
+	"value",
+	"icon",
+	"url",
+	"visibility",
+	"class",
+	"style",
+	"width",
+];
+
+// Old key -> new key. Both work; the old one warns once.
+Component.RENAMED_PROPS = {
+	onGetValue: "value",
+	onLoop: "onRender",
+	onAdd: "onMount",
+};
+
+// Per-field hooks that must NOT cascade to derived components (field headers,
+// sorting items) - those render a label, not the row's data.
+Component.NON_CASCADING_PROPS = [
+	"visibility",
+	"onClick",
+	"icon",
+	"onRender",
+	"onMount",
+	"onBeforeRemove",
+	"url",
+	"value",
+	// Deprecated spellings, still stripped so old configs behave.
+	"onLoop",
+	"onAdd",
+	"onRemove",
+	"onGetValue",
+];
+
+/** Strips the non-cascading hooks from a derived component's config. */
+Component.stripHooks = function (config) {
+	if (!config) {
+		return config;
+	}
+	for (var i = 0; i < Component.NON_CASCADING_PROPS.length; i++) {
+		delete config[Component.NON_CASCADING_PROPS[i]];
+	}
+	return config;
+};
+
+Component.__deprecationsWarned = {};
+
+Component.warnDeprecated = function (oldName, newName, where) {
+	var key = oldName + "|" + where;
+	if (Component.__deprecationsWarned[key]) {
+		return;
+	}
+	Component.__deprecationsWarned[key] = true;
+	console.warn(
+		"DashboardJS: '" +
+			oldName +
+			"' is deprecated and will be removed in 2.0 - use '" +
+			newName +
+			"' instead. (on " +
+			where +
+			")"
+	);
+};
+
+/**
+ * Rewrites deprecated config keys onto their replacements, in place, once.
+ * onRemove is handled separately because its semantics changed: the old one
+ * completes a DashboardEvent, the new one returns false or a promise.
+ */
+Component.normalizeContract = function (config, where) {
+	if (!config || config.__contractNormalized) {
+		return config;
+	}
+
+	for (var oldName in Component.RENAMED_PROPS) {
+		if (!Component.RENAMED_PROPS.hasOwnProperty(oldName)) {
+			continue;
+		}
+		var newName = Component.RENAMED_PROPS[oldName];
+		if (config.hasOwnProperty(oldName) && config[oldName] != null) {
+			Component.warnDeprecated(oldName, newName, where);
+			// An explicit new-style key always wins over the alias.
+			if (!config.hasOwnProperty(newName) || config[newName] == null) {
+				config[newName] = config[oldName];
+			}
+			delete config[oldName];
+		}
+	}
+
+	if (config.hasOwnProperty("onRemove") && config.onRemove != null) {
+		Component.warnDeprecated("onRemove", "onBeforeRemove", where);
+		if (!config.onBeforeRemove) {
+			config.onBeforeRemove = config.onRemove;
+			// Flags the old DashboardEvent completion behaviour for remove().
+			config.__legacyRemove = true;
+		}
+		delete config.onRemove;
+	}
+
+	Object.defineProperty(config, "__contractNormalized", {
+		value: true,
+		enumerable: false,
+		configurable: true,
+	});
+	return config;
+};
+
+/**
+ * Resolves a noun property that may be static or computed.
+ * Returns `fallback` when the property is absent or the function opts out by
+ * returning undefined. Errors are contained so one bad callback cannot take
+ * the whole dashboard down.
+ */
+Component.prototype.resolve = function (name, fallback) {
+	var fn = this.__computed ? this.__computed[name] : null;
+
+	if (typeof fn !== "function") {
+		var raw = this[name];
+		return raw === undefined || raw === null ? fallback : raw;
+	}
+
+	try {
+		// The component is the context object, so all three call styles work.
+		var result = fn.call(this, this, this.record);
+		return result === undefined ? fallback : result;
+	} catch (err) {
+		console.log(
+			"DashboardJS: error in " +
+				name +
+				"() on " +
+				this.constructor.name +
+				" '" +
+				this.name +
+				"': " +
+				err
+		);
+		return fallback;
+	}
+};
+
+/**
+ * Invokes a verb hook with the same context-object convention as resolve().
+ * Returns whatever the hook returned so callers like remove() can act on it.
+ */
+Component.prototype.trigger = function (name, extra) {
+	var fn = this[name];
+	if (typeof fn !== "function") {
+		return undefined;
+	}
+	try {
+		return fn.call(this, this, this.record, extra);
+	} catch (err) {
+		console.log(
+			"DashboardJS: error in " +
+				name +
+				"() on " +
+				this.constructor.name +
+				" '" +
+				this.name +
+				"': " +
+				err
+		);
+		return undefined;
+	}
+};
+
+// ---- Context-object aliases -------------------------------------------------
+// `el` and `component` are part of the documented context shape but are just
+// views onto existing state, so they are getters rather than stored copies.
+Object.defineProperty(Component.prototype, "el", {
+	get: function () {
+		return this.object;
+	},
+	configurable: true,
+});
+
+Object.defineProperty(Component.prototype, "component", {
+	get: function () {
+		return this;
+	},
+	configurable: true,
+});
 
 Component.prototype.init = function ({
 	config,
@@ -61,9 +267,28 @@ Component.prototype.init = function ({
 	// to the local context
 	// then add a reference the original copy of config as well.
 	if (config) {
+		// Rewrite deprecated keys onto their replacements before anything reads them.
+		Component.normalizeContract(config, this.__proto__.constructor.name);
+
+		// Collect computed nouns first, so they are never copied onto the
+		// instance. The context object must expose the resolved value
+		// (ctx.value, ctx.icon), not the function that produces it - and some
+		// of those names are accessors on the prototype, where assigning the
+		// function would silently do nothing.
+		this.__computed = {};
+		for (var c = 0; c < Component.COMPUTED_PROPS.length; c++) {
+			var computedKey = Component.COMPUTED_PROPS[c];
+			if (typeof config[computedKey] === "function") {
+				this.__computed[computedKey] = config[computedKey];
+			}
+		}
+
 		var configKeys = Object.keys(config);
 		for (var j in configKeys) {
 			propKey = configKeys[j];
+			if (this.__computed.hasOwnProperty(propKey)) {
+				continue;
+			}
 			// Check if the config property exists in this context
 			//if (this[propKey] === undefined || this[propKey] === null){
 			this[propKey] = config[propKey];
@@ -166,14 +391,14 @@ Component.prototype.init = function ({
 		this.dashboard = null;
 	}
 
-	if (config.onLoop) {
-		this.onLoop = config.onLoop;
+	if (config.onRender) {
+		this.onRender = config.onRender;
 	}
 
 	// Remove all Events to stop them from cascading down the elements
-	if (this.onAdd) {
-		config.onAdd = null;
-		delete config.onAdd;
+	if (this.onMount) {
+		config.onMount = null;
+		delete config.onMount;
 	}
 
 	// Generate Readable ID from Name
@@ -352,19 +577,10 @@ Component.prototype.renderValues = function () {
 		);
 	}
 
-	// On Loop Event
-	if (this.onLoop) {
-		var fieldOnLoopEvent = this.onLoop;
-		// Apply the Action
-		//console.log("field", field);
-		try {
-			fieldOnLoopEvent(this);
-		} catch (err) {
-			console.log(
-				"ERROR in onLoop for Field: " + this.name + ". error: " + err
-			);
-		}
-	}
+	// onRender used to also fire here, unbound, on top of the call in
+	// processEvents() - so every handler ran twice per pass with `this` set
+	// inconsistently. processEvents() is the correct point (the DOM node
+	// exists by then), so this duplicate call has been removed.
 };
 
 Component.prototype.generateId = function (optionalName) {
@@ -416,7 +632,7 @@ Component.generateRandomId = function (name) {
 };
 
 Component.prototype.processEvents = function () {
-	visibility = this.visibility;
+	visibility = this.resolve("visibility", this.visibility);
 	var show = false;
 	if (typeof visibility === "string") {
 		// visibility is set as is, use it to determine show
@@ -461,9 +677,8 @@ Component.prototype.processEvents = function () {
 	}
 
 	// Icons
-	var icon = null;
-	if (this.icon) {
-		icon = this.icon;
+	var icon = this.resolve("icon", null);
+	if (icon) {
 		if (typeof icon === "function") {
 			icon = icon(this);
 		}
@@ -478,20 +693,27 @@ Component.prototype.processEvents = function () {
 	}
 
 	if (visibility == "show" || visibility == "enable") {
-		if (this.url || this.onClick) {
+		if (this.url || (this.__computed && this.__computed.url) || this.onClick) {
 			if (!this.template.selectors.itemLink) {
 				this.template.selectors.itemLink = this.template.selectors.item;
 			}
 			if (!this.objects.itemLink) {
 				this.objects.itemLink = this.objects.item;
 			}
-			if (this.url) {
-				this.setLink(this.url, null, this.urlTarget);
-
-				var url = this.url;
-				// Check if it's a function, if it is, expect the url to be returned
+			if (this.url || (this.__computed && this.__computed.url)) {
+				// Resolve first: setLink used to be handed the raw property, so a
+				// function-valued url was briefly written into the href.
+				var url = this.resolve("url", null);
 				if (typeof url === "function") {
 					url = url(this);
+				}
+
+				// urlTarget and target were read in different places; accept both.
+				var linkTarget = this.urlTarget || this.target;
+				// Only build the anchor for a real href - passing a falsy url
+				// through setLink wrote href="null" onto the element.
+				if (url) {
+					this.setLink(url, null, linkTarget);
 				}
 
 				if (!url) {
@@ -501,8 +723,8 @@ Component.prototype.processEvents = function () {
 					}
 				} else {
 					this.objects.itemLink.setAttribute("href", url);
-					if (this.target) {
-						this.objects.itemLink.setAttribute("target", this.target);
+					if (linkTarget) {
+						this.objects.itemLink.setAttribute("target", linkTarget);
 					}
 				}
 
@@ -518,7 +740,10 @@ Component.prototype.processEvents = function () {
 				this.objects.itemLink.classList.add("cursor-pointer");
 				this.objects.itemLink.addClickHandler(processOnClick, {
 					dashboard: this,
-					record: this.data,
+					// The row, on every component. This used to be this.data,
+					// which on a Field is the field's value, not the record -
+					// so the second argument contradicted its own name.
+					record: this.record !== undefined ? this.record : this.data,
 					item: this,
 					theFunction: itemOnClick,
 				});
@@ -544,9 +769,9 @@ Component.prototype.processEvents = function () {
 		}
 	}
 
-	// If onLoop event
-	if (this.onLoop) {
-		this.onLoop(this);
+	// onRender fires once per render pass, with the component as context.
+	if (this.onRender) {
+		this.trigger("onRender");
 	}
 
 	this.visibility = visibility;
@@ -603,21 +828,78 @@ Component.prototype.setLink = function (value, selectorKey, target) {
 };
 
 Component.prototype.remove = function () {
-	// If onRemove event
-	if (this.onRemove) {
-		var event = new DashboardEvent();
-		event.addCompletedEvent(function (element) {
-			element.delete();
-		}, this);
-		this.onRemove(event);
-	} else {
-		this.delete();
+	var self = this;
+
+	if (this.onBeforeRemove) {
+		// Legacy onRemove kept the DashboardEvent completion dance.
+		if (this.__legacyRemove) {
+			var event = new DashboardEvent();
+			event.addCompletedEvent(function (element) {
+				element.delete();
+			}, this);
+			this.onBeforeRemove(event);
+			return;
+		}
+
+		// New contract: false cancels, a promise defers, anything else proceeds.
+		var outcome = this.trigger("onBeforeRemove");
+		if (outcome === false) {
+			return;
+		}
+		if (outcome && typeof outcome.then === "function") {
+			outcome.then(function (settled) {
+				if (settled !== false) {
+					self.delete();
+				}
+			});
+			return;
+		}
 	}
+	this.delete();
 };
 
 Component.prototype.removeChildren = function (selectorKey) {
-	// If onRemove event
-	if (this.onRemove) {
+	// onBeforeRemove guards child removal exactly as it guards remove().
+	if (this.onBeforeRemove) {
+		var self = this;
+		var deleteChildren = function () {
+			for (var dc in self.children) {
+				if (self.children[dc] && (!selectorKey || selectorKey == dc)) {
+					for (var dcc in self.children[dc]) {
+						if (self.children[dc][dcc]) {
+							self.children[dc][dcc].delete();
+						}
+					}
+				}
+			}
+			if (selectorKey) {
+				if (self.children && self.children[selectorKey]) {
+					self.children[selectorKey] = [];
+				}
+			} else {
+				for (var rc in self.children) {
+					self.children[rc] = [];
+				}
+			}
+		};
+
+		if (!this.__legacyRemove) {
+			var outcome = this.trigger("onBeforeRemove");
+			if (outcome === false) {
+				return;
+			}
+			if (outcome && typeof outcome.then === "function") {
+				outcome.then(function (settled) {
+					if (settled !== false) {
+						deleteChildren();
+					}
+				});
+				return;
+			}
+			deleteChildren();
+			return;
+		}
+
 		var event = new DashboardEvent();
 		event.addCompletedEvent(function (element) {
 			for (var c in this.children) {
@@ -641,7 +923,7 @@ Component.prototype.removeChildren = function (selectorKey) {
 				}
 			}
 		}, this);
-		this.onRemove(event);
+		this.onBeforeRemove(event);
 	} else {
 		for (var c in this.children) {
 			if (this.children[c] && (!selectorKey || selectorKey == c)) {
@@ -737,12 +1019,11 @@ Component.prototype.append = function (childElement, containerSelector) {
 		console.log(err);
 	}
 
-	if (childElement.onAdd) {
-		var event = new DashboardEvent();
-		childElement.onAdd(event);
-		/* 		event.addCompletedEvent(function(ev, element){
-			
-		}, this);	 */
+	if (childElement.onMount) {
+		// The DashboardEvent that used to be passed here was never wired to
+		// anything, so onMount is a plain notification with the standard context.
+		childElement.dashboard = childElement.dashboard || this.dashboard || null;
+		childElement.trigger("onMount");
 	}
 };
 
@@ -772,12 +1053,9 @@ Component.prototype.prepend = function (childElement, containerSelector) {
 		console.log(err);
 	}
 
-	if (this.onAdd) {
-		var event = new DashboardEvent();
-		this.onAdd(event);
-		/* 		event.addCompletedEvent(function(ev, element){
-			
-		}, this);	 */
+	if (childElement.onMount) {
+		childElement.dashboard = childElement.dashboard || this.dashboard || null;
+		childElement.trigger("onMount");
 	}
 };
 

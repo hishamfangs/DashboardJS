@@ -24,7 +24,11 @@ function Action(settings) {
 	}
 	// Call Default 
 	Component.call(this, settings);
-	this.record = this.data;
+	// An action's data IS its row, but Record now injects `record` explicitly;
+	// don't overwrite that if it was supplied.
+	if (!this.record) {
+		this.record = this.data;
+	}
 }
 
 Action.prototype = Object.create(Component.prototype);
